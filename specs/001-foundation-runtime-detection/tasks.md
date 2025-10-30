@@ -247,42 +247,42 @@
 
 ---
 
-## Phase 11: User Story 3.1 - No Runtimes Guidance (Priority: P1)
+## Phase 11: No Runtimes Guidance (Priority: P1)
 
-**Goal**: Provide helpful messages and installation links when no runtimes are detected
+**Goal**: Provide helpful guidance when no container runtimes are detected
 
-**Independent Test**: With no runtimes installed, app shows "No runtimes detected" message with installation links
+**Independent Test**: Show installation instructions when no Docker/Podman found
 
 ### Implementation for US3.1
 
-- [ ] T095 [US3.1] Create NoRuntimesMessage component in src/components/NoRuntimesMessage.tsx
-- [ ] T096 [US3.1] Add platform-specific installation instructions to NoRuntimesMessage (detect OS, show relevant links)
-- [ ] T097 [US3.1] Include links to Docker Desktop and Podman installation pages
-- [ ] T098 [US3.1] Add "Retry Detection" button that calls detect_runtimes with force=true
-- [ ] T099 [US3.1] Link to HarborMaster documentation/troubleshooting guide
-- [ ] T100 [US3.1] Show NoRuntimesMessage in App.tsx when runtimes array is empty after detection
-- [ ] T101 [US3.1] Style NoRuntimesMessage with Tailwind (centered, friendly, helpful tone)
+- [x] T095 [US3.1] Create NoRuntimesMessage component in src/components/NoRuntimesMessage.tsx
+- [x] T096 [US3.1] Add platform-specific installation instructions to NoRuntimesMessage (detect OS, show relevant links)
+- [x] T097 [US3.1] Include links to Docker Desktop and Podman installation pages
+- [x] T098 [US3.1] Add "Retry Detection" button that calls detect_runtimes with force=true
+- [x] T099 [US3.1] Link to HarborMaster documentation/troubleshooting guide
+- [x] T100 [US3.1] Show NoRuntimesMessage in App.tsx when runtimes array is empty after detection
+- [x] T101 [US3.1] Style NoRuntimesMessage with Tailwind (centered, friendly, helpful tone)
 
 **Checkpoint**: US3.1 complete - users get clear guidance when no runtimes are found
 
 ---
 
-## Phase 12: User Story 3.2 - Runtime Connection Error Feedback (Priority: P1)
+## Phase 12: Runtime Error Feedback (Priority: P1)
 
-**Goal**: Display specific error messages with troubleshooting suggestions when runtime connection fails
+**Goal**: Provide actionable error messages and recovery options when runtime connection fails
 
-**Independent Test**: Stop Docker daemon - error banner appears with "Docker daemon is not running" and retry button
+**Independent Test**: Show contextual error when selected runtime has status='error'
 
 ### Implementation for US3.2
 
-- [ ] T102 [US3.2] Create RuntimeError component in src/components/RuntimeError.tsx (error banner with message)
-- [ ] T103 [US3.2] Map common error types in status.rs (daemon not running, permission denied, not found)
-- [ ] T104 [US3.2] Add error-specific troubleshooting suggestions in RuntimeError component
-- [ ] T105 [US3.2] Include "Retry Connection" button that calls check_runtime_status
-- [ ] T106 [US3.2] Add "Try alternative runtime" option when multiple runtimes available
-- [ ] T107 [US3.2] Link to troubleshooting guide for each error type
-- [ ] T108 [US3.2] Display RuntimeError in App.tsx when selectedRuntime.status === 'error'
-- [ ] T109 [US3.2] Show error in runtime selector dropdown (red status dot + error text)
+- [x] T102 [US3.2] Create RuntimeError component in src/components/RuntimeError.tsx (error banner with message)
+- [x] T103 [US3.2] Map common error types in status.rs (daemon not running, permission denied, not found)
+- [x] T104 [US3.2] Add error-specific troubleshooting suggestions in RuntimeError component
+- [x] T105 [US3.2] Include "Retry Connection" button that calls check_runtime_status
+- [x] T106 [US3.2] Add "Try alternative runtime" option when multiple runtimes available
+- [x] T107 [US3.2] Link to troubleshooting guide for each error type
+- [x] T108 [US3.2] Display RuntimeError in App.tsx when selectedRuntime.status === 'error'
+- [x] T109 [US3.2] Show error in runtime selector dropdown (red status dot + error text)
 
 **Checkpoint**: US3.2 complete - error handling provides actionable feedback to users
 
@@ -292,18 +292,18 @@
 
 **Purpose**: Comprehensive testing to ensure 85% coverage and quality standards
 
-- [ ] T110 [P] Write unit tests for Docker detector in src-tauri/src/runtime/docker.rs (test PATH scan, platform-specific paths, WSL2 detection)
-- [ ] T111 [P] Write unit tests for Podman detector in src-tauri/src/runtime/podman.rs (test mode detection, version parsing)
-- [ ] T112 [P] Write unit tests for version parser in src-tauri/src/runtime/version.rs (test various version string formats)
-- [ ] T113 [P] Write unit tests for status checker in src-tauri/src/runtime/status.rs (test timeout, error mapping)
-- [ ] T114 [P] Write unit tests for cache in src-tauri/src/runtime/cache.rs (test TTL expiration, clear)
-- [ ] T115 [P] Write unit tests for preferences manager in src-tauri/src/config/preferences.rs (test load/save, defaults)
-- [ ] T116 [P] Write unit tests for runtimeStore in __tests__/stores/runtimeStore.test.ts (test state mutations, auto-selection)
-- [ ] T117 [P] Write component tests for WelcomeScreen in __tests__/components/WelcomeScreen.test.tsx
-- [ ] T118 [P] Write component tests for RuntimeSelector in __tests__/components/RuntimeSelector.test.tsx
-- [ ] T119 [P] Write component tests for StatusIndicator in __tests__/components/StatusIndicator.test.tsx
-- [ ] T120 [P] Write component tests for NoRuntimesMessage in __tests__/components/NoRuntimesMessage.test.tsx
-- [ ] T121 [P] Write component tests for RuntimeError in __tests__/components/RuntimeError.test.tsx
+- [x] T110 [P] Write unit tests for Docker detector in src-tauri/src/runtime/docker.rs (test PATH scan, platform-specific paths, WSL2 detection)
+- [x] T111 [P] Write unit tests for Podman detector in src-tauri/src/runtime/podman.rs (test mode detection, version parsing)
+- [x] T112 [P] Write unit tests for version parser in src-tauri/src/runtime/version.rs (test various version string formats)
+- [x] T113 [P] Write unit tests for status checker in src-tauri/src/runtime/status.rs (test timeout, error mapping)
+- [x] T114 [P] Write unit tests for cache in src-tauri/src/runtime/cache.rs (test TTL expiration, clear)
+- [x] T115 [P] Write unit tests for preferences manager in src-tauri/src/config/preferences.rs (test load/save, defaults)
+- [x] T116 [P] Write unit tests for runtimeStore in __tests__/stores/runtimeStore.test.ts (test state mutations, auto-selection)
+- [x] T117 [P] Write component tests for WelcomeScreen in __tests__/components/WelcomeScreen.test.tsx
+- [x] T118 [P] Write component tests for RuntimeSelector in __tests__/components/RuntimeSelector.test.tsx
+- [x] T119 [P] Write component tests for StatusIndicator in __tests__/components/StatusIndicator.test.tsx
+- [x] T120 [P] Write component tests for NoRuntimesMessage in __tests__/components/NoRuntimesMessage.test.tsx
+- [x] T121 [P] Write component tests for RuntimeError in __tests__/components/RuntimeError.test.tsx
 - [ ] T122 [P] Write integration test for full detection flow (Docker + Podman)
 - [ ] T123 [P] Write E2E test for runtime detection in e2e/runtime-detection.spec.ts
 - [ ] T124 [P] Write E2E test for runtime selection in e2e/runtime-selection.spec.ts
