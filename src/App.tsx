@@ -6,11 +6,12 @@ import { useRuntimeStatus } from './hooks/useRuntimeStatus';
 import { WelcomeScreen } from './components/WelcomeScreen';
 import { RuntimeSelector } from './components/RuntimeSelector';
 import { NoRuntimesMessage } from './components/NoRuntimesMessage';
+import { RuntimeError } from './components/RuntimeError';
 import { formatRelativeTime } from './utils/formatters';
 import type { DetectionResult } from './types/runtime';
 
 function App() {
-  const { isDetecting, error, runtimes, setRuntimes, setDetecting, setError } = useRuntimeStore();
+  const { isDetecting, error, runtimes, selectedRuntime, setRuntimes, setDetecting, setError, setSelectedRuntime } = useRuntimeStore();
   const [showWelcome, setShowWelcome] = useState(true);
   
   // Start status polling when runtimes are detected
@@ -140,6 +141,24 @@ function App() {
                 </h2>
                 <RuntimeSelector />
               </div>
+
+              {/* Show error banner if selected runtime has error status */}
+              {selectedRuntime && selectedRuntime.status === 'error' && (
+                <RuntimeError
+                  runtime={selectedRuntime}
+                  onRetry={() => detectRuntimes(true)}
+                  onSwitchRuntime={() => {
+                    // Find an alternative runtime that's not in error state
+                    const alternative = runtimes.find(
+                      (r) => r.id !== selectedRuntime.id && r.status !== 'error'
+                    );
+                    if (alternative) {
+                      setSelectedRuntime(alternative);
+                    }
+                  }}
+                  hasAlternatives={runtimes.filter((r) => r.status !== 'error').length > 1}
+                />
+              )}
 
               <div>
                 <h2 className="text-sm font-semibold text-gray-400 uppercase mb-4">
