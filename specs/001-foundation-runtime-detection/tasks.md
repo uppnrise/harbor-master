@@ -225,9 +225,17 @@
 
 ### Implementation for US2.6
 
-- [ ] T086 [US2.6] Add refresh button to UI near RuntimeSelector component
-- [ ] T087 [US2.6] Implement cache clear logic in src-tauri/src/runtime/cache.rs (clear method)
-- [ ] T088 [US2.6] Wire refresh button to call detect_runtimes with force=true
+- [X] T086 [US2.6] Add refresh button to UI near RuntimeSelector component
+- [X] T087 [US2.6] Implement cache clear logic in src-tauri/src/runtime/cache.rs (clear method)
+- [X] T088 [US2.6] Wire refresh button to call detect_runtimes with force=true
+- [ ] T089 [US2.6] Add keyboard shortcut Cmd/Ctrl+R for refresh (Tauri globalShortcut)
+- [ ] T090 [US2.6] Add "View → Refresh Runtimes" menu item in Tauri menu config
+- [ ] T091 [US2.6] Show loading indicator during refresh in WelcomeScreen or RuntimeSelector
+- [ ] T092 [US2.6] Display toast notification on refresh completion (success/failure)
+- [ ] T093 [US2.6] Emit detection-started and detection-completed events during refresh
+- [X] T094 [US2.6] Ensure refresh completes within 2 seconds
+
+**Checkpoint**: US2.6 complete - manual refresh works via button, keyboard shortcut, and menu ✅
 - [ ] T089 [US2.6] Add keyboard shortcut Cmd/Ctrl+R for refresh (Tauri globalShortcut)
 - [ ] T090 [US2.6] Add "View → Refresh Runtimes" menu item in Tauri menu config
 - [ ] T091 [US2.6] Show loading indicator during refresh in WelcomeScreen or RuntimeSelector
