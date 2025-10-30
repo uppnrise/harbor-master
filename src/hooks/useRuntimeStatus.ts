@@ -44,6 +44,7 @@ export function useRuntimeStatus() {
         console.error('Failed to stop status polling:', err);
       });
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [runtimes.length]); // Re-run when number of runtimes changes
 
   return {

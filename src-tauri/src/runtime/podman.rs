@@ -91,7 +91,7 @@ fn verify_executable(path: &PathBuf) -> bool {
 /// Detect if Podman is running in rootless mode
 fn detect_rootless_mode(podman_path: &PathBuf) -> Option<PodmanMode> {
     let output = Command::new(podman_path)
-        .args(&["info", "--format={{.Host.Security.Rootless}}"])
+        .args(["info", "--format={{.Host.Security.Rootless}}"])
         .output();
     
     match output {

@@ -62,6 +62,7 @@ impl RuntimeDetector {
     }
 
     /// Clear cache for specific runtime
+    #[allow(dead_code)]
     pub fn clear_cache(&self, runtime_type: &crate::types::RuntimeType) {
         self.cache.clear(runtime_type);
     }

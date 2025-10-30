@@ -136,6 +136,7 @@ impl PollingService {
     }
 
     /// Check if polling is active
+    #[allow(dead_code)]
     pub async fn is_running(&self) -> bool {
         let is_running = self.is_running.lock().await;
         *is_running

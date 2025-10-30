@@ -27,6 +27,7 @@ export function RuntimeSelector() {
     return () => {
       unlisten.then((fn) => fn());
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [runtimes, selectedRuntime]);
 
   const autoSelectRuntime = async () => {

@@ -1,4 +1,4 @@
-use tauri::{Manager, Window, AppHandle, Emitter, State};
+use tauri::{Window, AppHandle, Emitter};
 use crate::config::preferences::{load_preferences, save_preferences};
 use crate::types::{RuntimePreferences, DetectionResult};
 use crate::runtime::detector::RuntimeDetector;

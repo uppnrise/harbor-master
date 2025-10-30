@@ -50,6 +50,7 @@ impl DetectionCache {
     }
 
     /// Clear cache for specific runtime type
+    #[allow(dead_code)]
     pub fn clear(&self, runtime_type: &RuntimeType) {
         if let Ok(mut entries) = self.entries.lock() {
             entries.remove(runtime_type);

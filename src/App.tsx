@@ -38,6 +38,12 @@ function App() {
       setDetecting(false);
     });
 
+    // Listen for menu refresh event
+    const unlistenMenu = listen('menu-refresh', () => {
+      console.log('Refresh from menu');
+      detectRuntimes(true);
+    });
+
     // Add keyboard shortcut for refresh (Cmd/Ctrl+R)
     const handleKeyPress = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key === 'r') {
@@ -50,8 +56,10 @@ function App() {
 
     return () => {
       unlisten.then((fn) => fn());
+      unlistenMenu.then((fn) => fn());
       window.removeEventListener('keydown', handleKeyPress);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {

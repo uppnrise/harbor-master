@@ -7,7 +7,7 @@ mod polling;
 mod runtime;
 mod types;
 
-use tauri::Manager;
+use tauri::{Emitter, Manager, menu::{MenuBuilder, SubmenuBuilder, MenuItemBuilder}};
 
 fn main() {
     // Initialize detector before building the app
@@ -32,6 +32,29 @@ fn main() {
             commands::get_platform,
         ])
         .setup(|app| {
+            // Build the menu
+            let refresh_item = MenuItemBuilder::with_id("refresh", "Refresh Runtimes")
+                .accelerator("CmdOrCtrl+R")
+                .build(app)?;
+            
+            let view_menu = SubmenuBuilder::new(app, "View")
+                .item(&refresh_item)
+                .build()?;
+            
+            let menu = MenuBuilder::new(app)
+                .item(&view_menu)
+                .build()?;
+            
+            app.set_menu(menu)?;
+            
+            // Handle menu item clicks
+            app.on_menu_event(move |app, event| {
+                if event.id() == "refresh" {
+                    // Emit refresh event that App.tsx can listen to
+                    let _ = app.emit("menu-refresh", ());
+                }
+            });
+            
             #[cfg(debug_assertions)]
             {
                 let window = app.get_webview_window("main").unwrap();

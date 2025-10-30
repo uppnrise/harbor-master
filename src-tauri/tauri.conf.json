@@ -17,22 +17,7 @@
         "minWidth": 1024,
         "minHeight": 768,
         "resizable": true,
-        "center": true,
-        "menu": {
-          "items": [
-            {
-              "id": "view",
-              "text": "View",
-              "items": [
-                {
-                  "id": "refresh",
-                  "text": "Refresh Runtimes",
-                  "accelerator": "CmdOrCtrl+R"
-                }
-              ]
-            }
-          ]
-        }
+        "center": true
       }
     ],
     "security": {
