@@ -1,13 +1,25 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useRuntimeStore } from './stores/runtimeStore';
+import { WelcomeScreen } from './components/WelcomeScreen';
 
 function App() {
   const { isDetecting, error, runtimes } = useRuntimeStore();
+  const [showWelcome, setShowWelcome] = useState(true);
 
   useEffect(() => {
     // Detection logic will be implemented in later phases
     console.log('HarborMaster initialized');
-  }, []);
+
+    // Hide welcome screen after initial load or when detection completes
+    if (!isDetecting && runtimes.length > 0) {
+      setShowWelcome(false);
+    }
+  }, [isDetecting, runtimes.length]);
+
+  // Show welcome screen on first load or during initial detection
+  if (showWelcome && (isDetecting || runtimes.length === 0)) {
+    return <WelcomeScreen isDetecting={isDetecting} />;
+  }
 
   return (
     <div className="min-h-screen bg-gray-900 text-white">
