@@ -1,0 +1,99 @@
+use chrono::{DateTime, Utc};
+use serde::{Deserialize, Serialize};
+use std::path::PathBuf;
+
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+#[serde(rename_all = "lowercase")]
+pub enum RuntimeType {
+    Docker,
+    Podman,
+}
+
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq)]
+#[serde(rename_all = "lowercase")]
+pub enum RuntimeStatus {
+    Running,
+    Stopped,
+    Error,
+    Unknown,
+}
+
+#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
+#[serde(rename_all = "lowercase")]
+pub enum PodmanMode {
+    Rootful,
+    Rootless,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct Version {
+    pub major: u32,
+    pub minor: u32,
+    pub patch: u32,
+    pub full: String,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct Runtime {
+    pub id: String,
+    #[serde(rename = "type")]
+    pub runtime_type: RuntimeType,
+    pub path: PathBuf,
+    pub version: Version,
+    pub status: RuntimeStatus,
+    pub last_checked: DateTime<Utc>,
+    pub detected_at: DateTime<Utc>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub mode: Option<PodmanMode>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub is_wsl: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub error: Option<String>,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct DetectionResult {
+    pub runtimes: Vec<Runtime>,
+    pub detected_at: DateTime<Utc>,
+    pub duration: u64, // milliseconds
+    pub errors: Vec<DetectionError>,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct DetectionError {
+    pub runtime: RuntimeType,
+    pub path: String,
+    pub error: String,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct StatusUpdate {
+    pub runtime_id: String,
+    pub status: RuntimeStatus,
+    pub timestamp: DateTime<Utc>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub error: Option<String>,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct RuntimePreferences {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub selected_runtime_id: Option<String>,
+    pub auto_select_running: bool,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub preferred_type: Option<RuntimeType>,
+    pub detection_cache_ttl: u64, // seconds
+    pub status_poll_interval: u64, // seconds
+}
+
+impl Default for RuntimePreferences {
+    fn default() -> Self {
+        Self {
+            selected_runtime_id: None,
+            auto_select_running: true,
+            preferred_type: Some(RuntimeType::Docker),
+            detection_cache_ttl: 60,
+            status_poll_interval: 5,
+        }
+    }
+}
