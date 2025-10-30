@@ -298,7 +298,7 @@
 - [x] T119 [P] Write component tests for StatusIndicator in __tests__/components/StatusIndicator.test.tsx
 - [x] T120 [P] Write component tests for NoRuntimesMessage in __tests__/components/NoRuntimesMessage.test.tsx
 - [x] T121 [P] Write component tests for RuntimeError in __tests__/components/RuntimeError.test.tsx
-- [ ] T122 [P] Write integration test for full detection flow (Docker + Podman)
+- [x] T122 [P] Write integration test for full detection flow (Docker + Podman)
 - [ ] T123 [P] Write E2E test for runtime detection in e2e/runtime-detection.spec.ts
 - [ ] T124 [P] Write E2E test for runtime selection in e2e/runtime-selection.spec.ts
 - [ ] T125 [P] Write E2E test for status monitoring in e2e/status-monitoring.spec.ts
