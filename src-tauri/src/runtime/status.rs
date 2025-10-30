@@ -27,17 +27,18 @@ async fn check_docker_status(path: &str) -> RuntimeStatus {
             if output.status.success() {
                 RuntimeStatus::Running
             } else {
-                // Check if it's a permission error or daemon not running
+                // Docker not running is normal - only treat permission issues as errors
                 let stderr = String::from_utf8_lossy(&output.stderr);
-                if stderr.contains("permission denied") || stderr.contains("Cannot connect") {
+                if stderr.contains("permission denied") {
                     RuntimeStatus::Error
                 } else {
+                    // Cannot connect to daemon or any other error = stopped
                     RuntimeStatus::Stopped
                 }
             }
         }
-        Ok(Ok(Err(_))) => RuntimeStatus::Error,
-        Ok(Err(_)) => RuntimeStatus::Error,
+        Ok(Ok(Err(_))) => RuntimeStatus::Stopped, // Failed to execute = stopped
+        Ok(Err(_)) => RuntimeStatus::Stopped,      // Task join error = stopped
         Err(_) => RuntimeStatus::Unknown, // Timeout
     }
 }
@@ -61,17 +62,18 @@ async fn check_podman_status(path: &str) -> RuntimeStatus {
             if output.status.success() {
                 RuntimeStatus::Running
             } else {
-                // Check if it's a permission error or daemon not running
+                // Podman not running is normal - only treat permission issues as errors
                 let stderr = String::from_utf8_lossy(&output.stderr);
-                if stderr.contains("permission denied") || stderr.contains("Cannot connect") {
+                if stderr.contains("permission denied") {
                     RuntimeStatus::Error
                 } else {
+                    // Cannot connect to service or any other error = stopped
                     RuntimeStatus::Stopped
                 }
             }
         }
-        Ok(Ok(Err(_))) => RuntimeStatus::Error,
-        Ok(Err(_)) => RuntimeStatus::Error,
+        Ok(Ok(Err(_))) => RuntimeStatus::Stopped, // Failed to execute = stopped
+        Ok(Err(_)) => RuntimeStatus::Stopped,      // Task join error = stopped
         Err(_) => RuntimeStatus::Unknown, // Timeout
     }
 }
