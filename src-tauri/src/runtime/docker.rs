@@ -327,11 +327,12 @@ mod tests {
         };
         assert!(validate_docker_version(&valid));
         
+        // Exact minimum version 20.10.0
         let exact_min = Version {
-            major: 19,
-            minor: 3,
+            major: 20,
+            minor: 10,
             patch: 0,
-            full: "19.3.0".to_string(),
+            full: "20.10.0".to_string(),
         };
         assert!(validate_docker_version(&exact_min));
     }
