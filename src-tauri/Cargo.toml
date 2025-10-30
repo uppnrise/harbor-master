@@ -1,0 +1,30 @@
+[package]
+name = "harbor-master"
+version = "0.1.0"
+description = "Master Your Containers - Cross-platform desktop container management"
+authors = ["HarborMaster Team"]
+license = "MIT"
+repository = "https://github.com/uppnrise/harbor-master"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[build-dependencies]
+tauri-build = { version = "2.0", features = [] }
+
+[dependencies]
+tauri = { version = "2.0", features = [] }
+tauri-plugin-shell = "2.0"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+tokio = { version = "1.35", features = ["full"] }
+which = "6.0"
+semver = "1.0"
+chrono = { version = "0.4", features = ["serde"] }
+thiserror = "1.0"
+regex = "1.10"
+
+[features]
+# This feature is used for production builds or when `devPath` points to the filesystem
+# DO NOT REMOVE!!
+custom-protocol = ["tauri/custom-protocol"]
