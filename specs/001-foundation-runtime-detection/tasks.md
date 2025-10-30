@@ -109,19 +109,19 @@
 
 ### Implementation for US2.1
 
-- [ ] T041 [US2.1] Create Docker detector module in src-tauri/src/runtime/docker.rs (detect_docker async function)
-- [ ] T042 [US2.1] Implement PATH scanning for docker executable using `which` crate in docker.rs
-- [ ] T043 [US2.1] Implement platform-specific location checks in docker.rs:
+- [X] T041 [US2.1] Create Docker detector module in src-tauri/src/runtime/docker.rs (detect_docker async function)
+- [X] T042 [US2.1] Implement PATH scanning for docker executable using `which` crate in docker.rs
+- [X] T043 [US2.1] Implement platform-specific location checks in docker.rs:
   - Windows: `C:\Program Files\Docker\Docker\resources\bin`
   - macOS: `/usr/local/bin`, `/opt/homebrew/bin`
   - Linux: `/usr/bin`, `/usr/local/bin`
-- [ ] T044 [US2.1] Add WSL2 Docker detection for Windows in docker.rs (check WSL distributions for docker)
-- [ ] T045 [US2.1] Implement executable permission verification in docker.rs
-- [ ] T046 [US2.1] Add version detection via `docker --version` command in docker.rs (parse output)
-- [ ] T047 [US2.1] Implement 60-second detection cache in src-tauri/src/runtime/cache.rs (TTL-based cache struct)
-- [ ] T048 [US2.1] Add detection timeout logic (500ms max) in docker.rs
+- [X] T044 [US2.1] Add WSL2 Docker detection for Windows in docker.rs (check WSL distributions for docker)
+- [X] T045 [US2.1] Implement executable permission verification in docker.rs
+- [X] T046 [US2.1] Add version detection via `docker --version` command in docker.rs (parse output)
+- [X] T047 [US2.1] Implement 60-second detection cache in src-tauri/src/runtime/cache.rs (TTL-based cache struct)
+- [X] T048 [US2.1] Add detection timeout logic (500ms max) in docker.rs
 
-**Checkpoint**: US2.1 complete - Docker detection works with caching, platform-specific paths, and WSL2 support
+**Checkpoint**: US2.1 complete - Docker detection works with caching, platform-specific paths, and WSL2 support ✅
 
 ---
 
