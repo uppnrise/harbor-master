@@ -177,17 +177,17 @@
 
 ### Implementation for US2.4
 
-- [ ] T064 [US2.4] Create status checker in src-tauri/src/runtime/status.rs (check_status async function via `docker info`/`podman info`)
-- [ ] T065 [US2.4] Add status timeout logic (3 seconds max) in status.rs
-- [ ] T066 [US2.4] Map status responses to RuntimeStatus enum in status.rs (Running/Stopped/Error)
-- [ ] T067 [US2.4] Create polling service in src-tauri/src/polling/service.rs (tokio async task, 5-second interval)
-- [ ] T068 [US2.4] Implement start_status_polling Tauri command in src-tauri/src/commands/runtime.rs
-- [ ] T069 [US2.4] Implement stop_status_polling Tauri command in src-tauri/src/commands/runtime.rs
-- [ ] T070 [US2.4] Emit runtime-status-update events from polling service
-- [ ] T071 [US2.4] Create useRuntimeStatus hook in src/hooks/useRuntimeStatus.ts (listen to status update events)
-- [ ] T072 [US2.4] Update RuntimeSelector component to show status dots (green/gray/red using StatusIndicator)
-- [ ] T073 [US2.4] Display "Last checked" timestamp in UI
-- [ ] T074 [US2.4] Add exponential backoff for repeated failures in polling service
+- [x] T064 [US2.4] Create status checker in src-tauri/src/runtime/status.rs (check_status async function via `docker info`/`podman info`)
+- [x] T065 [US2.4] Add status timeout logic (3 seconds max) in status.rs
+- [x] T066 [US2.4] Map status responses to RuntimeStatus enum in status.rs (Running/Stopped/Error)
+- [x] T067 [US2.4] Create polling service in src-tauri/src/polling/service.rs (tokio async task, 5-second interval)
+- [x] T068 [US2.4] Implement start_status_polling Tauri command in src-tauri/src/commands/runtime.rs
+- [x] T069 [US2.4] Implement stop_status_polling Tauri command in src-tauri/src/commands/runtime.rs
+- [x] T070 [US2.4] Emit runtime-status-update events from polling service
+- [x] T071 [US2.4] Create useRuntimeStatus hook in src/hooks/useRuntimeStatus.ts (listen to status update events)
+- [x] T072 [US2.4] Update RuntimeSelector component to show status dots (green/gray/red using StatusIndicator)
+- [x] T073 [US2.4] Display "Last checked" timestamp in UI
+- [x] T074 [US2.4] Add exponential backoff for repeated failures in polling service
 
 **Checkpoint**: US2.4 complete - status monitoring works with real-time updates and error handling
 
