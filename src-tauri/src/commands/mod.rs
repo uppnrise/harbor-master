@@ -1,12 +1,14 @@
-use tauri::{Manager, Window, AppHandle, Emitter};
+use tauri::{Manager, Window, AppHandle, Emitter, State};
 use crate::config::preferences::{load_preferences, save_preferences};
 use crate::types::{RuntimePreferences, DetectionResult};
 use crate::runtime::detector::RuntimeDetector;
+use crate::polling::PollingService;
 use std::sync::Arc;
 
 // Global detector instance
 lazy_static::lazy_static! {
     static ref DETECTOR: Arc<RuntimeDetector> = Arc::new(RuntimeDetector::new(60, 500));
+    static ref POLLING_SERVICE: Arc<PollingService> = Arc::new(PollingService::new(5));
 }
 
 // Initialize detector (called from main.rs)
@@ -79,5 +81,23 @@ pub async fn select_runtime(app: AppHandle, runtime_id: String) -> Result<(), St
 #[tauri::command]
 pub async fn clear_detection_cache() -> Result<(), String> {
     DETECTOR.clear_all_caches();
+    Ok(())
+}
+
+#[tauri::command]
+pub async fn start_status_polling(app: AppHandle) -> Result<(), String> {
+    // Get current runtimes from detector
+    let runtimes = DETECTOR.detect_all().await;
+    
+    // Update polling service with runtimes
+    POLLING_SERVICE.set_runtimes(runtimes).await;
+    
+    // Start polling
+    POLLING_SERVICE.start(app).await
+}
+
+#[tauri::command]
+pub async fn stop_status_polling() -> Result<(), String> {
+    POLLING_SERVICE.stop().await;
     Ok(())
 }

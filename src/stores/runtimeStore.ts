@@ -13,7 +13,7 @@ interface RuntimeState {
   setSelectedRuntime: (runtime: Runtime | null) => void;
   setDetecting: (isDetecting: boolean) => void;
   setError: (error: string | null) => void;
-  updateRuntimeStatus: (runtimeId: string, status: RuntimeStatus, error?: string) => void;
+  updateRuntimeStatus: (runtimeId: string, status: RuntimeStatus, timestamp: string, error?: string) => void;
   addRuntime: (runtime: Runtime) => void;
   removeRuntime: (runtimeId: string) => void;
   clearRuntimes: () => void;
@@ -35,14 +35,14 @@ export const useRuntimeStore = create<RuntimeState>((set) => ({
 
   setError: (error) => set({ error }),
 
-  updateRuntimeStatus: (runtimeId, status, errorMsg) =>
+  updateRuntimeStatus: (runtimeId, status, timestamp, errorMsg) =>
     set((state) => ({
       runtimes: state.runtimes.map((runtime) => {
         if (runtime.id === runtimeId) {
           const updated: Runtime = {
             ...runtime,
             status,
-            lastChecked: new Date().toISOString(),
+            lastChecked: timestamp,
           };
           if (errorMsg) {
             updated.error = errorMsg;
@@ -57,7 +57,7 @@ export const useRuntimeStore = create<RuntimeState>((set) => ({
               const updated: Runtime = {
                 ...state.selectedRuntime,
                 status,
-                lastChecked: new Date().toISOString(),
+                lastChecked: timestamp,
               };
               if (errorMsg) {
                 updated.error = errorMsg;

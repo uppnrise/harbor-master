@@ -2,13 +2,18 @@ import { useEffect, useState } from 'react';
 import { invoke } from '@tauri-apps/api/core';
 import { listen } from '@tauri-apps/api/event';
 import { useRuntimeStore } from './stores/runtimeStore';
+import { useRuntimeStatus } from './hooks/useRuntimeStatus';
 import { WelcomeScreen } from './components/WelcomeScreen';
 import { RuntimeSelector } from './components/RuntimeSelector';
+import { formatRelativeTime } from './utils/formatters';
 import type { DetectionResult } from './types/runtime';
 
 function App() {
   const { isDetecting, error, runtimes, setRuntimes, setDetecting, setError } = useRuntimeStore();
   const [showWelcome, setShowWelcome] = useState(true);
+  
+  // Start status polling when runtimes are detected
+  useRuntimeStatus();
 
   useEffect(() => {
     console.log('HarborMaster initialized');
@@ -151,6 +156,9 @@ function App() {
                             Version: {runtime.version.full}
                           </p>
                           <p className="text-xs text-gray-500 mt-1">Path: {runtime.path}</p>
+                          <p className="text-xs text-gray-500">
+                            Last checked: {formatRelativeTime(runtime.lastChecked)}
+                          </p>
                           {runtime.mode && (
                             <p className="text-xs text-gray-500">Mode: {runtime.mode}</p>
                           )}

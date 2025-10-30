@@ -25,6 +25,9 @@ fn main() {
             commands::set_runtime_preferences,
             commands::select_runtime,
             commands::clear_detection_cache,
+            // Status polling commands
+            commands::start_status_polling,
+            commands::stop_status_polling,
         ])
         .setup(|app| {
             #[cfg(debug_assertions)]
