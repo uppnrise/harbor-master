@@ -23,8 +23,19 @@ function App() {
       setDetecting(false);
     });
 
+    // Add keyboard shortcut for refresh (Cmd/Ctrl+R)
+    const handleKeyPress = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'r') {
+        e.preventDefault();
+        detectRuntimes(true);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyPress);
+
     return () => {
       unlisten.then((fn) => fn());
+      window.removeEventListener('keydown', handleKeyPress);
     };
   }, []);
 
@@ -35,10 +46,17 @@ function App() {
     }
   }, [isDetecting, runtimes.length]);
 
-  const detectRuntimes = async () => {
+  const detectRuntimes = async (force = false) => {
     try {
       setDetecting(true);
       setError(null);
+      
+      if (force) {
+        console.log('Force refreshing runtime detection...');
+        // Clear cache before detecting
+        await invoke('clear_detection_cache');
+      }
+      
       const result = await invoke<DetectionResult>('detect_runtimes');
       console.log('Detection result:', result);
       setRuntimes(result.runtimes);
@@ -59,8 +77,35 @@ function App() {
     <div className="min-h-screen bg-gray-900 text-white">
       <div className="container mx-auto px-4 py-8 max-w-4xl">
         <header className="mb-8">
-          <h1 className="text-4xl font-bold text-blue-500">⚓ HarborMaster</h1>
-          <p className="text-gray-400 mt-2">Master Your Containers</p>
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-4xl font-bold text-blue-500">⚓ HarborMaster</h1>
+              <p className="text-gray-400 mt-2">Master Your Containers</p>
+            </div>
+            {!showWelcome && runtimes.length > 0 && (
+              <button
+                onClick={() => detectRuntimes(true)}
+                disabled={isDetecting}
+                className="flex items-center space-x-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-700 disabled:cursor-not-allowed rounded-lg transition-colors"
+                title="Refresh runtime detection (Cmd/Ctrl+R)"
+              >
+                <svg
+                  className={`w-5 h-5 ${isDetecting ? 'animate-spin' : ''}`}
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                  />
+                </svg>
+                <span>{isDetecting ? 'Refreshing...' : 'Refresh'}</span>
+              </button>
+            )}
+          </div>
         </header>
 
         <main className="space-y-6">

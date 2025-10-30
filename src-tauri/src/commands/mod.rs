@@ -75,3 +75,9 @@ pub async fn select_runtime(app: AppHandle, runtime_id: String) -> Result<(), St
     
     Ok(())
 }
+
+#[tauri::command]
+pub async fn clear_detection_cache() -> Result<(), String> {
+    DETECTOR.clear_all_caches();
+    Ok(())
+}

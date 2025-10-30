@@ -24,6 +24,7 @@ fn main() {
             commands::get_runtime_preferences,
             commands::set_runtime_preferences,
             commands::select_runtime,
+            commands::clear_detection_cache,
         ])
         .setup(|app| {
             #[cfg(debug_assertions)]
