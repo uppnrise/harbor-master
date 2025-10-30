@@ -5,7 +5,7 @@ use std::error::Error;
 use chrono::Utc;
 
 use crate::types::{Runtime, RuntimeType, RuntimeStatus, PodmanMode, DetectionResult, DetectionError};
-use crate::runtime::version::parse_version;
+use crate::runtime::version::{parse_version, validate_podman_version};
 
 /// Platform-specific Podman installation paths
 fn get_platform_paths() -> Vec<PathBuf> {
@@ -179,6 +179,12 @@ pub async fn detect_podman(timeout_ms: u64) -> DetectionResult {
                                 RuntimeStatus::Stopped
                             };
                             
+                            let version_warning = if !validate_podman_version(&version) {
+                                Some(true)
+                            } else {
+                                None
+                            };
+                            
                             runtimes.push(Runtime {
                                 id: format!("podman-{}", path.to_string_lossy()),
                                 runtime_type: RuntimeType::Podman,
@@ -190,6 +196,7 @@ pub async fn detect_podman(timeout_ms: u64) -> DetectionResult {
                                 mode,
                                 is_wsl: None,
                                 error: None,
+                                version_warning,
                             });
                         }
                         Err(e) => {

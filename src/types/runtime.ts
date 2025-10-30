@@ -23,6 +23,7 @@ export interface Runtime {
   mode?: PodmanMode;
   isWsl?: boolean;
   error?: string;
+  versionWarning?: boolean; // true if version is below minimum requirements
 }
 
 export interface DetectionResult {

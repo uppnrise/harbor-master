@@ -3,6 +3,7 @@ import { invoke } from '@tauri-apps/api/core';
 import { listen } from '@tauri-apps/api/event';
 import { useRuntimeStore } from '../stores/runtimeStore';
 import { StatusIndicator } from './StatusIndicator';
+import { formatRuntimeVersion, getMinimumVersion } from '../utils/formatters';
 import type { Runtime } from '../types/runtime';
 
 export function RuntimeSelector() {
@@ -92,9 +93,17 @@ export function RuntimeSelector() {
         {selectedRuntime ? (
           <div className="flex items-center space-x-3">
             <span className="text-2xl">{getRuntimeIcon(selectedRuntime.type)}</span>
-            <div className="text-left">
-              <div className="font-semibold text-white">
-                {selectedRuntime.type === 'docker' ? 'Docker' : 'Podman'} {selectedRuntime.version.full}
+            <div className="text-left flex-1">
+              <div className="font-semibold text-white flex items-center space-x-2">
+                <span>{formatRuntimeVersion(selectedRuntime)}</span>
+                {selectedRuntime.versionWarning && (
+                  <span
+                    className="text-yellow-400 text-sm"
+                    title={`Version below minimum (${getMinimumVersion(selectedRuntime.type)} required)`}
+                  >
+                    ⚠️
+                  </span>
+                )}
               </div>
               <div className="text-sm text-gray-400 flex items-center space-x-2">
                 <StatusIndicator status={selectedRuntime.status} size="sm" />
@@ -130,8 +139,16 @@ export function RuntimeSelector() {
             >
               <span className="text-2xl">{getRuntimeIcon(runtime.type)}</span>
               <div className="flex-1 text-left">
-                <div className="font-semibold text-white">
-                  {runtime.type === 'docker' ? 'Docker' : 'Podman'} {runtime.version.full}
+                <div className="font-semibold text-white flex items-center space-x-2">
+                  <span>{formatRuntimeVersion(runtime)}</span>
+                  {runtime.versionWarning && (
+                    <span
+                      className="text-yellow-400 text-sm"
+                      title={`Version below minimum (${getMinimumVersion(runtime.type)} required)`}
+                    >
+                      ⚠️
+                    </span>
+                  )}
                 </div>
                 <div className="text-sm text-gray-400 flex items-center space-x-2">
                   <StatusIndicator status={runtime.status} size="sm" />

@@ -5,7 +5,7 @@ use std::error::Error;
 use chrono::Utc;
 
 use crate::types::{Runtime, RuntimeType, RuntimeStatus, DetectionResult, DetectionError};
-use crate::runtime::version::parse_version;
+use crate::runtime::version::{parse_version, validate_docker_version};
 
 /// Platform-specific Docker installation paths
 fn get_platform_paths() -> Vec<PathBuf> {
@@ -184,6 +184,12 @@ pub async fn detect_docker(timeout_ms: u64) -> DetectionResult {
                                 RuntimeStatus::Stopped
                             };
                             
+                            let version_warning = if !validate_docker_version(&version) {
+                                Some(true)
+                            } else {
+                                None
+                            };
+                            
                             runtimes.push(Runtime {
                                 id: format!("docker-{}", path.to_string_lossy()),
                                 runtime_type: RuntimeType::Docker,
@@ -195,6 +201,7 @@ pub async fn detect_docker(timeout_ms: u64) -> DetectionResult {
                                 mode: None,
                                 is_wsl: if is_wsl { Some(true) } else { None },
                                 error: None,
+                                version_warning,
                             });
                         }
                         Err(e) => {

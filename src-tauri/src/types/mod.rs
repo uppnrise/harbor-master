@@ -48,6 +48,8 @@ pub struct Runtime {
     pub is_wsl: Option<bool>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub error: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub version_warning: Option<bool>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
