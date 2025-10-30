@@ -201,16 +201,16 @@
 
 ### Implementation for US2.5
 
-- [ ] T075 [US2.5] Implement detect_runtimes Tauri command in src-tauri/src/commands/runtime.rs (orchestrate Docker + Podman detection)
-- [ ] T076 [US2.5] Implement get_runtime_preferences Tauri command in src-tauri/src/commands/runtime.rs
-- [ ] T077 [US2.5] Implement set_runtime_preferences Tauri command in src-tauri/src/commands/runtime.rs
-- [ ] T078 [US2.5] Implement select_runtime Tauri command in src-tauri/src/commands/runtime.rs (update preferences, emit event)
+- [X] T075 [US2.5] Implement detect_runtimes Tauri command in src-tauri/src/commands/runtime.rs (orchestrate Docker + Podman detection)
+- [X] T076 [US2.5] Implement get_runtime_preferences Tauri command in src-tauri/src/commands/runtime.rs
+- [X] T077 [US2.5] Implement set_runtime_preferences Tauri command in src-tauri/src/commands/runtime.rs
+- [X] T078 [US2.5] Implement select_runtime Tauri command in src-tauri/src/commands/runtime.rs (update preferences, emit event)
 - [ ] T079 [US2.5] Create runtime selection dropdown in RuntimeSelector component (show all detected runtimes)
 - [ ] T080 [US2.5] Display runtime icon (Docker whale, Podman logo), version, and status in dropdown
 - [ ] T081 [US2.5] Implement auto-selection logic in runtimeStore (first running, prefer Docker, last used, first detected)
 - [ ] T082 [US2.5] Add runtime-selected event listener in useRuntimeStatus hook
 - [ ] T083 [US2.5] Persist selected runtime to preferences on selection change
-- [ ] T084 [US2.5] Show "No runtimes detected" message when runtimes array is empty
+- [X] T084 [US2.5] Show "No runtimes detected" message when runtimes array is empty
 - [ ] T085 [US2.5] Ensure runtime switch completes in < 1 second
 
 **Checkpoint**: US2.5 complete - runtime selection works with persistence and auto-selection
