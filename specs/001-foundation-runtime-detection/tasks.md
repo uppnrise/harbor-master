@@ -157,13 +157,13 @@
 
 ### Implementation for US2.3
 
-- [ ] T057 [US2.3] Enhance version parsing in src-tauri/src/runtime/version.rs (extract major.minor.patch from version strings)
-- [ ] T058 [US2.3] Add version validation logic in version.rs (check Docker >= 20.10.0, Podman >= 3.0.0)
-- [ ] T059 [US2.3] Create version formatter utility in src/utils/formatters.ts (format as "Docker 24.0.7")
-- [ ] T060 [US2.3] Update Runtime interface to include version warning flag in src/types/runtime.ts
-- [ ] T061 [US2.3] Display version in RuntimeSelector component (create component in src/components/RuntimeSelector.tsx)
-- [ ] T062 [US2.3] Add version warning UI in RuntimeSelector (show yellow indicator for old versions)
-- [ ] T063 [US2.3] Ensure version check completes within 1 second (integrate with detection timeouts)
+- [x] T057 [US2.3] Enhance version parsing in src-tauri/src/runtime/version.rs (extract major.minor.patch from version strings)
+- [x] T058 [US2.3] Add version validation logic in version.rs (check Docker >= 20.10.0, Podman >= 3.0.0)
+- [x] T059 [US2.3] Create version formatter utility in src/utils/formatters.ts (format as "Docker 24.0.7")
+- [x] T060 [US2.3] Update Runtime interface to include version warning flag in src/types/runtime.ts
+- [x] T061 [US2.3] Display version in RuntimeSelector component (create component in src/components/RuntimeSelector.tsx)
+- [x] T062 [US2.3] Add version warning UI in RuntimeSelector (show yellow indicator for old versions)
+- [x] T063 [US2.3] Ensure version check completes within 1 second (integrate with detection timeouts)
 
 **Checkpoint**: US2.3 complete - version information displays with validation warnings
 
