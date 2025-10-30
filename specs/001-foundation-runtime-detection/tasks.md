@@ -19,22 +19,22 @@
 
 **Purpose**: Project initialization and basic structure
 
-- [ ] T001 Initialize Tauri 2.0 project with `npm create tauri-app` in repository root
-- [ ] T002 Configure package.json with React 18, TypeScript 5.3+, Zustand, Tailwind CSS, Vite
-- [ ] T003 [P] Configure pnpm workspace in pnpm-workspace.yaml
-- [ ] T004 [P] Setup TypeScript with strict mode in tsconfig.json
-- [ ] T005 [P] Configure ESLint with TypeScript rules in .eslintrc.json
-- [ ] T006 [P] Configure Prettier formatting in .prettierrc.json
-- [ ] T007 [P] Setup Tailwind CSS config in tailwind.config.js with theme (dark mode default)
-- [ ] T008 [P] Configure Vite bundler in vite.config.ts
-- [ ] T009 [P] Setup Vitest for unit tests in vitest.config.ts
-- [ ] T010 [P] Setup Playwright for E2E tests in playwright.config.ts
-- [ ] T011 [P] Configure Rust dependencies in src-tauri/Cargo.toml (tokio, which, semver, serde, chrono, thiserror, regex)
-- [ ] T012 Create project directory structure per plan.md (src/components/, src/stores/, src/types/, src/hooks/, src/utils/, src-tauri/src/runtime/, src-tauri/src/commands/, src-tauri/src/types/, src-tauri/src/config/, src-tauri/src/polling/)
-- [ ] T013 [P] Setup .gitignore for Node, Rust, and Tauri artifacts
-- [ ] T014 [P] Create README.md with setup instructions and quickstart reference
+- [X] T001 Initialize Tauri 2.0 project with `npm create tauri-app` in repository root
+- [X] T002 Configure package.json with React 18, TypeScript 5.3+, Zustand, Tailwind CSS, Vite
+- [X] T003 [P] Configure pnpm workspace in pnpm-workspace.yaml
+- [X] T004 [P] Setup TypeScript with strict mode in tsconfig.json
+- [X] T005 [P] Configure ESLint with TypeScript rules in .eslintrc.json
+- [X] T006 [P] Configure Prettier formatting in .prettierrc.json
+- [X] T007 [P] Setup Tailwind CSS config in tailwind.config.js with theme (dark mode default)
+- [X] T008 [P] Configure Vite bundler in vite.config.ts
+- [X] T009 [P] Setup Vitest for unit tests in vitest.config.ts
+- [X] T010 [P] Setup Playwright for E2E tests in playwright.config.ts
+- [X] T011 [P] Configure Rust dependencies in src-tauri/Cargo.toml (tokio, which, semver, serde, chrono, thiserror, regex)
+- [X] T012 Create project directory structure per plan.md (src/components/, src/stores/, src/types/, src/hooks/, src/utils/, src-tauri/src/runtime/, src-tauri/src/commands/, src-tauri/src/types/, src-tauri/src/config/, src-tauri/src/polling/)
+- [X] T013 [P] Setup .gitignore for Node, Rust, and Tauri artifacts
+- [X] T014 [P] Create README.md with setup instructions and quickstart reference
 
-**Checkpoint**: Development environment ready - all tools installed and configured
+**Checkpoint**: Development environment ready - all tools installed and configured ✅
 
 ---
 
@@ -44,20 +44,20 @@
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete
 
-- [ ] T015 [P] Create Runtime type definitions in src/types/runtime.ts (Runtime, RuntimeType, RuntimeStatus, Version, PodmanMode interfaces)
-- [ ] T016 [P] Create DetectionResult and StatusUpdate types in src/types/runtime.ts
-- [ ] T017 [P] Create RuntimePreferences type in src/types/runtime.ts
-- [ ] T018 [P] Create Rust Runtime struct in src-tauri/src/types/mod.rs (with serde derive)
-- [ ] T019 [P] Create Rust DetectionResult struct in src-tauri/src/types/mod.rs
-- [ ] T020 [P] Create Rust RuntimePreferences struct in src-tauri/src/types/mod.rs with Default impl
-- [ ] T021 Create base Zustand runtime store in src/stores/runtimeStore.ts (state: runtimes[], selectedRuntime, isDetecting, error)
-- [ ] T022 Register Tauri command handlers in src-tauri/src/main.rs (setup invoke_handler with empty commands for now)
-- [ ] T023 Setup Tauri window configuration in src-tauri/tauri.conf.json (1200x800 default, 1024x768 minimum, centered, resizable, dark theme)
-- [ ] T024 [P] Create version parsing utility in src-tauri/src/runtime/version.rs (parse_version function for Docker/Podman version strings)
-- [ ] T025 [P] Create platform detection utilities in src/utils/platform.ts (getOS, isPlatform helpers)
-- [ ] T026 Create preferences config manager in src-tauri/src/config/preferences.rs (load/save functions with platform-specific paths)
+- [X] T015 [P] Create Runtime type definitions in src/types/runtime.ts (Runtime, RuntimeType, RuntimeStatus, Version, PodmanMode interfaces)
+- [X] T016 [P] Create DetectionResult and StatusUpdate types in src/types/runtime.ts
+- [X] T017 [P] Create RuntimePreferences type in src/types/runtime.ts
+- [X] T018 [P] Create Rust Runtime struct in src-tauri/src/types/mod.rs (with serde derive)
+- [X] T019 [P] Create Rust DetectionResult struct in src-tauri/src/types/mod.rs
+- [X] T020 [P] Create Rust RuntimePreferences struct in src-tauri/src/types/mod.rs with Default impl
+- [X] T021 Create base Zustand runtime store in src/stores/runtimeStore.ts (state: runtimes[], selectedRuntime, isDetecting, error)
+- [X] T022 Register Tauri command handlers in src-tauri/src/main.rs (setup invoke_handler with empty commands for now)
+- [X] T023 Setup Tauri window configuration in src-tauri/tauri.conf.json (1200x800 default, 1024x768 minimum, centered, resizable, dark theme)
+- [X] T024 [P] Create version parsing utility in src-tauri/src/runtime/version.rs (parse_version function for Docker/Podman version strings)
+- [X] T025 [P] Create platform detection utilities in src/utils/platform.ts (getOS, isPlatform helpers)
+- [X] T026 Create preferences config manager in src-tauri/src/config/preferences.rs (load/save functions with platform-specific paths)
 
-**Checkpoint**: Foundation ready - type system, state management, and config infrastructure complete
+**Checkpoint**: Foundation ready - type system, state management, and config infrastructure complete ✅
 
 ---
 
@@ -69,15 +69,15 @@
 
 ### Implementation for US1.1
 
-- [ ] T027 [US1.1] Create main React entry point in src/main.tsx (render App component, import styles)
-- [ ] T028 [US1.1] Create root App component in src/App.tsx (basic structure with placeholder content)
-- [ ] T029 [US1.1] Create global styles in src/styles.css (Tailwind imports, dark theme base styles)
-- [ ] T030 [US1.1] Update Rust main.rs to register Tauri app with window configuration
-- [ ] T031 [US1.1] Test development server with `pnpm tauri dev` - verify hot-reload works
-- [ ] T032 [US1.1] Test production build with `pnpm tauri build` for current platform
-- [ ] T033 [US1.1] Verify linting with `pnpm lint` and formatting with `pnpm format`
+- [X] T027 [US1.1] Create main React entry point in src/main.tsx (render App component, import styles)
+- [X] T028 [US1.1] Create root App component in src/App.tsx (basic structure with placeholder content)
+- [X] T029 [US1.1] Create global styles in src/styles.css (Tailwind imports, dark theme base styles)
+- [X] T030 [US1.1] Update Rust main.rs to register Tauri app with window configuration
+- [X] T031 [US1.1] Test development server with `pnpm tauri dev` - verify hot-reload works
+- [X] T032 [US1.1] Test production build with `pnpm tauri build` for current platform
+- [X] T033 [US1.1] Verify linting with `pnpm lint` and formatting with `pnpm format`
 
-**Checkpoint**: US1.1 complete - project runs in dev and builds successfully
+**Checkpoint**: US1.1 complete - project runs in dev and builds successfully ✅
 
 ---
 
