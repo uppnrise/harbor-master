@@ -133,19 +133,19 @@
 
 ### Implementation for US2.2
 
-- [ ] T049 [US2.2] Create Podman detector module in src-tauri/src/runtime/podman.rs (detect_podman async function)
-- [ ] T050 [US2.2] Implement PATH scanning for podman executable using `which` crate in podman.rs
-- [ ] T051 [US2.2] Implement platform-specific location checks in podman.rs:
+- [X] T049 [US2.2] Create Podman detector module in src-tauri/src/runtime/podman.rs (detect_podman async function)
+- [X] T050 [US2.2] Implement PATH scanning for podman executable using `which` crate in podman.rs
+- [X] T051 [US2.2] Implement platform-specific location checks in podman.rs:
   - Windows: `C:\Program Files\RedHat\Podman`
   - macOS: `/usr/local/bin`, `/opt/homebrew/bin`
   - Linux: `/usr/bin`, `/usr/local/bin`
-- [ ] T052 [US2.2] Detect rootless vs rootful mode via `podman info --format={{.Host.Security.Rootless}}` in podman.rs
-- [ ] T053 [US2.2] Implement executable permission verification in podman.rs
-- [ ] T054 [US2.2] Add version detection via `podman --version` command in podman.rs (parse output, handle 3.x and 4.x)
-- [ ] T055 [US2.2] Integrate Podman detector with cache (reuse cache.rs from T047)
-- [ ] T056 [US2.2] Add detection timeout logic (500ms max) in podman.rs
+- [X] T052 [US2.2] Detect rootless vs rootful mode via `podman info --format={{.Host.Security.Rootless}}` in podman.rs
+- [X] T053 [US2.2] Implement executable permission verification in podman.rs
+- [X] T054 [US2.2] Add version detection via `podman --version` command in podman.rs (parse output, handle 3.x and 4.x)
+- [X] T055 [US2.2] Integrate Podman detector with cache (reuse cache.rs from T047)
+- [X] T056 [US2.2] Add detection timeout logic (500ms max) in podman.rs
 
-**Checkpoint**: US2.2 complete - Podman detection works with mode detection and version parsing
+**Checkpoint**: US2.2 complete - Podman detection works with mode detection and version parsing ✅
 
 ---
 
