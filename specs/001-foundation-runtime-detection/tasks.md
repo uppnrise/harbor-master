@@ -89,15 +89,15 @@
 
 ### Implementation for US1.2
 
-- [ ] T034 [P] [US1.2] Create WelcomeScreen component in src/components/WelcomeScreen.tsx (logo, tagline, loading indicator)
-- [ ] T035 [P] [US1.2] Create StatusIndicator component in src/components/StatusIndicator.tsx (colored dot: green/gray/red)
-- [ ] T036 [US1.2] Add HarborMaster logo SVG to public/harbormaster-logo.svg
-- [ ] T037 [US1.2] Update App.tsx to conditionally render WelcomeScreen during detection
-- [ ] T038 [US1.2] Add loading state management to runtimeStore (isDetecting flag)
-- [ ] T039 [US1.2] Implement window size persistence in Tauri (save/restore window dimensions to preferences)
-- [ ] T040 [US1.2] Style WelcomeScreen with Tailwind (centered layout, responsive, dark theme)
+- [X] T034 [P] [US1.2] Create WelcomeScreen component in src/components/WelcomeScreen.tsx (logo, tagline, loading indicator)
+- [X] T035 [P] [US1.2] Create StatusIndicator component in src/components/StatusIndicator.tsx (colored dot: green/gray/red)
+- [X] T036 [US1.2] Add HarborMaster logo SVG to public/harbormaster-logo.svg
+- [X] T037 [US1.2] Update App.tsx to conditionally render WelcomeScreen during detection
+- [X] T038 [US1.2] Add loading state management to runtimeStore (isDetecting flag)
+- [X] T039 [US1.2] Implement window size persistence in Tauri (save/restore window dimensions to preferences)
+- [X] T040 [US1.2] Style WelcomeScreen with Tailwind (centered layout, responsive, dark theme)
 
-**Checkpoint**: US1.2 complete - welcome screen displays during app launch with proper styling
+**Checkpoint**: US1.2 complete - welcome screen displays during app launch with proper styling ✅
 
 ---
 
