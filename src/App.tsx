@@ -1,18 +1,26 @@
 import { useEffect, useState } from 'react';
 import { invoke } from '@tauri-apps/api/core';
-import { listen } from '@tauri-apps/api/event';
+import { listen, emit } from '@tauri-apps/api/event';
 import { useRuntimeStore } from './stores/runtimeStore';
 import { useRuntimeStatus } from './hooks/useRuntimeStatus';
 import { WelcomeScreen } from './components/WelcomeScreen';
 import { RuntimeSelector } from './components/RuntimeSelector';
 import { NoRuntimesMessage } from './components/NoRuntimesMessage';
 import { RuntimeError } from './components/RuntimeError';
+import { Toast } from './components/Toast';
 import { formatRelativeTime } from './utils/formatters';
 import type { DetectionResult } from './types/runtime';
+
+interface ToastState {
+  message: string;
+  type: 'success' | 'error' | 'info';
+  show: boolean;
+}
 
 function App() {
   const { isDetecting, error, runtimes, selectedRuntime, setRuntimes, setDetecting, setError, setSelectedRuntime } = useRuntimeStore();
   const [showWelcome, setShowWelcome] = useState(true);
+  const [toast, setToast] = useState<ToastState>({ message: '', type: 'info', show: false });
   
   // Start status polling when runtimes are detected
   useRuntimeStatus();
@@ -58,6 +66,9 @@ function App() {
       setDetecting(true);
       setError(null);
       
+      // Emit detection-started event
+      await emit('detection-started', { force, timestamp: new Date() });
+      
       if (force) {
         // Clear cache before detecting
         await invoke('clear_detection_cache');
@@ -65,9 +76,26 @@ function App() {
       
       const result = await invoke<DetectionResult>('detect_runtimes');
       setRuntimes(result.runtimes);
+      
+      // Emit detection-completed event
+      await emit('detection-completed', { result });
+      
+      // Show success toast
+      setToast({
+        message: `Found ${result.runtimes.length} runtime${result.runtimes.length !== 1 ? 's' : ''}`,
+        type: 'success',
+        show: true,
+      });
     } catch (err) {
       console.error('Detection error:', err);
       setError(err as string);
+      
+      // Show error toast
+      setToast({
+        message: 'Failed to detect runtimes',
+        type: 'error',
+        show: true,
+      });
     } finally {
       setDetecting(false);
     }
@@ -211,6 +239,15 @@ function App() {
           )}
         </main>
       </div>
+      
+      {/* Toast notifications */}
+      {toast.show && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast({ ...toast, show: false })}
+        />
+      )}
     </div>
   );
 }
