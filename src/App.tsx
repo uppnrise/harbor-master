@@ -86,7 +86,7 @@ function App() {
       setRuntimes(result.runtimes);
       
       // Emit detection-completed event
-      await emit('detection-completed', { result });
+      await emit('detection-completed', result);
       
       // Show success toast
       setToast({

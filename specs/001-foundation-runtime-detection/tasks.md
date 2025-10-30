@@ -299,9 +299,9 @@
 - [x] T120 [P] Write component tests for NoRuntimesMessage in __tests__/components/NoRuntimesMessage.test.tsx
 - [x] T121 [P] Write component tests for RuntimeError in __tests__/components/RuntimeError.test.tsx
 - [x] T122 [P] Write integration test for full detection flow (Docker + Podman)
-- [ ] T123 [P] Write E2E test for runtime detection in e2e/runtime-detection.spec.ts
-- [ ] T124 [P] Write E2E test for runtime selection in e2e/runtime-selection.spec.ts
-- [ ] T125 [P] Write E2E test for status monitoring in e2e/status-monitoring.spec.ts
+- [x] T123 [P] Write E2E test for runtime detection in e2e/runtime-detection.spec.ts
+- [x] T124 [P] Write E2E test for runtime selection in e2e/runtime-selection.spec.ts
+- [x] T125 [P] Write E2E test for status monitoring in e2e/status-monitoring.spec.ts
 - [X] T126 Run coverage report with `cargo test` and `vitest --coverage` - verify >= 60%
 
 **Checkpoint**: All tests passing, coverage >= 60%
