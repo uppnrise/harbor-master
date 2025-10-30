@@ -42,7 +42,7 @@ export const useRuntimeStore = create<RuntimeState>((set) => ({
           const updated: Runtime = {
             ...runtime,
             status,
-            lastChecked: new Date(),
+            lastChecked: new Date().toISOString(),
           };
           if (errorMsg) {
             updated.error = errorMsg;
@@ -57,7 +57,7 @@ export const useRuntimeStore = create<RuntimeState>((set) => ({
               const updated: Runtime = {
                 ...state.selectedRuntime,
                 status,
-                lastChecked: new Date(),
+                lastChecked: new Date().toISOString(),
               };
               if (errorMsg) {
                 updated.error = errorMsg;
