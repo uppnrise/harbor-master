@@ -237,11 +237,143 @@ pub async fn detect_docker(timeout_ms: u64) -> DetectionResult {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::types::Version;
 
     #[test]
     fn test_get_platform_paths() {
         let paths = get_platform_paths();
         assert!(!paths.is_empty());
+        
+        // Verify paths contain expected directories based on platform
+        #[cfg(target_os = "macos")]
+        {
+            let expected_paths = vec!["/usr/local/bin", "/opt/homebrew/bin"];
+            for expected in expected_paths {
+                assert!(paths.iter().any(|p| p.to_string_lossy() == expected));
+            }
+        }
+        
+        #[cfg(target_os = "windows")]
+        {
+            let program_files = std::env::var("ProgramFiles").unwrap_or_default();
+            assert!(paths.iter().any(|p| p.contains(&program_files)));
+        }
+        
+        #[cfg(target_os = "linux")]
+        {
+            assert!(paths.contains(&"/usr/bin".to_string()));
+        }
+    }
+
+    #[test]
+    fn test_parse_version_valid() {
+        let version_str = "Docker version 24.0.7, build afdd53b";
+        let result = parse_version(version_str);
+        assert!(result.is_ok());
+        
+        let version = result.unwrap();
+        assert_eq!(version.major, 24);
+        assert_eq!(version.minor, 0);
+        assert_eq!(version.patch, 7);
+        assert_eq!(version.full, "24.0.7");
+    }
+
+    #[test]
+    fn test_parse_version_simple() {
+        let version_str = "25.1.0";
+        let result = parse_version(version_str);
+        assert!(result.is_ok());
+        
+        let version = result.unwrap();
+        assert_eq!(version.major, 25);
+        assert_eq!(version.minor, 1);
+        assert_eq!(version.patch, 0);
+    }
+
+    #[test]
+    fn test_parse_version_with_suffix() {
+        let version_str = "Docker version 20.10.21-ce";
+        let result = parse_version(version_str);
+        assert!(result.is_ok());
+        
+        let version = result.unwrap();
+        assert_eq!(version.major, 20);
+        assert_eq!(version.minor, 10);
+        assert_eq!(version.patch, 21);
+    }
+
+    #[test]
+    fn test_parse_version_invalid() {
+        let invalid_versions = vec![
+            "not a version",
+            "v",
+            "1.2",  // Missing patch
+            "abc.def.ghi",
+        ];
+        
+        for version_str in invalid_versions {
+            let result = parse_version(version_str);
+            assert!(result.is_err(), "Should fail for: {}", version_str);
+        }
+    }
+
+    #[test]
+    fn test_validate_docker_version_minimum() {
+        let valid = Version {
+            major: 20,
+            minor: 10,
+            patch: 0,
+            full: "20.10.0".to_string(),
+        };
+        assert!(validate_docker_version(&valid));
+        
+        let exact_min = Version {
+            major: 19,
+            minor: 3,
+            patch: 0,
+            full: "19.3.0".to_string(),
+        };
+        assert!(validate_docker_version(&exact_min));
+    }
+
+    #[test]
+    fn test_validate_docker_version_below_minimum() {
+        let too_old = Version {
+            major: 19,
+            minor: 2,
+            patch: 9,
+            full: "19.2.9".to_string(),
+        };
+        assert!(!validate_docker_version(&too_old));
+        
+        let very_old = Version {
+            major: 18,
+            minor: 0,
+            patch: 0,
+            full: "18.0.0".to_string(),
+        };
+        assert!(!validate_docker_version(&very_old));
+    }
+
+    #[test]
+    fn test_verify_executable_permissions() {
+        // Test with a known executable (the current binary)
+        let current_exe = std::env::current_exe().unwrap();
+        assert!(verify_executable(&current_exe));
+        
+        // Test with a non-existent path
+        let fake_path = PathBuf::from("/nonexistent/path/to/binary");
+        assert!(!verify_executable(&fake_path));
+    }
+
+    #[cfg(target_os = "linux")]
+    #[test]
+    fn test_detect_wsl_docker() {
+        // This test checks if WSL detection logic works
+        // It will return None on non-WSL systems
+        let result = detect_wsl_docker();
+        // Just verify it doesn't panic - actual result depends on environment
+        let _ = result;
     }
 
     #[tokio::test]
@@ -250,5 +382,22 @@ mod tests {
         // Should complete within reasonable time
         // Detection can take time but should finish
         assert!(result.duration <= 1000); // Allow 1 second max
+    }
+
+    #[tokio::test]
+    async fn test_detect_docker_structure() {
+        let result = detect_docker(500).await;
+        
+        // Verify result structure is valid
+        assert!(result.duration > 0);
+        
+        // If Docker is installed, verify runtime data
+        if !result.runtimes.is_empty() {
+            let runtime = &result.runtimes[0];
+            assert!(!runtime.id.is_empty());
+            assert_eq!(runtime.runtime_type, RuntimeType::Docker);
+            assert!(!runtime.path.is_empty());
+            assert!(runtime.version.major > 0);
+        }
     }
 }

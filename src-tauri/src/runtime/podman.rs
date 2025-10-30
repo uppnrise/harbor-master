@@ -232,11 +232,129 @@ pub async fn detect_podman(timeout_ms: u64) -> DetectionResult {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::types::Version;
 
     #[test]
     fn test_get_platform_paths() {
         let paths = get_platform_paths();
         assert!(!paths.is_empty());
+        
+        // Verify paths contain expected directories
+        #[cfg(target_os = "macos")]
+        {
+            let expected_paths = vec!["/usr/local/bin", "/opt/homebrew/bin"];
+            for expected in expected_paths {
+                assert!(paths.iter().any(|p| p.to_string_lossy() == expected));
+            }
+        }
+        
+        #[cfg(target_os = "linux")]
+        {
+            assert!(paths.iter().any(|p| p.to_string_lossy() == "/usr/bin"));
+        }
+    }
+
+    #[test]
+    fn test_parse_version_valid() {
+        let version_str = "podman version 4.5.1";
+        let result = parse_version(version_str);
+        assert!(result.is_ok());
+        
+        let version = result.unwrap();
+        assert_eq!(version.major, 4);
+        assert_eq!(version.minor, 5);
+        assert_eq!(version.patch, 1);
+        assert_eq!(version.full, "4.5.1");
+    }
+
+    #[test]
+    fn test_parse_version_simple() {
+        let version_str = "5.0.2";
+        let result = parse_version(version_str);
+        assert!(result.is_ok());
+        
+        let version = result.unwrap();
+        assert_eq!(version.major, 5);
+        assert_eq!(version.minor, 0);
+        assert_eq!(version.patch, 2);
+    }
+
+    #[test]
+    fn test_parse_version_with_build() {
+        let version_str = "podman version 4.3.1-dev";
+        let result = parse_version(version_str);
+        assert!(result.is_ok());
+        
+        let version = result.unwrap();
+        assert_eq!(version.major, 4);
+        assert_eq!(version.minor, 3);
+        assert_eq!(version.patch, 1);
+    }
+
+    #[test]
+    fn test_parse_version_invalid() {
+        let invalid_versions = vec![
+            "not a version",
+            "podman",
+            "1.2",  // Missing patch
+            "x.y.z",
+        ];
+        
+        for version_str in invalid_versions {
+            let result = parse_version(version_str);
+            assert!(result.is_err(), "Should fail for: {}", version_str);
+        }
+    }
+
+    #[test]
+    fn test_validate_podman_version_minimum() {
+        let valid = Version {
+            major: 4,
+            minor: 0,
+            patch: 0,
+            full: "4.0.0".to_string(),
+        };
+        assert!(validate_podman_version(&valid));
+        
+        let exact_min = Version {
+            major: 3,
+            minor: 0,
+            patch: 0,
+            full: "3.0.0".to_string(),
+        };
+        assert!(validate_podman_version(&exact_min));
+    }
+
+    #[test]
+    fn test_validate_podman_version_below_minimum() {
+        let too_old = Version {
+            major: 2,
+            minor: 9,
+            patch: 9,
+            full: "2.9.9".to_string(),
+        };
+        assert!(!validate_podman_version(&too_old));
+        
+        let very_old = Version {
+            major: 1,
+            minor: 0,
+            patch: 0,
+            full: "1.0.0".to_string(),
+        };
+        assert!(!validate_podman_version(&very_old));
+    }
+
+    #[test]
+    fn test_detect_rootless_mode() {
+        // This test verifies the function doesn't panic
+        // Actual result depends on environment and Podman installation
+        let fake_path = PathBuf::from("/usr/bin/podman");
+        let mode = detect_rootless_mode(&fake_path);
+        
+        // Mode should be either rootful or rootless, or None
+        if let Some(m) = mode {
+            assert!(m == PodmanMode::Rootful || m == PodmanMode::Rootless);
+        }
     }
 
     #[tokio::test]
@@ -244,5 +362,25 @@ mod tests {
         let result = detect_podman(500).await;
         // Should complete within reasonable time
         assert!(result.duration <= 2000); // Allow 2 seconds max
+    }
+
+    #[tokio::test]
+    async fn test_detect_podman_structure() {
+        let result = detect_podman(500).await;
+        
+        // Verify result structure is valid
+        assert!(result.duration > 0);
+        
+        // If Podman is installed, verify runtime data
+        if !result.runtimes.is_empty() {
+            let runtime = &result.runtimes[0];
+            assert!(!runtime.id.is_empty());
+            assert_eq!(runtime.runtime_type, RuntimeType::Podman);
+            assert!(!runtime.path.is_empty());
+            assert!(runtime.version.major > 0);
+            
+            // Podman should have mode information
+            assert!(runtime.mode.is_some());
+        }
     }
 }
