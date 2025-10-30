@@ -40,21 +40,24 @@ pub struct Runtime {
     pub path: String,
     pub version: Version,
     pub status: RuntimeStatus,
+    #[serde(rename = "lastChecked")]
     pub last_checked: DateTime<Utc>,
+    #[serde(rename = "detectedAt")]
     pub detected_at: DateTime<Utc>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub mode: Option<PodmanMode>,
-    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none", rename = "isWsl")]
     pub is_wsl: Option<bool>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub error: Option<String>,
-    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none", rename = "versionWarning")]
     pub version_warning: Option<bool>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct DetectionResult {
     pub runtimes: Vec<Runtime>,
+    #[serde(rename = "detectedAt")]
     pub detected_at: DateTime<Utc>,
     pub duration: u64, // milliseconds
     pub errors: Vec<DetectionError>,
@@ -69,6 +72,7 @@ pub struct DetectionError {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct StatusUpdate {
+    #[serde(rename = "runtimeId")]
     pub runtime_id: String,
     pub status: RuntimeStatus,
     pub timestamp: DateTime<Utc>,
@@ -78,12 +82,15 @@ pub struct StatusUpdate {
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct RuntimePreferences {
-    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none", rename = "selectedRuntimeId", alias = "selected_runtime_id")]
     pub selected_runtime_id: Option<String>,
+    #[serde(rename = "autoSelectRunning", alias = "auto_select_running")]
     pub auto_select_running: bool,
-    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none", rename = "preferredType", alias = "preferred_type")]
     pub preferred_type: Option<RuntimeType>,
+    #[serde(rename = "detectionCacheTTL", alias = "detection_cache_ttl")]
     pub detection_cache_ttl: u64, // seconds
+    #[serde(rename = "statusPollInterval", alias = "status_poll_interval")]
     pub status_poll_interval: u64, // seconds
 }
 

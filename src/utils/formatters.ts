@@ -45,7 +45,13 @@ export function getMinimumVersion(type: RuntimeType): string {
  * Examples: "just now", "2 minutes ago", "5 hours ago"
  */
 export function formatRelativeTime(isoString: string): string {
+  if (!isoString) return 'never';
+  
   const date = new Date(isoString);
+  
+  // Check if date is valid
+  if (isNaN(date.getTime())) return 'never';
+  
   const now = new Date();
   const seconds = Math.floor((now.getTime() - date.getTime()) / 1000);
 

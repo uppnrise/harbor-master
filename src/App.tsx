@@ -57,13 +57,11 @@ function App() {
       setError(null);
       
       if (force) {
-        console.log('Force refreshing runtime detection...');
         // Clear cache before detecting
         await invoke('clear_detection_cache');
       }
       
       const result = await invoke<DetectionResult>('detect_runtimes');
-      console.log('Detection result:', result);
       setRuntimes(result.runtimes);
     } catch (err) {
       console.error('Detection error:', err);
