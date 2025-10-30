@@ -18,10 +18,10 @@ export interface Runtime {
   path: string;
   version: Version;
   status: RuntimeStatus;
-  lastChecked: Date;
-  detectedAt: Date;
-  mode?: PodmanMode; // Only for Podman
-  isWSL?: boolean; // Only for Docker on Windows
+  lastChecked: string;
+  detectedAt: string;
+  mode?: PodmanMode;
+  isWsl?: boolean;
   error?: string;
 }
 
