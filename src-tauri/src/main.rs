@@ -28,6 +28,8 @@ fn main() {
             // Status polling commands
             commands::start_status_polling,
             commands::stop_status_polling,
+            // Platform info
+            commands::get_platform,
         ])
         .setup(|app| {
             #[cfg(debug_assertions)]

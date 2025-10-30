@@ -101,3 +101,8 @@ pub async fn stop_status_polling() -> Result<(), String> {
     POLLING_SERVICE.stop().await;
     Ok(())
 }
+
+#[tauri::command]
+pub fn get_platform() -> String {
+    std::env::consts::OS.to_string()
+}

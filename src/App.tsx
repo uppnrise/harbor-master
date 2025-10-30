@@ -5,6 +5,7 @@ import { useRuntimeStore } from './stores/runtimeStore';
 import { useRuntimeStatus } from './hooks/useRuntimeStatus';
 import { WelcomeScreen } from './components/WelcomeScreen';
 import { RuntimeSelector } from './components/RuntimeSelector';
+import { NoRuntimesMessage } from './components/NoRuntimesMessage';
 import { formatRelativeTime } from './utils/formatters';
 import type { DetectionResult } from './types/runtime';
 
@@ -72,8 +73,13 @@ function App() {
   };
 
   // Show welcome screen on first load or during initial detection
-  if (showWelcome && (isDetecting || runtimes.length === 0)) {
+  if (showWelcome && isDetecting) {
     return <WelcomeScreen isDetecting={isDetecting} />;
+  }
+
+  // Show no runtimes message after detection completes with no runtimes
+  if (!isDetecting && runtimes.length === 0 && !showWelcome) {
+    return <NoRuntimesMessage onRetry={() => detectRuntimes(true)} />;
   }
 
   return (
