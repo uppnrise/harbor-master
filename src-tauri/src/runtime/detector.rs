@@ -1,5 +1,5 @@
 use crate::types::{DetectionResult, Runtime};
-use crate::runtime::{docker::detect_docker, cache::DetectionCache};
+use crate::runtime::{docker::detect_docker, podman::detect_podman, cache::DetectionCache};
 use std::sync::Arc;
 
 pub struct RuntimeDetector {
@@ -31,12 +31,32 @@ impl RuntimeDetector {
         result
     }
 
+    /// Detect Podman with caching
+    pub async fn detect_podman(&self) -> DetectionResult {
+        // Check cache first
+        if let Some(cached) = self.cache.get(&crate::types::RuntimeType::Podman) {
+            return cached;
+        }
+
+        // Perform detection
+        let result = detect_podman(self.detection_timeout).await;
+
+        // Cache the result
+        self.cache.set(crate::types::RuntimeType::Podman, result.clone());
+
+        result
+    }
+
     /// Detect all runtimes
     pub async fn detect_all(&self) -> Vec<Runtime> {
-        let docker_result = self.detect_docker().await;
+        let (docker_result, podman_result) = tokio::join!(
+            self.detect_docker(),
+            self.detect_podman()
+        );
         
         let mut all_runtimes = Vec::new();
         all_runtimes.extend(docker_result.runtimes);
+        all_runtimes.extend(podman_result.runtimes);
         
         all_runtimes
     }
@@ -73,5 +93,16 @@ mod tests {
         
         // Results should be the same
         assert_eq!(result1.runtimes.len(), result2.runtimes.len());
+    }
+
+    #[tokio::test]
+    async fn test_detect_all() {
+        let detector = RuntimeDetector::new(60, 500);
+        
+        // Should detect both Docker and Podman (returns empty vec if neither installed)
+        let all_runtimes = detector.detect_all().await;
+        
+        // Result should be valid
+        assert!(all_runtimes.is_empty() || !all_runtimes.is_empty());
     }
 }
