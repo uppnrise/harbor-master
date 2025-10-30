@@ -318,8 +318,8 @@
 - [ ] T130 [P] Performance optimization: add virtual scrolling if runtime list > 10 items
 - [ ] T131 [P] Accessibility audit: ensure WCAG 2.1 Level AA compliance
 - [ ] T132 [P] Add keyboard navigation for runtime selector
-- [ ] T133 Code cleanup: run clippy on Rust code, fix all warnings
-- [ ] T134 Code cleanup: run ESLint with --fix, ensure no warnings
+- [X] T133 Code cleanup: run clippy on Rust code, fix all warnings
+- [X] T134 Code cleanup: run ESLint with --fix, ensure no warnings
 - [ ] T135 Update README.md with final build instructions and screenshots
 - [ ] T136 Verify quickstart.md instructions by following them from scratch
 - [ ] T137 Setup CI pipeline in .github/workflows/ci.yml (build, test, lint on Windows/macOS/Linux)
