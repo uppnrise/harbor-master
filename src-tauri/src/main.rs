@@ -10,20 +10,20 @@ mod types;
 use tauri::Manager;
 
 fn main() {
+    // Initialize detector before building the app
+    commands::init_detector();
+    
     tauri::Builder::default()
         .plugin(tauri_plugin_shell::init())
         .invoke_handler(tauri::generate_handler![
             // Window management
             commands::save_window_size,
             commands::get_window_size,
-            // Runtime detection commands (to be implemented)
-            // commands::runtime::detect_runtimes,
-            // commands::runtime::check_runtime_status,
-            // commands::runtime::get_runtime_preferences,
-            // commands::runtime::set_runtime_preferences,
-            // commands::runtime::select_runtime,
-            // commands::runtime::start_status_polling,
-            // commands::runtime::stop_status_polling,
+            // Runtime detection commands
+            commands::detect_runtimes,
+            commands::get_runtime_preferences,
+            commands::set_runtime_preferences,
+            commands::select_runtime,
         ])
         .setup(|app| {
             #[cfg(debug_assertions)]
