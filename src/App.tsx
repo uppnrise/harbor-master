@@ -11,12 +11,37 @@ import { Toast } from './components/Toast';
 import { formatRelativeTime } from './utils/formatters';
 import type { DetectionResult } from './types/runtime';
 
+/**
+ * Toast notification state
+ */
 interface ToastState {
+  /** Message to display */
   message: string;
+  /** Toast type (affects color and icon) */
   type: 'success' | 'error' | 'info';
+  /** Whether toast is currently visible */
   show: boolean;
 }
 
+/**
+ * Main application component for HarborMaster
+ * 
+ * Features:
+ * - Automatic runtime detection on startup
+ * - Manual refresh via menu (Cmd/Ctrl+R keyboard shortcut)
+ * - Welcome screen during initial detection
+ * - Runtime status polling for selected runtime
+ * - Toast notifications for detection results
+ * - Error handling with troubleshooting UI
+ * - Empty state with installation links
+ * 
+ * Event listeners:
+ * - `detection-completed`: Updates runtime list when detection finishes
+ * - `menu-refresh`: Triggers manual detection from menu
+ * - Keyboard shortcut: Cmd/Ctrl+R for refresh
+ * 
+ * @returns Main application UI
+ */
 function App() {
   const { isDetecting, error, runtimes, selectedRuntime, setRuntimes, setDetecting, setError, setSelectedRuntime } = useRuntimeStore();
   const [showWelcome, setShowWelcome] = useState(true);
