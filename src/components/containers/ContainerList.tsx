@@ -4,15 +4,11 @@ import { ContainerRow } from './ContainerRow';
 import { useContainerStore } from '../../stores/containerStore';
 import type { Container } from '../../types/container';
 
-interface ContainerListProps {
-  onContainerAction?: (action: string, containerId: string) => void;
-}
-
 /**
  * ContainerList component - displays a virtualized list of containers
  * Uses @tanstack/react-virtual for efficient rendering of large lists
  */
-export function ContainerList({ onContainerAction }: ContainerListProps) {
+export function ContainerList() {
   const {
     containers,
     selectedContainer,
@@ -41,12 +37,6 @@ export function ContainerList({ onContainerAction }: ContainerListProps) {
 
   const handleSelect = (container: Container) => {
     selectContainer(container);
-  };
-
-  const handleAction = (action: string, containerId: string) => {
-    if (onContainerAction) {
-      onContainerAction(action, containerId);
-    }
   };
 
   if (error) {
@@ -138,7 +128,6 @@ export function ContainerList({ onContainerAction }: ContainerListProps) {
                   container={container}
                   isSelected={selectedContainer?.id === container.id}
                   onSelect={handleSelect}
-                  onAction={handleAction}
                 />
               </div>
             );
