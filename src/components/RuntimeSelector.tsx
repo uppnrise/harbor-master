@@ -32,6 +32,7 @@ import type { Runtime } from '../types/runtime';
 export function RuntimeSelector() {
   const { runtimes, selectedRuntime, setSelectedRuntime } = useRuntimeStore();
   const [isOpen, setIsOpen] = useState(false);
+  const [focusedIndex, setFocusedIndex] = useState(-1);
 
   useEffect(() => {
     // Auto-select runtime on initial load
@@ -52,6 +53,16 @@ export function RuntimeSelector() {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [runtimes, selectedRuntime]);
+
+  // Reset focused index when dropdown opens
+  useEffect(() => {
+    if (isOpen) {
+      const currentIndex = selectedRuntime
+        ? runtimes.findIndex((r) => r.id === selectedRuntime.id)
+        : 0;
+      setFocusedIndex(currentIndex);
+    }
+  }, [isOpen, selectedRuntime, runtimes]);
 
   const autoSelectRuntime = async () => {
     if (runtimes.length === 0) return;
@@ -104,6 +115,49 @@ export function RuntimeSelector() {
     return type === 'docker' ? '🐳' : '🦭';
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (!isOpen && (e.key === 'Enter' || e.key === ' ' || e.key === 'ArrowDown')) {
+      e.preventDefault();
+      setIsOpen(true);
+      return;
+    }
+
+    if (!isOpen) return;
+
+    switch (e.key) {
+      case 'ArrowDown':
+        e.preventDefault();
+        setFocusedIndex((prev) => (prev < runtimes.length - 1 ? prev + 1 : prev));
+        break;
+      case 'ArrowUp':
+        e.preventDefault();
+        setFocusedIndex((prev) => (prev > 0 ? prev - 1 : prev));
+        break;
+      case 'Enter':
+      case ' ':
+        e.preventDefault();
+        if (focusedIndex >= 0 && focusedIndex < runtimes.length) {
+          const runtime = runtimes[focusedIndex];
+          if (runtime) {
+            handleSelect(runtime);
+          }
+        }
+        break;
+      case 'Escape':
+        e.preventDefault();
+        setIsOpen(false);
+        break;
+      case 'Home':
+        e.preventDefault();
+        setFocusedIndex(0);
+        break;
+      case 'End':
+        e.preventDefault();
+        setFocusedIndex(runtimes.length - 1);
+        break;
+    }
+  };
+
   if (runtimes.length === 0) {
     return null;
   }
@@ -112,6 +166,7 @@ export function RuntimeSelector() {
     <div className="relative">
       <button
         onClick={() => setIsOpen(!isOpen)}
+        onKeyDown={handleKeyDown}
         className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 flex items-center justify-between hover:border-blue-500 transition-colors"
         aria-label="Select container runtime"
         aria-expanded={isOpen}
@@ -160,13 +215,13 @@ export function RuntimeSelector() {
           role="listbox"
           aria-label="Available container runtimes"
         >
-          {runtimes.map((runtime) => (
+          {runtimes.map((runtime, index) => (
             <button
               key={runtime.id}
               onClick={() => handleSelect(runtime)}
               className={`w-full px-4 py-3 flex items-center space-x-3 hover:bg-gray-700 transition-colors ${
                 selectedRuntime?.id === runtime.id ? 'bg-gray-700/50' : ''
-              }`}
+              } ${focusedIndex === index ? 'ring-2 ring-blue-500 ring-inset' : ''}`}
               role="option"
               aria-selected={selectedRuntime?.id === runtime.id}
             >
