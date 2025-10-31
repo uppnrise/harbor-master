@@ -317,7 +317,7 @@
 - [X] T129 [P] Performance optimization: lazy load components with React.lazy
 - [X] T130 [P] Performance optimization: add virtual scrolling if runtime list > 10 items
 - [X] T131 [P] Accessibility audit: ensure WCAG 2.1 Level AA compliance
-- [ ] T132 [P] Add keyboard navigation for runtime selector
+- [X] T132 [P] Add keyboard navigation for runtime selector
 - [X] T133 Code cleanup: run clippy on Rust code, fix all warnings
 - [X] T134 Code cleanup: run ESLint with --fix, ensure no warnings
 - [ ] T135 Update README.md with final build instructions and screenshots
