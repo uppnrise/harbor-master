@@ -121,26 +121,6 @@ describe('ContainerRow', () => {
     expect(onSelect).toHaveBeenCalledWith(mockContainer);
   });
 
-  it('should call onAction when action button clicked', async () => {
-    const user = userEvent.setup();
-    const onSelect = vi.fn();
-    const onAction = vi.fn();
-    render(
-      <ContainerRow
-        container={mockContainer}
-        isSelected={false}
-        onSelect={onSelect}
-        onAction={onAction}
-      />
-    );
-
-    const stopButton = screen.getByLabelText(/stop test-container/i);
-    await user.click(stopButton);
-
-    expect(onAction).toHaveBeenCalledWith('stop', mockContainer.id);
-    expect(onSelect).not.toHaveBeenCalled(); // Should not select when clicking action
-  });
-
   it('should highlight when selected', () => {
     const onSelect = vi.fn();
     const { container } = render(

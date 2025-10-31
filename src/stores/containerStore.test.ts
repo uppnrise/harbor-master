@@ -7,7 +7,16 @@ import { ContainerState, type Container, type ContainerDetails, type PruneResult
 
 // Mock the services
 vi.mock('../services/containerService');
-vi.mock('./runtimeStore');
+vi.mock('./runtimeStore', () => ({
+  useRuntimeStore: Object.assign(
+    vi.fn(),
+    {
+      getState: vi.fn(),
+      setState: vi.fn(),
+      subscribe: vi.fn(),
+    }
+  ),
+}));
 
 const mockRuntime: Runtime = {
   id: 'docker',
@@ -106,15 +115,21 @@ describe('containerStore', () => {
       loading: false,
       error: null,
       refreshInterval: null,
+      operationInProgress: new Set<string>(),
     });
 
-    // Mock runtime store
+    // Clear service mocks but not module mocks
+    vi.clearAllTimers();
+    
+    // Reset runtime store mock to return mockRuntime
+    vi.mocked(runtimeStore.useRuntimeStore).mockReturnValue({
+      selectedRuntime: mockRuntime,
+      getState: () => ({ selectedRuntime: mockRuntime } as unknown as ReturnType<typeof runtimeStore.useRuntimeStore.getState>),
+    } as unknown as ReturnType<typeof runtimeStore.useRuntimeStore>);
+    
     vi.mocked(runtimeStore.useRuntimeStore.getState).mockReturnValue({
       selectedRuntime: mockRuntime,
-    } as any);
-
-    // Clear all mocks
-    vi.clearAllMocks();
+    } as unknown as ReturnType<typeof runtimeStore.useRuntimeStore.getState>);
   });
 
   describe('fetchContainers', () => {
