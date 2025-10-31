@@ -94,15 +94,15 @@ export function ContainerList({ onContainerAction }: ContainerListProps) {
   }
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col border border-gray-300 dark:border-gray-700 rounded-lg overflow-hidden bg-white dark:bg-gray-800" style={{ minHeight: '400px', maxHeight: '600px' }}>
       {/* Header */}
-      <div className="flex items-center gap-4 p-3 border-b border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-900 font-medium text-sm text-gray-700 dark:text-gray-300">
-        <div className="w-20">Status</div>
-        <div className="flex-1">Name</div>
-        <div className="hidden md:block w-48">Image</div>
-        <div className="hidden lg:block w-32">Ports</div>
-        <div className="hidden xl:block w-24">Created</div>
-        <div className="w-32">Actions</div>
+      <div className="grid grid-cols-[100px_1fr_200px_120px_100px_140px] gap-3 p-3 border-b border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-900 font-medium text-sm text-gray-700 dark:text-gray-300">
+        <div>Status</div>
+        <div>Name</div>
+        <div className="hidden md:block">Image</div>
+        <div className="hidden lg:block">Ports</div>
+        <div className="hidden xl:block">Created</div>
+        <div>Actions</div>
       </div>
 
       {/* Container List with Virtual Scrolling */}

@@ -5,6 +5,7 @@ import { useRuntimeStore } from './stores/runtimeStore';
 import { useRuntimeStatus } from './hooks/useRuntimeStatus';
 import { WelcomeScreen } from './components/WelcomeScreen';
 import { RuntimeSelector } from './components/RuntimeSelector';
+import { ContainerList } from './components/containers';
 import { formatRelativeTime } from './utils/formatters';
 import type { DetectionResult } from './types/runtime';
 
@@ -227,6 +228,16 @@ function App() {
                     hasAlternatives={runtimes.filter((r) => r.status !== 'error').length > 1}
                   />
                 </Suspense>
+              )}
+
+              {/* Container Management - Show when runtime is running */}
+              {selectedRuntime && selectedRuntime.status === 'running' && (
+                <div className="mb-6">
+                  <h2 className="text-sm font-semibold text-gray-400 uppercase mb-4">
+                    Containers
+                  </h2>
+                  <ContainerList />
+                </div>
               )}
 
               <div>

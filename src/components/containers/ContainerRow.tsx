@@ -70,7 +70,7 @@ export const ContainerRow = memo(function ContainerRow({
   return (
     <div
       className={`
-        flex items-center gap-4 p-3 border-b border-gray-200 dark:border-gray-700
+        grid grid-cols-[100px_1fr_200px_120px_100px_140px] gap-3 p-3 border-b border-gray-200 dark:border-gray-700
         hover:bg-gray-50 dark:hover:bg-gray-800 cursor-pointer transition-colors
         ${isSelected ? 'bg-blue-50 dark:bg-blue-900/20' : ''}
       `}
@@ -85,7 +85,7 @@ export const ContainerRow = memo(function ContainerRow({
       aria-selected={isSelected}
     >
       {/* Status Indicator */}
-      <div className="flex-shrink-0">
+      <div className="flex items-center">
         <StatusBadge
           status={getStateText(container.state)}
           variant={
@@ -101,38 +101,38 @@ export const ContainerRow = memo(function ContainerRow({
       </div>
 
       {/* Container Name */}
-      <div className="flex-1 min-w-0">
+      <div className="min-w-0">
         <div className="font-medium text-gray-900 dark:text-white truncate">
           {truncateName(container.name)}
         </div>
-        <div className="text-sm text-gray-500 dark:text-gray-400">
+        <div className="text-sm text-gray-500 dark:text-gray-400 truncate">
           {truncateId(container.id)}
         </div>
       </div>
 
       {/* Image */}
-      <div className="hidden md:block w-48 min-w-0">
+      <div className="hidden md:block min-w-0">
         <div className="text-sm text-gray-700 dark:text-gray-300 truncate">
           {container.image}
         </div>
       </div>
 
       {/* Ports */}
-      <div className="hidden lg:block w-32">
-        <div className="text-sm text-gray-600 dark:text-gray-400">
+      <div className="hidden lg:block">
+        <div className="text-sm text-gray-600 dark:text-gray-400 truncate">
           {formatPorts(container.ports)}
         </div>
       </div>
 
       {/* Created */}
-      <div className="hidden xl:block w-24">
+      <div className="hidden xl:block">
         <div className="text-sm text-gray-500 dark:text-gray-400">
           {formatCreated(container.created)}
         </div>
       </div>
 
       {/* Quick Actions */}
-      <div className="flex gap-2 flex-shrink-0">
+      <div className="flex gap-1">
         {container.state === ContainerState.Running ? (
           <>
             <button
