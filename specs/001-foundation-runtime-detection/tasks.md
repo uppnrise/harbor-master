@@ -320,8 +320,8 @@
 - [X] T132 [P] Add keyboard navigation for runtime selector
 - [X] T133 Code cleanup: run clippy on Rust code, fix all warnings
 - [X] T134 Code cleanup: run ESLint with --fix, ensure no warnings
-- [ ] T135 Update README.md with final build instructions and screenshots
-- [ ] T136 Verify quickstart.md instructions by following them from scratch
+- [X] T135 Update README.md with final build instructions and screenshots
+- [X] T136 Verify quickstart.md instructions by following them from scratch
 - [ ] T137 Setup CI pipeline in .github/workflows/ci.yml (build, test, lint on Windows/macOS/Linux)
 - [ ] T138 Final validation: run all tests, build for all platforms, verify installers work
 
