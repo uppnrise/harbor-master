@@ -46,9 +46,6 @@ test.describe('Runtime Selection', () => {
     const isVisible = await runtimeSelector.isVisible().catch(() => false);
     
     if (isVisible) {
-      // Get the current value
-      const initialValue = await runtimeSelector.inputValue().catch(() => '');
-      
       // Reload the page
       await page.reload();
       
