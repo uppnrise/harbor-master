@@ -4,13 +4,13 @@
  */
 
 export enum ContainerState {
-  Created = 'Created',
-  Running = 'Running',
-  Paused = 'Paused',
-  Restarting = 'Restarting',
-  Removing = 'Removing',
-  Exited = 'Exited',
-  Dead = 'Dead',
+  Created = 'created',
+  Running = 'running',
+  Paused = 'paused',
+  Restarting = 'restarting',
+  Removing = 'removing',
+  Exited = 'exited',
+  Dead = 'dead',
 }
 
 export interface PortBinding {

@@ -52,7 +52,7 @@ describe('ContainerRow', () => {
       />
     );
 
-    const badge = screen.getByText('Running');
+    const badge = screen.getByText('running');
     expect(badge).toBeInTheDocument();
   });
 
