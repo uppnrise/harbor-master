@@ -3,6 +3,7 @@
 
 mod commands;
 mod config;
+mod container;
 mod polling;
 mod runtime;
 mod types;
@@ -33,6 +34,17 @@ fn main() {
             commands::stop_status_polling,
             // Platform info
             commands::get_platform,
+            // Container management commands
+            commands::container::list_containers_command,
+            commands::container::start_container_command,
+            commands::container::stop_container_command,
+            commands::container::restart_container_command,
+            commands::container::pause_container_command,
+            commands::container::unpause_container_command,
+            commands::container::inspect_container_command,
+            commands::container::remove_container_command,
+            commands::container::remove_containers_command,
+            commands::container::prune_containers_command,
         ])
         .setup(|app| {
             // Build the menu
