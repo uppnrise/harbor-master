@@ -6,7 +6,14 @@ export default defineConfig({
   test: {
     globals: true,
     environment: 'jsdom',
+    globalSetup: './tests/globalSetup.ts',
     setupFiles: './tests/setup.ts',
+    pool: 'forks',
+    poolOptions: {
+      forks: {
+        singleFork: true,
+      },
+    },
     environmentOptions: {
       jsdom: {
         resources: 'usable',
