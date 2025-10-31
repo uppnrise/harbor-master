@@ -95,6 +95,8 @@ jobs:
 
   build-tauri:
     name: Build Tauri App
+    # Only run on main branch to save CI resources
+    if: github.ref == 'refs/heads/main'
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -151,6 +153,8 @@ jobs:
 
   coverage:
     name: Code Coverage
+    # Only run on main branch to save CI resources
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     
     steps:
