@@ -6,8 +6,25 @@ import type { StatusUpdate } from '../types/runtime';
 
 /**
  * Hook to manage runtime status polling
- * Automatically starts polling on mount and stops on unmount
- * Listens for status update events and updates the store
+ * 
+ * Automatically starts polling for runtime status updates when runtimes are detected.
+ * Listens for status update events from the backend and updates the store accordingly.
+ * Polling runs every 5 seconds and checks if Docker/Podman daemons are running.
+ * 
+ * Lifecycle:
+ * - Starts polling when runtimes.length > 0
+ * - Stops polling on component unmount
+ * - Cleans up event listeners on unmount
+ * 
+ * @returns Object containing isActive flag indicating if polling is active
+ * 
+ * @example
+ * ```tsx
+ * function App() {
+ *   const { isActive } = useRuntimeStatus();
+ *   // Polling automatically starts when runtimes are detected
+ * }
+ * ```
  */
 export function useRuntimeStatus() {
   const { runtimes, updateRuntimeStatus } = useRuntimeStore();

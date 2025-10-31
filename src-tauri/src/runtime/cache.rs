@@ -1,21 +1,56 @@
-// Detection cache with TTL
+//! Detection result caching with time-to-live (TTL)
+//!
+//! This module provides a thread-safe cache for runtime detection results
+//! to avoid expensive repeated detections. Each cache entry expires after
+//! a configurable TTL period.
+
 use std::time::{Duration, Instant};
 use std::sync::{Arc, Mutex};
 use crate::types::{DetectionResult, RuntimeType};
 
-/// Cache entry with TTL
+/// Internal cache entry with expiration timestamp
 struct CacheEntry {
+    /// The cached detection result
     result: DetectionResult,
+    /// Absolute time when this entry expires
     expires_at: Instant,
 }
 
-/// Detection result cache with TTL
+/// Thread-safe cache for detection results with automatic expiration
+/// 
+/// # Example
+/// ```no_run
+/// use harbor_master::runtime::cache::DetectionCache;
+/// use harbor_master::types::RuntimeType;
+/// 
+/// let cache = DetectionCache::new(60); // 60 second TTL
+/// 
+/// // Cache is empty initially
+/// assert!(cache.get(&RuntimeType::Docker).is_none());
+/// 
+/// // Store a result
+/// cache.set(RuntimeType::Docker, detection_result);
+/// 
+/// // Retrieve within TTL
+/// if let Some(result) = cache.get(&RuntimeType::Docker) {
+///     println!("Found cached result");
+/// }
+/// ```
 pub struct DetectionCache {
+    /// Thread-safe storage of cached entries per runtime type
     entries: Arc<Mutex<std::collections::HashMap<RuntimeType, CacheEntry>>>,
+    /// Duration before cached entries expire
     ttl: Duration,
 }
 
 impl DetectionCache {
+    /// Creates a new cache with specified TTL
+    /// 
+    /// # Arguments
+    /// * `ttl_seconds` - Time-to-live in seconds for cache entries
+    /// 
+    /// # Returns
+    /// New `DetectionCache` instance
     pub fn new(ttl_seconds: u64) -> Self {
         Self {
             entries: Arc::new(Mutex::new(std::collections::HashMap::new())),
@@ -23,7 +58,14 @@ impl DetectionCache {
         }
     }
 
-    /// Get cached result if not expired
+    /// Retrieves a cached result if it hasn't expired
+    /// 
+    /// # Arguments
+    /// * `runtime_type` - The runtime type to look up
+    /// 
+    /// # Returns
+    /// - `Some(DetectionResult)` if cached and not expired
+    /// - `None` if not in cache or expired
     pub fn get(&self, runtime_type: &RuntimeType) -> Option<DetectionResult> {
         let entries = self.entries.lock().ok()?;
         
@@ -36,7 +78,11 @@ impl DetectionCache {
         None
     }
 
-    /// Store result with TTL
+    /// Stores a detection result with automatic expiration
+    /// 
+    /// # Arguments
+    /// * `runtime_type` - The runtime type this result belongs to
+    /// * `result` - The detection result to cache
     pub fn set(&self, runtime_type: RuntimeType, result: DetectionResult) {
         let expires_at = Instant::now() + self.ttl;
         let entry = CacheEntry {
@@ -49,7 +95,10 @@ impl DetectionCache {
         }
     }
 
-    /// Clear cache for specific runtime type
+    /// Removes the cache entry for a specific runtime type
+    /// 
+    /// # Arguments
+    /// * `runtime_type` - The runtime type to clear from cache
     #[allow(dead_code)]
     pub fn clear(&self, runtime_type: &RuntimeType) {
         if let Ok(mut entries) = self.entries.lock() {
@@ -57,7 +106,9 @@ impl DetectionCache {
         }
     }
 
-    /// Clear all cache entries
+    /// Removes all cache entries
+    /// 
+    /// Useful for manual refresh operations where fresh detection is required.
     pub fn clear_all(&self) {
         if let Ok(mut entries) = self.entries.lock() {
             entries.clear();

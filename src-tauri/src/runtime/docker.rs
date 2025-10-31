@@ -1,3 +1,9 @@
+//! Docker runtime detection and version parsing
+//!
+//! This module handles the detection of Docker installations on the system,
+//! including platform-specific search paths, WSL2 detection on Linux, and
+//! version validation against minimum supported versions.
+
 use std::path::PathBuf;
 use std::process::Command;
 use std::time::{Duration, Instant};
@@ -7,7 +13,12 @@ use chrono::Utc;
 use crate::types::{Runtime, RuntimeType, RuntimeStatus, DetectionResult, DetectionError};
 use crate::runtime::version::{parse_version, validate_docker_version};
 
-/// Platform-specific Docker installation paths
+/// Returns platform-specific Docker installation paths
+/// 
+/// # Platform Paths
+/// - **Windows**: Program Files Docker directories
+/// - **macOS**: /usr/local/bin, Homebrew, Docker.app
+/// - **Linux**: /usr/bin, /usr/local/bin, snap
 fn get_platform_paths() -> Vec<PathBuf> {
     let mut paths = vec![];
     
@@ -34,7 +45,15 @@ fn get_platform_paths() -> Vec<PathBuf> {
     paths
 }
 
-/// Find Docker executable in PATH or platform-specific locations
+/// Locates the Docker executable in PATH or platform-specific directories
+/// 
+/// Searches for docker/docker.exe using:
+/// 1. System PATH environment variable
+/// 2. Platform-specific installation directories
+/// 
+/// # Returns
+/// - `Some(PathBuf)` if Docker executable is found
+/// - `None` if not found
 fn find_docker_executable() -> Option<PathBuf> {
     // First try using 'which' crate to find in PATH
     if let Ok(path) = which::which("docker") {
@@ -68,7 +87,15 @@ fn find_docker_executable() -> Option<PathBuf> {
     None
 }
 
-/// Check if running in WSL2 and detect Windows Docker
+/// Detects Docker Desktop running in Windows when inside WSL2
+/// 
+/// On Linux systems, checks if running in WSL2 environment by examining
+/// /proc/version for "microsoft" or "wsl" keywords. If found, attempts
+/// to locate docker.exe in the Windows PATH.
+/// 
+/// # Returns
+/// - `Some(PathBuf)` to docker.exe if in WSL2 and Docker Desktop is accessible
+/// - `None` if not in WSL2 or Docker Desktop not found
 #[cfg(target_os = "linux")]
 fn detect_wsl_docker() -> Option<PathBuf> {
     // Check if we're in WSL
@@ -83,12 +110,25 @@ fn detect_wsl_docker() -> Option<PathBuf> {
     None
 }
 
+/// Stub for WSL detection on non-Linux platforms
+/// 
+/// Always returns None since WSL only exists on Windows/Linux.
 #[cfg(not(target_os = "linux"))]
 fn detect_wsl_docker() -> Option<PathBuf> {
     None
 }
 
-/// Verify executable has proper permissions
+/// Verifies that the executable has proper execute permissions
+/// 
+/// # Platform Behavior
+/// - **Unix**: Checks execute bits (0o111) in file permissions
+/// - **Windows**: Validates file exists and is not a directory
+/// 
+/// # Arguments
+/// * `path` - Path to the executable to verify
+/// 
+/// # Returns
+/// `true` if executable has proper permissions, `false` otherwise
 fn verify_executable(path: &PathBuf) -> bool {
     #[cfg(unix)]
     {
@@ -108,7 +148,16 @@ fn verify_executable(path: &PathBuf) -> bool {
     false
 }
 
-/// Get Docker version
+/// Retrieves the Docker version string
+/// 
+/// Executes `docker --version` command and parses the output.
+/// 
+/// # Arguments
+/// * `docker_path` - Path to the Docker executable
+/// 
+/// # Returns
+/// - `Ok(String)` containing the version output
+/// - `Err` if command fails or output cannot be parsed
 fn get_docker_version(docker_path: &PathBuf) -> Result<String, Box<dyn Error>> {
     let output = Command::new(docker_path)
         .arg("--version")
@@ -122,7 +171,15 @@ fn get_docker_version(docker_path: &PathBuf) -> Result<String, Box<dyn Error>> {
     Ok(version_str.trim().to_string())
 }
 
-/// Check if Docker daemon is running
+/// Checks if the Docker daemon is currently running
+/// 
+/// Executes `docker info` command to verify daemon connectivity.
+/// 
+/// # Arguments
+/// * `docker_path` - Path to the Docker executable
+/// 
+/// # Returns
+/// `true` if daemon is running and responsive, `false` otherwise
 fn check_docker_running(docker_path: &PathBuf) -> bool {
     let output = Command::new(docker_path)
         .arg("info")
@@ -134,7 +191,34 @@ fn check_docker_running(docker_path: &PathBuf) -> bool {
     }
 }
 
-/// Detect Docker installation with timeout
+/// Detects Docker installation on the system with timeout protection
+/// 
+/// Performs comprehensive Docker detection including:
+/// - Executable discovery in PATH and platform-specific locations
+/// - WSL2 detection on Linux systems
+/// - Version parsing and validation against minimum requirements
+/// - Daemon status checking
+/// - Permission verification
+/// 
+/// # Arguments
+/// * `timeout_ms` - Maximum time in milliseconds before detection aborts
+/// 
+/// # Returns
+/// `DetectionResult` containing:
+/// - Found runtimes with version, status, and path information
+/// - Detection errors if any occurred
+/// - Total detection duration in milliseconds
+/// 
+/// # Example
+/// ```no_run
+/// use harbor_master::runtime::docker::detect_docker;
+/// 
+/// #[tokio::main]
+/// async fn main() {
+///     let result = detect_docker(5000).await;
+///     println!("Found {} Docker runtime(s)", result.runtimes.len());
+/// }
+/// ```
 pub async fn detect_docker(timeout_ms: u64) -> DetectionResult {
     let start = Instant::now();
     let timeout = Duration::from_millis(timeout_ms);

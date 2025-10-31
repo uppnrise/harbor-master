@@ -1,3 +1,9 @@
+//! Podman runtime detection and mode identification
+//!
+//! This module handles the detection of Podman installations on the system,
+//! including rootless/rootful mode detection, version parsing, and validation
+//! against minimum supported versions.
+
 use std::path::PathBuf;
 use std::process::Command;
 use std::time::{Duration, Instant};
@@ -7,7 +13,12 @@ use chrono::Utc;
 use crate::types::{Runtime, RuntimeType, RuntimeStatus, PodmanMode, DetectionResult, DetectionError};
 use crate::runtime::version::{parse_version, validate_podman_version};
 
-/// Platform-specific Podman installation paths
+/// Returns platform-specific Podman installation paths
+/// 
+/// # Platform Paths
+/// - **Windows**: RedHat Podman directories in Program Files
+/// - **macOS**: /usr/local/bin, Homebrew, /opt/podman
+/// - **Linux**: /usr/bin, /usr/local/bin, /usr/libexec/podman
 fn get_platform_paths() -> Vec<PathBuf> {
     let mut paths = vec![];
     
@@ -34,7 +45,15 @@ fn get_platform_paths() -> Vec<PathBuf> {
     paths
 }
 
-/// Find Podman executable in PATH or platform-specific locations
+/// Locates the Podman executable in PATH or platform-specific directories
+/// 
+/// Searches for podman/podman.exe using:
+/// 1. System PATH environment variable
+/// 2. Platform-specific installation directories
+/// 
+/// # Returns
+/// - `Some(PathBuf)` if Podman executable is found
+/// - `None` if not found
 fn find_podman_executable() -> Option<PathBuf> {
     // First try using 'which' crate to find in PATH
     if let Ok(path) = which::which("podman") {
@@ -68,7 +87,17 @@ fn find_podman_executable() -> Option<PathBuf> {
     None
 }
 
-/// Verify executable has proper permissions
+/// Verifies that the executable has proper execute permissions
+/// 
+/// # Platform Behavior
+/// - **Unix**: Checks execute bits (0o111) in file permissions
+/// - **Windows**: Validates file exists and is not a directory
+/// 
+/// # Arguments
+/// * `path` - Path to the executable to verify
+/// 
+/// # Returns
+/// `true` if executable has proper permissions, `false` otherwise
 fn verify_executable(path: &PathBuf) -> bool {
     #[cfg(unix)]
     {
@@ -88,7 +117,19 @@ fn verify_executable(path: &PathBuf) -> bool {
     false
 }
 
-/// Detect if Podman is running in rootless mode
+/// Detects whether Podman is running in rootless or rootful mode
+/// 
+/// Executes `podman info --format={{.Host.Security.Rootless}}` to query
+/// the current security context. Rootless mode runs without root privileges,
+/// while rootful mode requires elevated permissions.
+/// 
+/// # Arguments
+/// * `podman_path` - Path to the Podman executable
+/// 
+/// # Returns
+/// - `Some(PodmanMode::Rootless)` if running without root
+/// - `Some(PodmanMode::Rootful)` if running with root privileges
+/// - Defaults to Rootless if unable to determine (safer assumption)
 fn detect_rootless_mode(podman_path: &PathBuf) -> Option<PodmanMode> {
     let output = Command::new(podman_path)
         .args(["info", "--format={{.Host.Security.Rootless}}"])
@@ -113,7 +154,16 @@ fn detect_rootless_mode(podman_path: &PathBuf) -> Option<PodmanMode> {
     }
 }
 
-/// Get Podman version
+/// Retrieves the Podman version string
+/// 
+/// Executes `podman --version` command and parses the output.
+/// 
+/// # Arguments
+/// * `podman_path` - Path to the Podman executable
+/// 
+/// # Returns
+/// - `Ok(String)` containing the version output
+/// - `Err` if command fails or output cannot be parsed
 fn get_podman_version(podman_path: &PathBuf) -> Result<String, Box<dyn Error>> {
     let output = Command::new(podman_path)
         .arg("--version")
@@ -127,7 +177,15 @@ fn get_podman_version(podman_path: &PathBuf) -> Result<String, Box<dyn Error>> {
     Ok(version_str.trim().to_string())
 }
 
-/// Check if Podman is accessible (can run info command)
+/// Checks if Podman is accessible and can execute commands
+/// 
+/// Executes `podman info` command to verify Podman responsiveness.
+/// 
+/// # Arguments
+/// * `podman_path` - Path to the Podman executable
+/// 
+/// # Returns
+/// `true` if Podman is accessible and running, `false` otherwise
 fn check_podman_running(podman_path: &PathBuf) -> bool {
     let output = Command::new(podman_path)
         .arg("info")
@@ -139,7 +197,38 @@ fn check_podman_running(podman_path: &PathBuf) -> bool {
     }
 }
 
-/// Detect Podman installation with timeout
+/// Detects Podman installation on the system with timeout protection
+/// 
+/// Performs comprehensive Podman detection including:
+/// - Executable discovery in PATH and platform-specific locations
+/// - Rootless/rootful mode detection
+/// - Version parsing and validation against minimum requirements
+/// - Runtime accessibility checking
+/// - Permission verification
+/// 
+/// # Arguments
+/// * `timeout_ms` - Maximum time in milliseconds before detection aborts
+/// 
+/// # Returns
+/// `DetectionResult` containing:
+/// - Found runtimes with version, status, mode, and path information
+/// - Detection errors if any occurred
+/// - Total detection duration in milliseconds
+/// 
+/// # Example
+/// ```no_run
+/// use harbor_master::runtime::podman::detect_podman;
+/// 
+/// #[tokio::main]
+/// async fn main() {
+///     let result = detect_podman(5000).await;
+///     for runtime in result.runtimes {
+///         if let Some(mode) = runtime.mode {
+///             println!("Found Podman in {:?} mode", mode);
+///         }
+///     }
+/// }
+/// ```
 pub async fn detect_podman(timeout_ms: u64) -> DetectionResult {
     let start = Instant::now();
     let timeout = Duration::from_millis(timeout_ms);
