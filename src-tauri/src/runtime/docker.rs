@@ -345,7 +345,9 @@ mod tests {
         #[cfg(target_os = "windows")]
         {
             let program_files = std::env::var("ProgramFiles").unwrap_or_default();
-            assert!(paths.iter().any(|p| p.to_string_lossy().contains(&program_files)));
+            assert!(paths
+                .iter()
+                .any(|p| p.to_string_lossy().contains(&program_files)));
         }
 
         #[cfg(target_os = "linux")]
