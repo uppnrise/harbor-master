@@ -1,7 +1,8 @@
-import { useRef, useEffect } from 'react';
+import { useRef, useEffect, useState } from 'react';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { ContainerRow } from './ContainerRow';
 import { FilterBar } from './FilterBar';
+import ContainerDetails from './ContainerDetails';
 import { useContainerStore } from '../../stores/containerStore';
 import type { Container } from '../../types/container';
 
@@ -29,6 +30,8 @@ export function ContainerList() {
   } = useContainerStore();
 
   const parentRef = useRef<HTMLDivElement>(null);
+  const [detailsPanelOpen, setDetailsPanelOpen] = useState(false);
+  const [detailsContainerId, setDetailsContainerId] = useState<string | null>(null);
 
   // Get filtered containers
   const filteredContainers = getFilteredContainers();
@@ -50,6 +53,12 @@ export function ContainerList() {
 
   const handleSelect = (container: Container) => {
     selectContainer(container);
+    setDetailsContainerId(container.id);
+    setDetailsPanelOpen(true);
+  };
+
+  const handleCloseDetails = () => {
+    setDetailsPanelOpen(false);
   };
 
   if (error) {
@@ -182,6 +191,15 @@ export function ContainerList() {
             </div>
           </div>
         </div>
+      )}
+
+      {/* Container Details Panel */}
+      {detailsContainerId && (
+        <ContainerDetails
+          containerId={detailsContainerId}
+          isOpen={detailsPanelOpen}
+          onClose={handleCloseDetails}
+        />
       )}
     </div>
   );
