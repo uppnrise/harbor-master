@@ -67,7 +67,7 @@ export const useContainerStore = create<ContainerStore>((set, get) => ({
       if (!runtime) {
         throw new Error('No runtime selected');
       }
-      const defaultOptions: ContainerListOptions = { all: false, size: false };
+      const defaultOptions: ContainerListOptions = { all: true, size: false };
       const containers = await listContainers(runtime, options || defaultOptions);
       set({ containers, loading: false });
     } catch (err) {

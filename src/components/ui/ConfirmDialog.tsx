@@ -122,7 +122,7 @@ export function ConfirmDialog({
   return (
     <dialog
       ref={dialogRef}
-      className="rounded-lg shadow-xl backdrop:bg-black/50 p-0 border border-gray-700 bg-gray-800"
+      className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 m-0 rounded-lg shadow-xl backdrop:bg-black/50 p-0 border border-gray-700 bg-gray-800"
       onKeyDown={handleKeyDown}
       aria-labelledby="dialog-title"
       aria-describedby="dialog-message"
@@ -153,7 +153,7 @@ export function ConfirmDialog({
           <button
             onClick={onCancel}
             disabled={isLoading}
-            className="px-4 py-2 rounded bg-gray-700 hover:bg-gray-600 text-white disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 focus:ring-offset-gray-800"
+            className="px-6 py-2.5 rounded bg-gray-700 hover:bg-gray-600 text-white disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 focus:ring-offset-gray-800 min-w-[100px]"
             aria-label={cancelText}
           >
             {cancelText}
@@ -161,7 +161,7 @@ export function ConfirmDialog({
           <button
             onClick={onConfirm}
             disabled={isLoading}
-            className={`px-4 py-2 rounded text-white disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 ${confirmButtonStyles[variant]}`}
+            className={`px-6 py-2.5 rounded text-white disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 min-w-[100px] ${confirmButtonStyles[variant]}`}
             aria-label={confirmText}
           >
             {isLoading ? (
