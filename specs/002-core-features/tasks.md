@@ -93,12 +93,12 @@
 - [ ] T1.3.9: Write integration tests (1h)
 
 #### Frontend (TypeScript/React) - 14 hours
-- [ ] T1.3.10: Create `src/components/containers/ContainerActions.tsx` (4h)
-- [ ] T1.3.11: Create `src/hooks/useContainerOps.ts` hook (3h)
-- [ ] T1.3.12: Add lifecycle methods to containerService (2h)
-- [ ] T1.3.13: Update containerStore with operation state (2h)
-- [ ] T1.3.14: Add loading states to ContainerRow (1h)
-- [ ] T1.3.15: Write tests for container operations (2h)
+- [x] T1.3.10: Create `src/components/ui/ConfirmDialog.tsx` for action confirmations (4h)
+- [x] T1.3.11: Create `src/hooks/useToast.ts` hook for notifications (3h)
+- [x] T1.3.12: Add lifecycle methods to containerService (2h) - Already existed
+- [x] T1.3.13: Update containerStore with operation state tracking (2h)
+- [x] T1.3.14: Wire up action buttons in ContainerRow with loading states (1h)
+- [x] T1.3.15: Write tests for container operations (2h)
 
 **Subtotal:** 24 hours
 
