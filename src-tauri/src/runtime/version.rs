@@ -3,28 +3,28 @@
 //! This module provides functions to parse semantic version strings from
 //! Docker and Podman output, and validate versions against minimum requirements.
 
-use regex::Regex;
 use crate::types::Version;
+use regex::Regex;
 use std::error::Error;
 
 /// Parses semantic version from Docker or Podman output
-/// 
+///
 /// Handles multiple output formats:
 /// - `"Docker version 24.0.7, build afdd53b"` → 24.0.7
 /// - `"podman version 4.8.0"` → 4.8.0
 /// - `"24.0.7"` → 24.0.7
-/// 
+///
 /// # Arguments
 /// * `version_str` - Raw version string from --version command
-/// 
+///
 /// # Returns
 /// - `Ok(Version)` with parsed major, minor, patch numbers
 /// - `Err` if string doesn't contain valid semantic version
-/// 
+///
 /// # Example
 /// ```
 /// use harbor_master::runtime::version::parse_version;
-/// 
+///
 /// let version = parse_version("Docker version 24.0.7, build afdd53b").unwrap();
 /// assert_eq!(version.major, 24);
 /// assert_eq!(version.minor, 0);
@@ -33,21 +33,24 @@ use std::error::Error;
 pub fn parse_version(version_str: &str) -> Result<Version, Box<dyn Error>> {
     // Regex to match semantic version (major.minor.patch)
     let re = Regex::new(r"(\d+)\.(\d+)\.(\d+)")?;
-    
+
     if let Some(caps) = re.captures(version_str) {
-        let major: u32 = caps.get(1)
+        let major: u32 = caps
+            .get(1)
             .ok_or("Missing major version")?
             .as_str()
             .parse()?;
-        let minor: u32 = caps.get(2)
+        let minor: u32 = caps
+            .get(2)
             .ok_or("Missing minor version")?
             .as_str()
             .parse()?;
-        let patch: u32 = caps.get(3)
+        let patch: u32 = caps
+            .get(3)
             .ok_or("Missing patch version")?
             .as_str()
             .parse()?;
-        
+
         Ok(Version {
             major,
             minor,
@@ -60,13 +63,13 @@ pub fn parse_version(version_str: &str) -> Result<Version, Box<dyn Error>> {
 }
 
 /// Validates Docker version against minimum requirements
-/// 
+///
 /// Ensures Docker version is >= 20.10.0, which is the minimum supported version
 /// for modern container features and security updates.
-/// 
+///
 /// # Arguments
 /// * `version` - Parsed version to validate
-/// 
+///
 /// # Returns
 /// `true` if version meets minimum requirements, `false` otherwise
 pub fn validate_docker_version(version: &Version) -> bool {
@@ -74,13 +77,13 @@ pub fn validate_docker_version(version: &Version) -> bool {
 }
 
 /// Validates Podman version against minimum requirements
-/// 
+///
 /// Ensures Podman version is >= 3.0.0, which provides stable API compatibility
 /// and essential container management features.
-/// 
+///
 /// # Arguments
 /// * `version` - Parsed version to validate
-/// 
+///
 /// # Returns
 /// `true` if version meets minimum requirements, `false` otherwise
 pub fn validate_podman_version(version: &Version) -> bool {
@@ -125,14 +128,14 @@ mod tests {
             patch: 7,
             full: "24.0.7".to_string(),
         }));
-        
+
         assert!(validate_docker_version(&Version {
             major: 20,
             minor: 10,
             patch: 0,
             full: "20.10.0".to_string(),
         }));
-        
+
         assert!(!validate_docker_version(&Version {
             major: 20,
             minor: 9,
@@ -149,14 +152,14 @@ mod tests {
             patch: 0,
             full: "4.8.0".to_string(),
         }));
-        
+
         assert!(validate_podman_version(&Version {
             major: 3,
             minor: 0,
             patch: 0,
             full: "3.0.0".to_string(),
         }));
-        
+
         assert!(!validate_podman_version(&Version {
             major: 2,
             minor: 9,

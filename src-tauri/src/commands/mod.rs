@@ -1,9 +1,9 @@
-use tauri::{Window, AppHandle, Emitter};
 use crate::config::preferences::{load_preferences, save_preferences};
-use crate::types::{RuntimePreferences, DetectionResult};
-use crate::runtime::detector::RuntimeDetector;
 use crate::polling::PollingService;
+use crate::runtime::detector::RuntimeDetector;
+use crate::types::{DetectionResult, RuntimePreferences};
 use std::sync::Arc;
+use tauri::{AppHandle, Emitter, Window};
 
 // Global detector instance
 lazy_static::lazy_static! {
@@ -20,11 +20,11 @@ pub fn init_detector() {
 #[tauri::command]
 pub async fn save_window_size(_window: Window, _width: f64, _height: f64) -> Result<(), String> {
     let prefs = load_preferences().map_err(|e| e.to_string())?;
-    
+
     // Store window dimensions (we'll add these fields to RuntimePreferences later)
     // For now, just save the preferences to ensure the mechanism works
     save_preferences(&prefs).map_err(|e| e.to_string())?;
-    
+
     Ok(())
 }
 
@@ -37,11 +37,12 @@ pub async fn get_window_size() -> Result<(f64, f64), String> {
 #[tauri::command]
 pub async fn detect_runtimes(app: AppHandle) -> Result<DetectionResult, String> {
     // Emit detection started event
-    app.emit("detection-started", ()).map_err(|e| e.to_string())?;
-    
+    app.emit("detection-started", ())
+        .map_err(|e| e.to_string())?;
+
     // Run detection
     let all_runtimes = DETECTOR.detect_all().await;
-    
+
     // Create detection result
     let result = DetectionResult {
         runtimes: all_runtimes,
@@ -49,10 +50,11 @@ pub async fn detect_runtimes(app: AppHandle) -> Result<DetectionResult, String> 
         duration: 0, // Combined duration handled by detector
         errors: vec![],
     };
-    
+
     // Emit detection completed event with runtimes
-    app.emit("detection-completed", &result).map_err(|e| e.to_string())?;
-    
+    app.emit("detection-completed", &result)
+        .map_err(|e| e.to_string())?;
+
     Ok(result)
 }
 
@@ -71,10 +73,11 @@ pub async fn select_runtime(app: AppHandle, runtime_id: String) -> Result<(), St
     let mut prefs = load_preferences().map_err(|e| e.to_string())?;
     prefs.selected_runtime_id = Some(runtime_id.clone());
     save_preferences(&prefs).map_err(|e| e.to_string())?;
-    
+
     // Emit runtime selected event
-    app.emit("runtime-selected", runtime_id).map_err(|e| e.to_string())?;
-    
+    app.emit("runtime-selected", runtime_id)
+        .map_err(|e| e.to_string())?;
+
     Ok(())
 }
 
@@ -88,10 +91,10 @@ pub async fn clear_detection_cache() -> Result<(), String> {
 pub async fn start_status_polling(app: AppHandle) -> Result<(), String> {
     // Get current runtimes from detector
     let runtimes = DETECTOR.detect_all().await;
-    
+
     // Update polling service with runtimes
     POLLING_SERVICE.set_runtimes(runtimes).await;
-    
+
     // Start polling
     POLLING_SERVICE.start(app).await
 }

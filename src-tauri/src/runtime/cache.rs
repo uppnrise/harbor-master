@@ -4,9 +4,9 @@
 //! to avoid expensive repeated detections. Each cache entry expires after
 //! a configurable TTL period.
 
-use std::time::{Duration, Instant};
-use std::sync::{Arc, Mutex};
 use crate::types::{DetectionResult, RuntimeType};
+use std::sync::{Arc, Mutex};
+use std::time::{Duration, Instant};
 
 /// Internal cache entry with expiration timestamp
 struct CacheEntry {
@@ -17,18 +17,18 @@ struct CacheEntry {
 }
 
 /// Thread-safe cache for detection results with automatic expiration
-/// 
+///
 /// # Example
 /// ```
 /// use harbor_master::runtime::cache::DetectionCache;
 /// use harbor_master::types::{RuntimeType, DetectionResult};
 /// use chrono::Utc;
-/// 
+///
 /// let cache = DetectionCache::new(60); // 60 second TTL
-/// 
+///
 /// // Cache is empty initially
 /// assert!(cache.get(&RuntimeType::Docker).is_none());
-/// 
+///
 /// // Store a result (DetectionResult with empty runtimes for demo)
 /// let result = DetectionResult {
 ///     runtimes: vec![],
@@ -37,7 +37,7 @@ struct CacheEntry {
 ///     duration: 100,
 /// };
 /// cache.set(RuntimeType::Docker, result);
-/// 
+///
 /// // Retrieve within TTL
 /// assert!(cache.get(&RuntimeType::Docker).is_some());
 /// ```
@@ -50,10 +50,10 @@ pub struct DetectionCache {
 
 impl DetectionCache {
     /// Creates a new cache with specified TTL
-    /// 
+    ///
     /// # Arguments
     /// * `ttl_seconds` - Time-to-live in seconds for cache entries
-    /// 
+    ///
     /// # Returns
     /// New `DetectionCache` instance
     pub fn new(ttl_seconds: u64) -> Self {
@@ -64,36 +64,33 @@ impl DetectionCache {
     }
 
     /// Retrieves a cached result if it hasn't expired
-    /// 
+    ///
     /// # Arguments
     /// * `runtime_type` - The runtime type to look up
-    /// 
+    ///
     /// # Returns
     /// - `Some(DetectionResult)` if cached and not expired
     /// - `None` if not in cache or expired
     pub fn get(&self, runtime_type: &RuntimeType) -> Option<DetectionResult> {
         let entries = self.entries.lock().ok()?;
-        
+
         if let Some(entry) = entries.get(runtime_type) {
             if Instant::now() < entry.expires_at {
                 return Some(entry.result.clone());
             }
         }
-        
+
         None
     }
 
     /// Stores a detection result with automatic expiration
-    /// 
+    ///
     /// # Arguments
     /// * `runtime_type` - The runtime type this result belongs to
     /// * `result` - The detection result to cache
     pub fn set(&self, runtime_type: RuntimeType, result: DetectionResult) {
         let expires_at = Instant::now() + self.ttl;
-        let entry = CacheEntry {
-            result,
-            expires_at,
-        };
+        let entry = CacheEntry { result, expires_at };
 
         if let Ok(mut entries) = self.entries.lock() {
             entries.insert(runtime_type, entry);
@@ -101,7 +98,7 @@ impl DetectionCache {
     }
 
     /// Removes the cache entry for a specific runtime type
-    /// 
+    ///
     /// # Arguments
     /// * `runtime_type` - The runtime type to clear from cache
     #[allow(dead_code)]
@@ -112,7 +109,7 @@ impl DetectionCache {
     }
 
     /// Removes all cache entries
-    /// 
+    ///
     /// Useful for manual refresh operations where fresh detection is required.
     pub fn clear_all(&self) {
         if let Ok(mut entries) = self.entries.lock() {
@@ -138,7 +135,7 @@ mod tests {
 
         cache.set(RuntimeType::Docker, result.clone());
         let cached = cache.get(&RuntimeType::Docker);
-        
+
         assert!(cached.is_some());
     }
 
@@ -153,13 +150,13 @@ mod tests {
         };
 
         cache.set(RuntimeType::Docker, result);
-        
+
         // Should be cached
         assert!(cache.get(&RuntimeType::Docker).is_some());
-        
+
         // Wait for expiration
         thread::sleep(Duration::from_secs(2));
-        
+
         // Should be expired
         assert!(cache.get(&RuntimeType::Docker).is_none());
     }
@@ -176,8 +173,7 @@ mod tests {
 
         cache.set(RuntimeType::Docker, result);
         cache.clear(&RuntimeType::Docker);
-        
+
         assert!(cache.get(&RuntimeType::Docker).is_none());
     }
 }
-

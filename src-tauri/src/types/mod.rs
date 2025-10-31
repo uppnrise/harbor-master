@@ -82,11 +82,19 @@ pub struct StatusUpdate {
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct RuntimePreferences {
-    #[serde(skip_serializing_if = "Option::is_none", rename = "selectedRuntimeId", alias = "selected_runtime_id")]
+    #[serde(
+        skip_serializing_if = "Option::is_none",
+        rename = "selectedRuntimeId",
+        alias = "selected_runtime_id"
+    )]
     pub selected_runtime_id: Option<String>,
     #[serde(rename = "autoSelectRunning", alias = "auto_select_running")]
     pub auto_select_running: bool,
-    #[serde(skip_serializing_if = "Option::is_none", rename = "preferredType", alias = "preferred_type")]
+    #[serde(
+        skip_serializing_if = "Option::is_none",
+        rename = "preferredType",
+        alias = "preferred_type"
+    )]
     pub preferred_type: Option<RuntimeType>,
     #[serde(rename = "detectionCacheTTL", alias = "detection_cache_ttl")]
     pub detection_cache_ttl: u64, // seconds

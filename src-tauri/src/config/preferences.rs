@@ -1,8 +1,8 @@
 use crate::types::RuntimePreferences;
 use serde_json;
+use std::error::Error;
 use std::fs;
 use std::path::PathBuf;
-use std::error::Error;
 
 /// Get the config directory path based on platform
 pub fn get_config_dir() -> Result<PathBuf, Box<dyn Error>> {
@@ -40,14 +40,14 @@ pub fn get_config_path() -> Result<PathBuf, Box<dyn Error>> {
 /// Returns default preferences if file doesn't exist
 pub fn load_preferences() -> Result<RuntimePreferences, Box<dyn Error>> {
     let config_path = get_config_path()?;
-    
+
     if !config_path.exists() {
         return Ok(RuntimePreferences::default());
     }
 
     let contents = fs::read_to_string(config_path)?;
     let prefs: RuntimePreferences = serde_json::from_str(&contents)?;
-    
+
     Ok(prefs)
 }
 
@@ -55,9 +55,9 @@ pub fn load_preferences() -> Result<RuntimePreferences, Box<dyn Error>> {
 pub fn save_preferences(prefs: &RuntimePreferences) -> Result<(), Box<dyn Error>> {
     let config_path = get_config_path()?;
     let contents = serde_json::to_string_pretty(prefs)?;
-    
+
     fs::write(config_path, contents)?;
-    
+
     Ok(())
 }
 

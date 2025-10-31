@@ -7,12 +7,15 @@ mod polling;
 mod runtime;
 mod types;
 
-use tauri::{Emitter, Manager, menu::{MenuBuilder, SubmenuBuilder, MenuItemBuilder}};
+use tauri::{
+    menu::{MenuBuilder, MenuItemBuilder, SubmenuBuilder},
+    Emitter, Manager,
+};
 
 fn main() {
     // Initialize detector before building the app
     commands::init_detector();
-    
+
     tauri::Builder::default()
         .plugin(tauri_plugin_shell::init())
         .invoke_handler(tauri::generate_handler![
@@ -36,17 +39,15 @@ fn main() {
             let refresh_item = MenuItemBuilder::with_id("refresh", "Refresh Runtimes")
                 .accelerator("CmdOrCtrl+R")
                 .build(app)?;
-            
+
             let view_menu = SubmenuBuilder::new(app, "View")
                 .item(&refresh_item)
                 .build()?;
-            
-            let menu = MenuBuilder::new(app)
-                .item(&view_menu)
-                .build()?;
-            
+
+            let menu = MenuBuilder::new(app).item(&view_menu).build()?;
+
             app.set_menu(menu)?;
-            
+
             // Handle menu item clicks
             app.on_menu_event(move |app, event| {
                 if event.id() == "refresh" {
@@ -54,7 +55,7 @@ fn main() {
                     let _ = app.emit("menu-refresh", ());
                 }
             });
-            
+
             #[cfg(debug_assertions)]
             {
                 let window = app.get_webview_window("main").unwrap();

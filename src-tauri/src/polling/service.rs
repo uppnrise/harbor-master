@@ -1,12 +1,12 @@
+use chrono::Utc;
 use std::sync::Arc;
 use std::time::Duration;
+use tauri::{AppHandle, Emitter};
 use tokio::sync::{Mutex, RwLock};
 use tokio::time::interval;
-use tauri::{AppHandle, Emitter};
-use chrono::Utc;
 
-use crate::types::{Runtime, RuntimeStatus, StatusUpdate};
 use crate::runtime::status::check_status;
+use crate::types::{Runtime, RuntimeStatus, StatusUpdate};
 
 /// Polling service state
 pub struct PollingService {
@@ -61,7 +61,7 @@ impl PollingService {
                     let running = is_running_clone.lock().await;
                     !*running
                 };
-                
+
                 if should_stop {
                     break;
                 }
@@ -75,7 +75,7 @@ impl PollingService {
                 // Check status for each runtime
                 for runtime in current_runtimes {
                     let runtime_id = runtime.id.clone();
-                    
+
                     // Check if we should apply backoff
                     let should_skip = {
                         let failures = failure_counts.read().await;
@@ -100,7 +100,7 @@ impl PollingService {
                     }
 
                     let new_status = check_status(&runtime).await;
-                    
+
                     // Update failure count
                     let mut failures = failure_counts.write().await;
                     if new_status == RuntimeStatus::Error || new_status == RuntimeStatus::Unknown {
@@ -179,9 +179,9 @@ mod tests {
     async fn test_set_runtimes() {
         let service = PollingService::new(5);
         let runtimes = vec![create_test_runtime("test1"), create_test_runtime("test2")];
-        
+
         service.set_runtimes(runtimes.clone()).await;
-        
+
         let stored = service.runtimes.read().await;
         assert_eq!(stored.len(), 2);
         assert_eq!(stored[0].id, "test1");
