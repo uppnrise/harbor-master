@@ -485,8 +485,8 @@ This delivers:
 - ✅ Phase 10: Manual Refresh UX (9/9 tasks)
 - ✅ Phase 11: Error Handling (6/6 tasks)
 - ✅ Phase 12: Preferences Persistence (3/3 tasks)
-- 🔄 Phase 13: Unit Testing (13/13 tasks complete, including T122-T126)
-- 🔄 Phase 14: Polish & Cross-Cutting (10/20 tasks remaining)
+- ✅ Phase 13: Unit Testing (13/13 tasks complete, including T122-T126)
+- 🔄 Phase 14: Polish & Cross-Cutting (6/20 tasks remaining)
 
 **Test Results**:
 - TypeScript Unit Tests: 80/80 passing ✅
@@ -496,8 +496,22 @@ This delivers:
 - **Total Tests Passing**: 121/121 (100%)
 - **Code Coverage**: 65.27% (exceeds 60% target) ✅
 
+**Documentation Status** (T127-T128):
+- ✅ Rust Modules: detector.rs, docker.rs, podman.rs, cache.rs, status.rs, version.rs
+- ✅ TypeScript Components: WelcomeScreen, RuntimeSelector, StatusIndicator, Toast, NoRuntimesMessage, RuntimeError
+- ✅ TypeScript Types: runtime.ts (all interfaces and types)
+- ✅ Main App: App.tsx
+- ✅ State Management: runtimeStore.ts
+- ✅ Hooks: useRuntimeStatus.ts
+
 **Recent Commits**:
 - feat: Add integration tests for runtime detection (T122)
+- feat: Create E2E test suite with Playwright (T123-T125)
+- fix: Event payload structure in App.tsx
+- docs: Add comprehensive documentation to Rust modules
+- docs: Add documentation to status, version modules and components
+- docs: Complete component and type documentation
+- docs: Add comprehensive documentation to App.tsx
 - feat: Add E2E tests and fix event payload bug (T123-T125)
 
 **Remaining Tasks** (10):
