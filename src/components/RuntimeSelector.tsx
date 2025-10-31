@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import type { KeyboardEvent } from 'react';
 import { invoke } from '@tauri-apps/api/core';
 import { listen } from '@tauri-apps/api/event';
 import { useRuntimeStore } from '../stores/runtimeStore';
@@ -115,7 +116,7 @@ export function RuntimeSelector() {
     return type === 'docker' ? '🐳' : '🦭';
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent) => {
+  const handleKeyDown = (e: KeyboardEvent) => {
     if (!isOpen && (e.key === 'Enter' || e.key === ' ' || e.key === 'ArrowDown')) {
       e.preventDefault();
       setIsOpen(true);
