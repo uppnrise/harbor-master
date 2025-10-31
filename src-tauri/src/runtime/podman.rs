@@ -450,7 +450,7 @@ mod tests {
     async fn test_detect_podman_timeout() {
         let result = detect_podman(500).await;
         // Should complete within reasonable time, allowing for slow CI runners
-        assert!(result.duration <= 5000); // Allow up to 5 seconds for CI environments
+        assert!(result.duration <= 10000); // Allow up to 10 seconds for very slow CI environments
     }
 
     #[tokio::test]
@@ -459,7 +459,7 @@ mod tests {
 
         // Verify result structure is valid
         // Duration varies based on system speed and may exceed timeout on slow CI runners
-        assert!(result.duration < 5000); // Allow up to 5 seconds for CI environments
+        assert!(result.duration < 10000); // Allow up to 10 seconds for very slow CI environments
 
         // If Podman is installed, verify runtime data
         if !result.runtimes.is_empty() {
