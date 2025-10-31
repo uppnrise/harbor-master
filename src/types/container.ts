@@ -107,7 +107,7 @@ export interface ContainerConfig {
   openStdin: boolean;
   stdinOnce: boolean;
   env: string[];
-  cmd: string[];
+  cmd?: string[];
   image: string;
   volumes?: Record<string, unknown>;
   workingDir: string;

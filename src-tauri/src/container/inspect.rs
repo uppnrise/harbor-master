@@ -6,11 +6,12 @@ use std::process::Command;
 
 /// Detailed container information
 #[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(rename_all = "PascalCase")]
+#[serde(rename_all(serialize = "camelCase", deserialize = "PascalCase"))]
 pub struct ContainerDetails {
     pub id: String,
     pub created: String,
     pub path: String,
+    #[serde(default)]
     pub args: Vec<String>,
     pub state: ContainerStateDetails,
     pub image: String,
@@ -23,11 +24,12 @@ pub struct ContainerDetails {
     pub app_armor_profile: String,
     pub config: ContainerConfig,
     pub network_settings: NetworkSettings,
+    #[serde(default)]
     pub mounts: Vec<MountDetails>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(rename_all = "PascalCase")]
+#[serde(rename_all(serialize = "camelCase", deserialize = "PascalCase"))]
 pub struct ContainerStateDetails {
     pub status: String,
     pub running: bool,
@@ -44,7 +46,7 @@ pub struct ContainerStateDetails {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(rename_all = "PascalCase")]
+#[serde(rename_all(serialize = "camelCase", deserialize = "PascalCase"))]
 pub struct ContainerConfig {
     pub hostname: String,
     pub domainname: String,
@@ -55,18 +57,20 @@ pub struct ContainerConfig {
     pub tty: bool,
     pub open_stdin: bool,
     pub stdin_once: bool,
+    #[serde(default)]
     pub env: Vec<String>,
-    pub cmd: Vec<String>,
+    pub cmd: Option<Vec<String>>,
     pub image: String,
     pub volumes: Option<HashMap<String, serde_json::Value>>,
     pub working_dir: String,
     pub entrypoint: Option<Vec<String>>,
     pub on_build: Option<Vec<String>>,
+    #[serde(default)]
     pub labels: HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(rename_all = "PascalCase")]
+#[serde(rename_all(serialize = "camelCase", deserialize = "PascalCase"))]
 pub struct NetworkSettings {
     pub bridge: String,
     #[serde(rename = "SandboxID")]
@@ -76,6 +80,7 @@ pub struct NetworkSettings {
     pub link_local_i_pv6_address: String,
     #[serde(rename = "LinkLocalIPv6PrefixLen")]
     pub link_local_i_pv6_prefix_len: i32,
+    #[serde(default)]
     pub ports: HashMap<String, Option<Vec<PortDetails>>>,
     pub sandbox_key: String,
     pub gateway: String,
@@ -86,11 +91,12 @@ pub struct NetworkSettings {
     #[serde(rename = "IPv6Gateway")]
     pub i_pv6_gateway: String,
     pub mac_address: String,
+    #[serde(default)]
     pub networks: HashMap<String, NetworkDetails>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(rename_all = "PascalCase")]
+#[serde(rename_all(serialize = "camelCase", deserialize = "PascalCase"))]
 pub struct PortDetails {
     #[serde(rename = "HostIp")]
     pub host_ip: String,
@@ -98,7 +104,7 @@ pub struct PortDetails {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(rename_all = "PascalCase")]
+#[serde(rename_all(serialize = "camelCase", deserialize = "PascalCase"))]
 pub struct NetworkDetails {
     #[serde(rename = "IPAMConfig")]
     pub ipam_config: Option<serde_json::Value>,
@@ -124,7 +130,7 @@ pub struct NetworkDetails {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(rename_all = "PascalCase")]
+#[serde(rename_all(serialize = "camelCase", deserialize = "PascalCase"))]
 pub struct MountDetails {
     #[serde(rename = "Type")]
     pub mount_type: String,
