@@ -19,22 +19,27 @@ struct CacheEntry {
 /// Thread-safe cache for detection results with automatic expiration
 /// 
 /// # Example
-/// ```no_run
+/// ```
 /// use harbor_master::runtime::cache::DetectionCache;
-/// use harbor_master::types::RuntimeType;
+/// use harbor_master::types::{RuntimeType, DetectionResult};
+/// use chrono::Utc;
 /// 
 /// let cache = DetectionCache::new(60); // 60 second TTL
 /// 
 /// // Cache is empty initially
 /// assert!(cache.get(&RuntimeType::Docker).is_none());
 /// 
-/// // Store a result
-/// cache.set(RuntimeType::Docker, detection_result);
+/// // Store a result (DetectionResult with empty runtimes for demo)
+/// let result = DetectionResult {
+///     runtimes: vec![],
+///     errors: vec![],
+///     detected_at: Utc::now(),
+///     duration: 100,
+/// };
+/// cache.set(RuntimeType::Docker, result);
 /// 
 /// // Retrieve within TTL
-/// if let Some(result) = cache.get(&RuntimeType::Docker) {
-///     println!("Found cached result");
-/// }
+/// assert!(cache.get(&RuntimeType::Docker).is_some());
 /// ```
 pub struct DetectionCache {
     /// Thread-safe storage of cached entries per runtime type
