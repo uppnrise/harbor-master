@@ -347,7 +347,7 @@ mod tests {
 
         #[cfg(target_os = "linux")]
         {
-            assert!(paths.contains(&"/usr/bin".to_string()));
+            assert!(paths.iter().any(|p| p.to_string_lossy() == "/usr/bin"));
         }
     }
 
