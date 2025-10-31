@@ -1,0 +1,9 @@
+node_modules/
+dist/
+build/
+coverage/
+*.min.js
+src-tauri/target/
+src-tauri/gen/
+playwright-report/
+test-results/

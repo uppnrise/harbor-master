@@ -1,0 +1,27 @@
+<svg width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Anchor symbol for HarborMaster -->
+  <g transform="translate(100, 100)">
+    <!-- Ring at top -->
+    <circle cx="0" cy="-55" r="15" stroke="#3B82F6" stroke-width="8" fill="none"/>
+    
+    <!-- Vertical shaft -->
+    <rect x="-4" y="-40" width="8" height="80" fill="#3B82F6" rx="4"/>
+    
+    <!-- Left arm -->
+    <path d="M -40 20 Q -40 50 -50 60 L -50 70 Q -40 60 -30 55" 
+          stroke="#3B82F6" stroke-width="8" fill="none" stroke-linecap="round"/>
+    
+    <!-- Right arm -->
+    <path d="M 40 20 Q 40 50 50 60 L 50 70 Q 40 60 30 55" 
+          stroke="#3B82F6" stroke-width="8" fill="none" stroke-linecap="round"/>
+    
+    <!-- Left fluke -->
+    <ellipse cx="-50" cy="70" rx="12" ry="8" fill="#3B82F6"/>
+    
+    <!-- Right fluke -->
+    <ellipse cx="50" cy="70" rx="12" ry="8" fill="#3B82F6"/>
+    
+    <!-- Bottom cross bar -->
+    <rect x="-45" y="15" width="90" height="8" fill="#3B82F6" rx="4"/>
+  </g>
+</svg>
