@@ -38,14 +38,15 @@ export const BatchActionsBar = memo(function BatchActionsBar() {
   
   const handleBatchStart = async () => {
     try {
+      showToast(`Starting ${selectedCount} container${selectedCount !== 1 ? 's' : ''}...`, 'info');
       const results = await batchStartContainers(selectedIds);
       const succeeded = results.filter(r => r.success).length;
       const failed = results.filter(r => !r.success).length;
       
       if (failed === 0) {
-        showToast(`Started ${succeeded} container${succeeded !== 1 ? 's' : ''}`, 'success');
+        showToast(`✓ Started ${succeeded} container${succeeded !== 1 ? 's' : ''}`, 'success');
       } else {
-        showToast(`Started ${succeeded}, failed ${failed} container${failed !== 1 ? 's' : ''}`, 'error');
+        showToast(`⚠ Started ${succeeded}, failed ${failed} container${failed !== 1 ? 's' : ''}`, 'error');
       }
       clearSelection();
     } catch (error) {
@@ -55,14 +56,15 @@ export const BatchActionsBar = memo(function BatchActionsBar() {
   
   const handleBatchStop = async () => {
     try {
+      showToast(`Stopping ${selectedCount} container${selectedCount !== 1 ? 's' : ''}...`, 'info');
       const results = await batchStopContainers(selectedIds);
       const succeeded = results.filter(r => r.success).length;
       const failed = results.filter(r => !r.success).length;
       
       if (failed === 0) {
-        showToast(`Stopped ${succeeded} container${succeeded !== 1 ? 's' : ''}`, 'success');
+        showToast(`✓ Stopped ${succeeded} container${succeeded !== 1 ? 's' : ''}`, 'success');
       } else {
-        showToast(`Stopped ${succeeded}, failed ${failed} container${failed !== 1 ? 's' : ''}`, 'error');
+        showToast(`⚠ Stopped ${succeeded}, failed ${failed} container${failed !== 1 ? 's' : ''}`, 'error');
       }
       clearSelection();
     } catch (error) {
@@ -72,14 +74,15 @@ export const BatchActionsBar = memo(function BatchActionsBar() {
   
   const handleBatchRestart = async () => {
     try {
+      showToast(`Restarting ${selectedCount} container${selectedCount !== 1 ? 's' : ''}...`, 'info');
       const results = await batchRestartContainers(selectedIds);
       const succeeded = results.filter(r => r.success).length;
       const failed = results.filter(r => !r.success).length;
       
       if (failed === 0) {
-        showToast(`Restarted ${succeeded} container${succeeded !== 1 ? 's' : ''}`, 'success');
+        showToast(`✓ Restarted ${succeeded} container${succeeded !== 1 ? 's' : ''}`, 'success');
       } else {
-        showToast(`Restarted ${succeeded}, failed ${failed} container${failed !== 1 ? 's' : ''}`, 'error');
+        showToast(`⚠ Restarted ${succeeded}, failed ${failed} container${failed !== 1 ? 's' : ''}`, 'error');
       }
       clearSelection();
     } catch (error) {
@@ -89,14 +92,15 @@ export const BatchActionsBar = memo(function BatchActionsBar() {
   
   const handleBatchPause = async () => {
     try {
+      showToast(`Pausing ${selectedCount} container${selectedCount !== 1 ? 's' : ''}...`, 'info');
       const results = await batchPauseContainers(selectedIds);
       const succeeded = results.filter(r => r.success).length;
       const failed = results.filter(r => !r.success).length;
       
       if (failed === 0) {
-        showToast(`Paused ${succeeded} container${succeeded !== 1 ? 's' : ''}`, 'success');
+        showToast(`✓ Paused ${succeeded} container${succeeded !== 1 ? 's' : ''}`, 'success');
       } else {
-        showToast(`Paused ${succeeded}, failed ${failed} container${failed !== 1 ? 's' : ''}`, 'error');
+        showToast(`⚠ Paused ${succeeded}, failed ${failed} container${failed !== 1 ? 's' : ''}`, 'error');
       }
       clearSelection();
     } catch (error) {
@@ -106,14 +110,15 @@ export const BatchActionsBar = memo(function BatchActionsBar() {
   
   const handleBatchUnpause = async () => {
     try {
+      showToast(`Unpausing ${selectedCount} container${selectedCount !== 1 ? 's' : ''}...`, 'info');
       const results = await batchUnpauseContainers(selectedIds);
       const succeeded = results.filter(r => r.success).length;
       const failed = results.filter(r => !r.success).length;
       
       if (failed === 0) {
-        showToast(`Unpaused ${succeeded} container${succeeded !== 1 ? 's' : ''}`, 'success');
+        showToast(`✓ Unpaused ${succeeded} container${succeeded !== 1 ? 's' : ''}`, 'success');
       } else {
-        showToast(`Unpaused ${succeeded}, failed ${failed} container${failed !== 1 ? 's' : ''}`, 'error');
+        showToast(`⚠ Unpaused ${succeeded}, failed ${failed} container${failed !== 1 ? 's' : ''}`, 'error');
       }
       clearSelection();
     } catch (error) {
@@ -127,14 +132,15 @@ export const BatchActionsBar = memo(function BatchActionsBar() {
     }
     
     try {
+      showToast(`Removing ${selectedCount} container${selectedCount !== 1 ? 's' : ''}...`, 'info');
       const results = await batchRemoveContainers(selectedIds, { force: false, volumes: false });
       const succeeded = results.filter(r => r.success).length;
       const failed = results.filter(r => !r.success).length;
       
       if (failed === 0) {
-        showToast(`Removed ${succeeded} container${succeeded !== 1 ? 's' : ''}`, 'success');
+        showToast(`✓ Removed ${succeeded} container${succeeded !== 1 ? 's' : ''}`, 'success');
       } else {
-        showToast(`Removed ${succeeded}, failed ${failed} container${failed !== 1 ? 's' : ''}`, 'error');
+        showToast(`⚠ Removed ${succeeded}, failed ${failed} container${failed !== 1 ? 's' : ''}`, 'error');
       }
       clearSelection();
     } catch (error) {
@@ -176,9 +182,31 @@ export const BatchActionsBar = memo(function BatchActionsBar() {
                 <button
                   onClick={handleBatchRestart}
                   disabled={batchOperationInProgress}
-                  className="px-3 py-1.5 text-sm font-medium text-blue-700 bg-blue-100 rounded hover:bg-blue-200 dark:bg-blue-900/30 dark:text-blue-300 dark:hover:bg-blue-900/50 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="px-3 py-1.5 text-sm font-medium text-blue-700 bg-blue-100 rounded hover:bg-blue-200 dark:bg-blue-900/30 dark:text-blue-300 dark:hover:bg-blue-900/50 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
                   title="Restart selected containers"
                 >
+                  {batchOperationInProgress && (
+                    <svg
+                      className="animate-spin h-3 w-3"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      />
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                      />
+                    </svg>
+                  )}
                   Restart All
                 </button>
                 

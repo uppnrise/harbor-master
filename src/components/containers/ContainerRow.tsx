@@ -182,7 +182,7 @@ export const ContainerRow = memo(function ContainerRow({
     <>
       <div
         className={`
-        grid grid-cols-[40px_100px_1fr_200px_120px_100px_140px] gap-3 p-3 border-b border-gray-200 dark:border-gray-700
+        grid grid-cols-[48px_100px_1fr_200px_120px_100px_140px] gap-3 p-3 border-b border-gray-200 dark:border-gray-700
         hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors
         ${isSelected ? 'bg-blue-50 dark:bg-blue-900/20' : ''}
       `}
@@ -193,7 +193,7 @@ export const ContainerRow = memo(function ContainerRow({
             type="checkbox"
             checked={isContainerSelected(container.id)}
             onChange={() => toggleContainerSelection(container.id)}
-            className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded cursor-pointer"
+            className="h-5 w-5 text-blue-600 focus:ring-blue-500 focus:ring-2 border-gray-300 rounded cursor-pointer"
             title="Select container"
           />
         </div>

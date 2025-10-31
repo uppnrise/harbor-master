@@ -19,7 +19,10 @@ export default function ContainerMounts({ details }: ContainerMountsProps) {
   const mounts = details.mounts || [];
 
   // Get mount type badge color
-  const getMountTypeColor = (type: string): string => {
+  const getMountTypeColor = (type?: string): string => {
+    if (!type) {
+      return 'bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-400';
+    }
     switch (type.toLowerCase()) {
       case 'volume':
         return 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400';
@@ -64,7 +67,7 @@ export default function ContainerMounts({ details }: ContainerMountsProps) {
                       mount.mountType
                     )}`}
                   >
-                    {mount.mountType}
+                    {mount.mountType || 'unknown'}
                   </span>
                   {mount.rw ? (
                     <span className="text-xs text-gray-600 dark:text-gray-400">

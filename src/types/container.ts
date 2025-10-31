@@ -133,7 +133,7 @@ export interface NetworkSettings {
 }
 
 export interface MountDetails {
-  mountType: string;
+  mountType?: string;
   name?: string;
   source: string;
   destination: string;

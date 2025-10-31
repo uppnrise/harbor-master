@@ -150,7 +150,7 @@ export function ContainerList() {
           <BatchActionsBar />
           
           {/* Header */}
-          <div className="grid grid-cols-[40px_100px_1fr_200px_120px_100px_140px] gap-3 p-3 border-b border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-900 font-medium text-sm text-gray-700 dark:text-gray-300">
+          <div className="grid grid-cols-[48px_100px_1fr_200px_120px_100px_140px] gap-3 p-3 border-b border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-900 font-medium text-sm text-gray-700 dark:text-gray-300">
             <div className="flex items-center justify-center">
               <input
                 type="checkbox"
@@ -162,7 +162,7 @@ export function ContainerList() {
                     clearSelection();
                   }
                 }}
-                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded cursor-pointer"
+                className="h-5 w-5 text-blue-600 focus:ring-blue-500 focus:ring-2 border-gray-300 rounded cursor-pointer"
                 title="Select all"
               />
             </div>

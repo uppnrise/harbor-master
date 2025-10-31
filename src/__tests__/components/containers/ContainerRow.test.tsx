@@ -3,6 +3,7 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { ContainerRow } from '../../../components/containers/ContainerRow';
 import { ContainerState, type Container } from '../../../types/container';
+import { ToastProvider } from '../../../contexts/ToastContext';
 
 const mockContainer: Container = {
   id: 'abc123456789',
@@ -26,10 +27,15 @@ const mockContainer: Container = {
   mounts: [],
 };
 
+// Helper to wrap component with providers
+const renderWithProviders = (ui: React.ReactElement) => {
+  return render(<ToastProvider>{ui}</ToastProvider>);
+};
+
 describe('ContainerRow', () => {
   it('should render container information', () => {
     const onSelect = vi.fn();
-    render(
+    renderWithProviders(
       <ContainerRow
         container={mockContainer}
         isSelected={false}
@@ -44,7 +50,7 @@ describe('ContainerRow', () => {
 
   it('should display running status with green badge', () => {
     const onSelect = vi.fn();
-    render(
+    renderWithProviders(
       <ContainerRow
         container={mockContainer}
         isSelected={false}
@@ -58,7 +64,7 @@ describe('ContainerRow', () => {
 
   it('should show stop and pause buttons for running container', () => {
     const onSelect = vi.fn();
-    render(
+    renderWithProviders(
       <ContainerRow
         container={mockContainer}
         isSelected={false}
@@ -76,7 +82,7 @@ describe('ContainerRow', () => {
       state: ContainerState.Exited,
     };
     const onSelect = vi.fn();
-    render(
+    renderWithProviders(
       <ContainerRow
         container={stoppedContainer}
         isSelected={false}
@@ -93,7 +99,7 @@ describe('ContainerRow', () => {
       state: ContainerState.Paused,
     };
     const onSelect = vi.fn();
-    render(
+    renderWithProviders(
       <ContainerRow
         container={pausedContainer}
         isSelected={false}
@@ -107,7 +113,7 @@ describe('ContainerRow', () => {
   it('should call onSelect when row clicked', async () => {
     const user = userEvent.setup();
     const onSelect = vi.fn();
-    const { container } = render(
+    const { container } = renderWithProviders(
       <ContainerRow
         container={mockContainer}
         isSelected={false}
@@ -123,7 +129,7 @@ describe('ContainerRow', () => {
 
   it('should highlight when selected', () => {
     const onSelect = vi.fn();
-    const { container } = render(
+    const { container } = renderWithProviders(
       <ContainerRow
         container={mockContainer}
         isSelected={true}
@@ -137,7 +143,7 @@ describe('ContainerRow', () => {
 
   it('should display ports correctly', () => {
     const onSelect = vi.fn();
-    render(
+    renderWithProviders(
       <ContainerRow
         container={mockContainer}
         isSelected={false}
@@ -154,7 +160,7 @@ describe('ContainerRow', () => {
       ports: [],
     };
     const onSelect = vi.fn();
-    render(
+    renderWithProviders(
       <ContainerRow
         container={containerNoPorts}
         isSelected={false}
@@ -169,7 +175,7 @@ describe('ContainerRow', () => {
 
   it('should format created time as relative', () => {
     const onSelect = vi.fn();
-    render(
+    renderWithProviders(
       <ContainerRow
         container={mockContainer}
         isSelected={false}
@@ -187,7 +193,7 @@ describe('ContainerRow', () => {
       name: 'very-long-container-name-that-should-be-truncated-to-fit',
     };
     const onSelect = vi.fn();
-    render(
+    renderWithProviders(
       <ContainerRow
         container={longNameContainer}
         isSelected={false}
@@ -202,7 +208,7 @@ describe('ContainerRow', () => {
   it('should be keyboard accessible', async () => {
     const user = userEvent.setup();
     const onSelect = vi.fn();
-    const { container } = render(
+    const { container } = renderWithProviders(
       <ContainerRow
         container={mockContainer}
         isSelected={false}
