@@ -1,8 +1,34 @@
+/**
+ * Props for the StatusIndicator component
+ */
 interface StatusIndicatorProps {
+  /** Current status of the runtime */
   status: 'running' | 'stopped' | 'error' | 'unknown' | 'detecting';
+  /** Size variant of the indicator */
   size?: 'sm' | 'md' | 'lg';
 }
 
+/**
+ * Visual status indicator component
+ * 
+ * Displays a colored dot representing the current state of a container runtime.
+ * Includes animation for detecting state.
+ * 
+ * Color scheme:
+ * - Green: Running
+ * - Gray: Stopped
+ * - Red: Error
+ * - Yellow: Unknown
+ * - Blue (pulsing): Detecting
+ * 
+ * @param props - Component properties
+ * @returns Status indicator dot
+ * 
+ * @example
+ * ```tsx
+ * <StatusIndicator status="running" size="md" />
+ * ```
+ */
 export function StatusIndicator({ status, size = 'md' }: StatusIndicatorProps) {
   const sizeClasses = {
     sm: 'h-2 w-2',

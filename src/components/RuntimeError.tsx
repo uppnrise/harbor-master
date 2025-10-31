@@ -1,13 +1,49 @@
 import { useState } from 'react';
 import type { Runtime } from '../types/runtime';
 
+/**
+ * Props for the RuntimeError component
+ */
 interface RuntimeErrorProps {
+  /** The runtime that encountered an error */
   runtime: Runtime;
+  /** Callback invoked when user clicks retry */
   onRetry: () => void;
+  /** Optional callback to switch to alternative runtime */
   onSwitchRuntime?: () => void;
+  /** Whether alternative runtimes are available */
   hasAlternatives: boolean;
 }
 
+/**
+ * Error display component for runtime connection failures
+ * 
+ * Features:
+ * - Context-aware error messages based on error type
+ * - Actionable troubleshooting suggestions
+ * - Retry functionality with loading state
+ * - Option to switch to alternative runtime
+ * - Links to official troubleshooting documentation
+ * 
+ * Error types handled:
+ * - Permission denied
+ * - Executable not found
+ * - Connection timeout
+ * - Generic daemon errors
+ * 
+ * @param props - Component properties
+ * @returns Runtime error UI with suggestions and actions
+ * 
+ * @example
+ * ```tsx
+ * <RuntimeError 
+ *   runtime={failedRuntime} 
+ *   onRetry={handleRetry}
+ *   onSwitchRuntime={handleSwitch}
+ *   hasAlternatives={true}
+ * />
+ * ```
+ */
 export function RuntimeError({ runtime, onRetry, onSwitchRuntime, hasAlternatives }: RuntimeErrorProps) {
   const [isRetrying, setIsRetrying] = useState(false);
 

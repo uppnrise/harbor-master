@@ -1,10 +1,34 @@
 import { useState, useEffect } from 'react';
 import { invoke } from '@tauri-apps/api/core';
 
+/**
+ * Props for the NoRuntimesMessage component
+ */
 interface NoRuntimesMessageProps {
+  /** Callback invoked when user clicks retry button */
   onRetry: () => void;
 }
 
+/**
+ * Message component displayed when no container runtimes are detected
+ * 
+ * Features:
+ * - Platform-specific installation links for Docker and Podman
+ * - Retry detection functionality
+ * - Troubleshooting guide link
+ * - Loading state during retry
+ * 
+ * Automatically detects user's platform (macOS, Windows, Linux) and provides
+ * appropriate installation links and instructions.
+ * 
+ * @param props - Component properties
+ * @returns No runtimes message UI
+ * 
+ * @example
+ * ```tsx
+ * <NoRuntimesMessage onRetry={handleRetryDetection} />
+ * ```
+ */
 export function NoRuntimesMessage({ onRetry }: NoRuntimesMessageProps) {
   const [platform, setPlatform] = useState<string>('');
   const [isRetrying, setIsRetrying] = useState(false);

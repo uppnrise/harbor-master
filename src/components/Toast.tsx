@@ -1,12 +1,44 @@
 import { useEffect } from 'react';
 
+/**
+ * Props for the Toast notification component
+ */
 interface ToastProps {
+  /** Message text to display */
   message: string;
+  /** Type of notification determining color and icon */
   type: 'success' | 'error' | 'info';
+  /** Callback invoked when toast closes */
   onClose: () => void;
+  /** Auto-dismiss duration in milliseconds (default: 3000ms) */
   duration?: number;
 }
 
+/**
+ * Temporary notification toast component
+ * 
+ * Displays a non-blocking notification message with auto-dismiss functionality.
+ * Positioned in bottom-right corner with slide-in animation.
+ * 
+ * Features:
+ * - Auto-dismiss after specified duration
+ * - Manual close button
+ * - Type-specific colors and icons
+ * - Slide-in animation
+ * 
+ * @param props - Component properties
+ * @returns Toast notification UI
+ * 
+ * @example
+ * ```tsx
+ * <Toast 
+ *   message="Detection complete!" 
+ *   type="success" 
+ *   onClose={() => setShowToast(false)}
+ *   duration={3000}
+ * />
+ * ```
+ */
 export function Toast({ message, type, onClose, duration = 3000 }: ToastProps) {
   useEffect(() => {
     const timer = setTimeout(() => {
