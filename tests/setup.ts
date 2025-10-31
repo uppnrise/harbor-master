@@ -4,7 +4,7 @@ import * as matchers from '@testing-library/jest-dom/matchers';
 
 // Ensure WeakMap is available for webidl-conversions
 if (typeof globalThis.WeakMap === 'undefined') {
-  (globalThis as any).WeakMap = WeakMap;
+  (globalThis as typeof globalThis & { WeakMap: typeof WeakMap }).WeakMap = WeakMap;
 }
 
 expect.extend(matchers);
