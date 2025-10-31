@@ -29,13 +29,13 @@
 - [x] T1.1.2: Create `src-tauri/src/container/types.rs` with Container struct (1h)
 - [x] T1.1.3: Implement `list_containers()` in `src-tauri/src/container/list.rs` (2h)
   - Using CLI: `docker ps --format json` / `podman ps --format json`
-- [ ] T1.1.4: Add `list_containers` command to `src-tauri/src/commands/container.rs` (1h)
+- [x] T1.1.4: Add `list_containers` command to `src-tauri/src/commands/container.rs` (1h)
 - [x] T1.1.5: Write unit tests for container listing (2h)
 - [ ] T1.1.6: Write integration tests with real Docker/Podman (1h)
 
 #### Frontend (TypeScript/React) - 12 hours
-- [ ] T1.1.7: Create `src/types/container.ts` with Container interface (1h)
-- [ ] T1.1.8: Create `src/services/containerService.ts` with listContainers() (1h)
+- [x] T1.1.7: Create `src/types/container.ts` with Container interface (1h)
+- [x] T1.1.8: Create `src/services/containerService.ts` with listContainers() (1h)
 - [ ] T1.1.9: Create `src/stores/containerStore.ts` with Zustand state (2h)
 - [ ] T1.1.10: Create `src/components/containers/ContainerList.tsx` (3h)
 - [ ] T1.1.11: Create `src/components/containers/ContainerRow.tsx` (2h)
@@ -88,7 +88,7 @@
 - [x] T1.3.4: Implement `restart_container(id, timeout)` (1h)
 - [x] T1.3.5: Implement `pause_container(id)` (1h)
 - [x] T1.3.6: Implement `unpause_container(id)` (1h)
-- [ ] T1.3.7: Add lifecycle commands to commands/container.rs (1h)
+- [x] T1.3.7: Add lifecycle commands to commands/container.rs (1h)
 - [x] T1.3.8: Write unit tests for all operations (2h)
 - [ ] T1.3.9: Write integration tests (1h)
 
@@ -141,7 +141,7 @@
 #### Backend (Rust) - 6 hours
 - [x] T1.5.1: Create `src-tauri/src/container/inspect.rs` (1h)
 - [x] T1.5.2: Implement `inspect_container(id)` (2h)
-- [ ] T1.5.3: Add inspect command (1h)
+- [x] T1.5.3: Add inspect command (1h)
 - [x] T1.5.4: Write tests for inspect (2h)
 
 #### Frontend (TypeScript/React) - 12 hours
@@ -168,7 +168,7 @@
 #### Backend (Rust) - 4 hours
 - [x] T1.6.1: Create `src-tauri/src/container/remove.rs` (1h)
 - [x] T1.6.2: Implement `remove_container(id, force, volumes)` (1h)
-- [ ] T1.6.3: Add remove command (1h)
+- [x] T1.6.3: Add remove command (1h)
 - [x] T1.6.4: Write tests for removal (1h)
 
 #### Frontend (TypeScript/React) - 8 hours
