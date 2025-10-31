@@ -6,7 +6,7 @@
 
 use chrono::Utc;
 use std::error::Error;
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 use std::process::Command;
 use std::time::{Duration, Instant};
 
@@ -101,22 +101,25 @@ fn find_podman_executable() -> Option<PathBuf> {
 ///
 /// # Returns
 /// `true` if executable has proper permissions, `false` otherwise
-fn verify_executable(path: &PathBuf) -> bool {
+fn verify_executable(path: &Path) -> bool {
     #[cfg(unix)]
     {
         use std::os::unix::fs::PermissionsExt;
         if let Ok(metadata) = std::fs::metadata(path) {
             let permissions = metadata.permissions();
-            return permissions.mode() & 0o111 != 0; // Check execute bits
+            permissions.mode() & 0o111 != 0 // Check execute bits
+        } else {
+            false
         }
     }
 
     #[cfg(windows)]
     {
         // On Windows, just check if file exists and is not a directory
-        return path.is_file();
+        path.is_file()
     }
 
+    #[cfg(not(any(unix, windows)))]
     false
 }
 
