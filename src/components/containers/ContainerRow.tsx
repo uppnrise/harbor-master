@@ -1,4 +1,5 @@
 import { memo, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { ContainerState, type Container } from '../../types/container';
 import { StatusBadge } from '../ui/StatusBadge';
 import { ConfirmDialog } from '../ui/ConfirmDialog';
@@ -353,8 +354,8 @@ export const ContainerRow = memo(function ContainerRow({
         onCancel={() => setConfirmDialog((prev) => ({ ...prev, isOpen: false }))}
       />
       
-      {/* Remove Confirmation Dialog with Options */}
-      {removeDialog.isOpen && (
+      {/* Remove Confirmation Dialog with Options - Rendered via Portal */}
+      {removeDialog.isOpen && createPortal(
         <div 
           className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
           onClick={() => setRemoveDialog({ isOpen: false, force: false, volumes: false })}
@@ -466,7 +467,8 @@ export const ContainerRow = memo(function ContainerRow({
               </button>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </>
   );
