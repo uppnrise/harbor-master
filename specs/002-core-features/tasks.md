@@ -172,9 +172,9 @@
 - [x] T1.6.4: Write tests for removal (1h)
 
 #### Frontend (TypeScript/React) - 8 hours
-- [ ] T1.6.5: Create `src/components/ui/ConfirmDialog.tsx` (3h)
-- [ ] T1.6.6: Add remove confirmation to ContainerActions (2h)
-- [ ] T1.6.7: Add remove options (force, volumes) (2h)
+- [x] T1.6.5: Create `src/components/ui/ConfirmDialog.tsx` (3h) - Already exists from Epic 1.3
+- [x] T1.6.6: Add remove confirmation to ContainerActions (2h)
+- [x] T1.6.7: Add remove options (force, volumes) (2h)
 - [ ] T1.6.8: Write tests for removal flow (1h)
 
 **Subtotal:** 12 hours

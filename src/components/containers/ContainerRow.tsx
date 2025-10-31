@@ -20,7 +20,7 @@ export const ContainerRow = memo(function ContainerRow({
   isSelected,
   onSelect,
 }: ContainerRowProps) {
-  const [currentOperation, setCurrentOperation] = useState<'starting' | 'stopping' | 'pausing' | 'unpausing' | null>(null);
+  const [currentOperation, setCurrentOperation] = useState<'starting' | 'stopping' | 'pausing' | 'unpausing' | 'removing' | null>(null);
   const [confirmDialog, setConfirmDialog] = useState<{
     isOpen: boolean;
     title: string;
@@ -32,6 +32,16 @@ export const ContainerRow = memo(function ContainerRow({
     message: '',
     action: async () => {},
   });
+  
+  const [removeDialog, setRemoveDialog] = useState<{
+    isOpen: boolean;
+    force: boolean;
+    volumes: boolean;
+  }>({
+    isOpen: false,
+    force: false,
+    volumes: false,
+  });
 
   const { showToast } = useToast();
   const {
@@ -39,6 +49,7 @@ export const ContainerRow = memo(function ContainerRow({
     stopContainer,
     pauseContainer,
     unpauseContainer,
+    removeContainer,
     isOperationInProgress,
   } = useContainerStore();
 
@@ -143,6 +154,26 @@ export const ContainerRow = memo(function ContainerRow({
     }
   };
 
+  const handleRemoveContainer = async () => {
+    try {
+      setCurrentOperation('removing');
+      await removeContainer(container.id, {
+        force: removeDialog.force,
+        volumes: removeDialog.volumes,
+      });
+      showToast(
+        `Container ${container.name} removed successfully${removeDialog.volumes ? ' with volumes' : ''}`,
+        'success'
+      );
+      setRemoveDialog({ isOpen: false, force: false, volumes: false });
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Failed to remove container';
+      showToast(message, 'error');
+    } finally {
+      setCurrentOperation(null);
+    }
+  };
+
   return (
     <>
       <div
@@ -238,6 +269,7 @@ export const ContainerRow = memo(function ContainerRow({
                 {currentOperation === 'stopping' && 'Stopping...'}
                 {currentOperation === 'pausing' && 'Pausing...'}
                 {currentOperation === 'unpausing' && 'Unpausing...'}
+                {currentOperation === 'removing' && 'Removing...'}
                 {!currentOperation && 'Loading...'}
               </span>
             </div>
@@ -291,6 +323,21 @@ export const ContainerRow = memo(function ContainerRow({
               Start
             </button>
           )}
+          
+          {/* Remove button - always visible for stopped/exited containers */}
+          {(container.state === ContainerState.Exited || container.state === ContainerState.Created) && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                setRemoveDialog({ isOpen: true, force: false, volumes: false });
+              }}
+              className="px-2 py-1 text-xs font-medium text-red-700 bg-red-100 rounded hover:bg-red-200 dark:bg-red-900/30 dark:text-red-400 dark:hover:bg-red-900/50 disabled:opacity-50 disabled:cursor-not-allowed"
+              aria-label={`Remove ${container.name}`}
+              disabled={isLoading}
+            >
+              Remove
+            </button>
+          )}
         </div>
       </div>
 
@@ -305,6 +352,122 @@ export const ContainerRow = memo(function ContainerRow({
         onConfirm={confirmDialog.action}
         onCancel={() => setConfirmDialog((prev) => ({ ...prev, isOpen: false }))}
       />
+      
+      {/* Remove Confirmation Dialog with Options */}
+      {removeDialog.isOpen && (
+        <div 
+          className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
+          onClick={() => setRemoveDialog({ isOpen: false, force: false, volumes: false })}
+        >
+          <div 
+            className="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6 max-w-md w-full mx-4"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-start gap-3 mb-4">
+              <div className="flex-shrink-0 w-10 h-10 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center">
+                <svg
+                  className="w-6 h-6 text-red-600 dark:text-red-400"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                  />
+                </svg>
+              </div>
+              <div className="flex-1">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-1">
+                  Remove Container
+                </h3>
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  Are you sure you want to remove <strong>{container.name}</strong>? This action cannot be undone.
+                </p>
+              </div>
+            </div>
+            
+            {/* Remove Options */}
+            <div className="space-y-3 mb-6">
+              <label className="flex items-start gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={removeDialog.force}
+                  onChange={(e) => setRemoveDialog(prev => ({ ...prev, force: e.target.checked }))}
+                  className="mt-1 h-4 w-4 text-red-600 focus:ring-red-500 border-gray-300 rounded"
+                />
+                <div>
+                  <div className="text-sm font-medium text-gray-900 dark:text-white">
+                    Force remove
+                  </div>
+                  <div className="text-xs text-gray-500 dark:text-gray-400">
+                    Remove even if the container is running
+                  </div>
+                </div>
+              </label>
+              
+              <label className="flex items-start gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={removeDialog.volumes}
+                  onChange={(e) => setRemoveDialog(prev => ({ ...prev, volumes: e.target.checked }))}
+                  className="mt-1 h-4 w-4 text-red-600 focus:ring-red-500 border-gray-300 rounded"
+                />
+                <div>
+                  <div className="text-sm font-medium text-gray-900 dark:text-white">
+                    Remove volumes
+                  </div>
+                  <div className="text-xs text-gray-500 dark:text-gray-400">
+                    Also remove anonymous volumes associated with the container
+                  </div>
+                </div>
+              </label>
+            </div>
+            
+            {/* Actions */}
+            <div className="flex gap-3 justify-end">
+              <button
+                onClick={() => setRemoveDialog({ isOpen: false, force: false, volumes: false })}
+                disabled={isLoading}
+                className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleRemoveContainer}
+                disabled={isLoading}
+                className="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+              >
+                {isLoading && (
+                  <svg
+                    className="animate-spin h-4 w-4"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    />
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                    />
+                  </svg>
+                )}
+                Remove Container
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 });
