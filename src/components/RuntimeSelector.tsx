@@ -152,7 +152,7 @@ export function RuntimeSelector() {
       </button>
 
       {isOpen && (
-        <div className="absolute z-10 w-full mt-2 bg-gray-800 border border-gray-700 rounded-lg shadow-xl overflow-hidden">
+        <div className="absolute z-10 w-full mt-2 bg-gray-800 border border-gray-700 rounded-lg shadow-xl overflow-hidden max-h-96 overflow-y-auto">
           {runtimes.map((runtime) => (
             <button
               key={runtime.id}
