@@ -1,6 +1,7 @@
 import { useRef, useEffect } from 'react';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { ContainerRow } from './ContainerRow';
+import { FilterBar } from './FilterBar';
 import { useContainerStore } from '../../stores/containerStore';
 import type { Container } from '../../types/container';
 
@@ -16,13 +17,25 @@ export function ContainerList() {
     loading,
     error,
     fetchContainers,
+    searchTerm,
+    setSearchTerm,
+    stateFilter,
+    setStateFilter,
+    sortField,
+    setSortField,
+    sortOrder,
+    setSortOrder,
+    getFilteredContainers,
   } = useContainerStore();
 
   const parentRef = useRef<HTMLDivElement>(null);
 
+  // Get filtered containers
+  const filteredContainers = getFilteredContainers();
+
   // Virtual scrolling for performance with large lists
   const rowVirtualizer = useVirtualizer({
-    count: containers.length,
+    count: filteredContainers.length,
     getScrollElement: () => parentRef.current,
     estimateSize: () => 72, // Estimated row height in pixels
     overscan: 10, // Render 10 extra items above/below viewport
@@ -84,61 +97,92 @@ export function ContainerList() {
   }
 
   return (
-    <div className="flex flex-col border border-gray-300 dark:border-gray-700 rounded-lg overflow-hidden bg-white dark:bg-gray-800" style={{ minHeight: '400px', maxHeight: '600px' }}>
-      {/* Header */}
-      <div className="grid grid-cols-[100px_1fr_200px_120px_100px_140px] gap-3 p-3 border-b border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-900 font-medium text-sm text-gray-700 dark:text-gray-300">
-        <div>Status</div>
-        <div>Name</div>
-        <div className="hidden md:block">Image</div>
-        <div className="hidden lg:block">Ports</div>
-        <div className="hidden xl:block">Created</div>
-        <div>Actions</div>
-      </div>
+    <div className="flex flex-col h-full min-h-[600px]">
+      {/* Filter Bar */}
+      <FilterBar
+        searchTerm={searchTerm}
+        onSearchChange={setSearchTerm}
+        stateFilter={stateFilter}
+        onStateFilterChange={setStateFilter}
+        sortField={sortField}
+        onSortFieldChange={setSortField}
+        sortOrder={sortOrder}
+        onSortOrderChange={setSortOrder}
+        containerCount={containers.length}
+        filteredCount={filteredContainers.length}
+      />
 
-      {/* Container List with Virtual Scrolling */}
-      <div
-        ref={parentRef}
-        className="flex-1 overflow-auto"
-        style={{ contain: 'strict' }}
-      >
-        <div
-          style={{
-            height: `${rowVirtualizer.getTotalSize()}px`,
-            width: '100%',
-            position: 'relative',
-          }}
-        >
-          {rowVirtualizer.getVirtualItems().map((virtualRow) => {
-            const container = containers[virtualRow.index];
-            if (!container) return null;
-            
-            return (
-              <div
-                key={container.id}
-                style={{
-                  position: 'absolute',
-                  top: 0,
-                  left: 0,
-                  width: '100%',
-                  height: `${virtualRow.size}px`,
-                  transform: `translateY(${virtualRow.start}px)`,
-                }}
-              >
-                <ContainerRow
-                  container={container}
-                  isSelected={selectedContainer?.id === container.id}
-                  onSelect={handleSelect}
-                />
-              </div>
-            );
-          })}
+      {/* Container List */}
+      {filteredContainers.length === 0 ? (
+        <div className="flex items-center justify-center flex-1 p-8">
+          <div className="text-center">
+            <div className="text-gray-600 dark:text-gray-400 mb-2">
+              No containers match the current filters
+            </div>
+            <button
+              onClick={() => {
+                setSearchTerm('');
+                setStateFilter('all');
+              }}
+              className="mt-2 px-4 py-2 text-sm bg-blue-600 text-white rounded hover:bg-blue-700"
+            >
+              Clear Filters
+            </button>
+          </div>
         </div>
-      </div>
+      ) : (
+        <div className="flex flex-col flex-1 border border-gray-300 dark:border-gray-700 rounded-lg overflow-hidden bg-white dark:bg-gray-800">
+          {/* Header */}
+          <div className="grid grid-cols-[100px_1fr_200px_120px_100px_140px] gap-3 p-3 border-b border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-900 font-medium text-sm text-gray-700 dark:text-gray-300">
+            <div>Status</div>
+            <div>Name</div>
+            <div className="hidden md:block">Image</div>
+            <div className="hidden lg:block">Ports</div>
+            <div className="hidden xl:block">Created</div>
+            <div>Actions</div>
+          </div>
 
-      {/* Footer with count */}
-      <div className="p-2 border-t border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-900 text-xs text-gray-600 dark:text-gray-400">
-        {containers.length} container{containers.length !== 1 ? 's' : ''}
-      </div>
+          {/* Container List with Virtual Scrolling */}
+          <div
+            ref={parentRef}
+            className="flex-1 overflow-auto"
+            style={{ contain: 'strict' }}
+          >
+            <div
+              style={{
+                height: `${rowVirtualizer.getTotalSize()}px`,
+                width: '100%',
+                position: 'relative',
+              }}
+            >
+              {rowVirtualizer.getVirtualItems().map((virtualRow) => {
+                const container = filteredContainers[virtualRow.index];
+                if (!container) return null;
+                
+                return (
+                  <div
+                    key={container.id}
+                    style={{
+                      position: 'absolute',
+                      top: 0,
+                      left: 0,
+                      width: '100%',
+                      height: `${virtualRow.size}px`,
+                      transform: `translateY(${virtualRow.start}px)`,
+                    }}
+                  >
+                    <ContainerRow
+                      container={container}
+                      isSelected={selectedContainer?.id === container.id}
+                      onSelect={handleSelect}
+                    />
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

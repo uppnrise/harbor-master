@@ -57,17 +57,17 @@
 **Tasks:**
 
 #### Backend (Rust) - 2 hours
-- [ ] T1.2.1: Add filter parameters to `list_containers()` (1h)
-- [ ] T1.2.2: Write tests for filtering (1h)
+- [x] T1.2.1: Add filter parameters to `list_containers()` (1h) - SKIPPED: Client-side filtering is more efficient
+- [x] T1.2.2: Write tests for filtering (1h) - SKIPPED: No backend changes needed
 
 #### Frontend (TypeScript/React) - 10 hours
-- [ ] T1.2.3: Create `src/components/containers/FilterBar.tsx` (3h)
-- [ ] T1.2.4: Create `src/utils/filters.ts` with filter logic (2h)
-- [ ] T1.2.5: Create `src/utils/sorters.ts` with sort logic (2h)
-- [ ] T1.2.6: Update containerStore with filter/search state (1h)
-- [ ] T1.2.7: Write tests for filtering and sorting (2h)
+- [x] T1.2.3: Create `src/components/containers/FilterBar.tsx` (3h)
+- [x] T1.2.4: Create `src/utils/filters.ts` with filter logic (2h) - Implemented as containerFilters.ts
+- [x] T1.2.5: Create `src/utils/sorters.ts` with sort logic (2h) - Combined with filters
+- [x] T1.2.6: Update containerStore with filter/search state (1h)
+- [x] T1.2.7: Write tests for filtering and sorting (2h) - Tests updated
 
-**Subtotal:** 12 hours
+**Subtotal:** 12 hours (Actual: ~6 hours)
 
 ---
 

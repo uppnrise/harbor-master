@@ -3,6 +3,7 @@ import type {
   Container,
   ContainerDetails,
   ContainerListOptions,
+  ContainerState,
   RemoveOptions,
   PruneResult,
 } from '../types/container';
@@ -19,6 +20,7 @@ import {
   pruneContainers as pruneContainersService,
 } from '../services/containerService';
 import { useRuntimeStore } from './runtimeStore';
+import { applyFiltersAndSort, type SortField, type SortOrder } from '../utils/containerFilters';
 
 interface ContainerStore {
   // State
@@ -29,11 +31,17 @@ interface ContainerStore {
   error: string | null;
   refreshInterval: number | null;
   operationInProgress: Set<string>; // Track which containers have operations in progress
+  
+  // Filter and sort state
+  searchTerm: string;
+  stateFilter: ContainerState | 'all';
+  sortField: SortField;
+  sortOrder: SortOrder;
 
   // Actions
-  fetchContainers: (options?: ContainerListOptions) => Promise<void>;
+  fetchContainers: (options?: ContainerListOptions) => Promise<Container[]>;
   selectContainer: (container: Container | null) => void;
-  fetchContainerDetails: (id: string) => Promise<void>;
+  fetchContainerDetails: (id: string) => Promise<ContainerDetails>;
   startContainer: (id: string) => Promise<void>;
   stopContainer: (id: string, timeout?: number) => Promise<void>;
   restartContainer: (id: string, timeout?: number) => Promise<void>;
@@ -44,9 +52,16 @@ interface ContainerStore {
   pruneContainers: () => Promise<PruneResult>;
   setError: (error: string | null) => void;
   clearError: () => void;
-  startAutoRefresh: (intervalMs?: number) => void;
+  startAutoRefresh: (interval?: number) => void;
   stopAutoRefresh: () => void;
   isOperationInProgress: (id: string) => boolean;
+  
+  // Filter and sort actions
+  setSearchTerm: (term: string) => void;
+  setStateFilter: (state: ContainerState | 'all') => void;
+  setSortField: (field: SortField) => void;
+  setSortOrder: (order: SortOrder) => void;
+  getFilteredContainers: () => Container[];
 }
 
 export const useContainerStore = create<ContainerStore>((set, get) => ({
@@ -58,6 +73,12 @@ export const useContainerStore = create<ContainerStore>((set, get) => ({
   error: null,
   refreshInterval: null,
   operationInProgress: new Set<string>(),
+  
+  // Filter and sort initial state
+  searchTerm: '',
+  stateFilter: 'all',
+  sortField: 'name',
+  sortOrder: 'asc',
 
     // Fetch containers list
   fetchContainers: async (options?: ContainerListOptions) => {
@@ -70,6 +91,7 @@ export const useContainerStore = create<ContainerStore>((set, get) => ({
       const defaultOptions: ContainerListOptions = { all: true, size: false };
       const containers = await listContainers(runtime, options || defaultOptions);
       set({ containers, loading: false });
+      return containers;
     } catch (err) {
       const error = err instanceof Error ? err.message : 'Failed to fetch containers';
       set({ error, loading: false });
@@ -92,6 +114,7 @@ export const useContainerStore = create<ContainerStore>((set, get) => ({
       }
       const details = await inspectContainerService(runtime, id);
       set({ containerDetails: details, loading: false });
+      return details;
     } catch (err) {
       const error = err instanceof Error ? err.message : 'Failed to fetch container details';
       set({ error, loading: false });
@@ -395,5 +418,27 @@ export const useContainerStore = create<ContainerStore>((set, get) => ({
   // Check if an operation is in progress for a container
   isOperationInProgress: (id: string) => {
     return get().operationInProgress.has(id);
+  },
+  
+  // Filter and sort methods
+  setSearchTerm: (term: string) => {
+    set({ searchTerm: term });
+  },
+  
+  setStateFilter: (state: ContainerState | 'all') => {
+    set({ stateFilter: state });
+  },
+  
+  setSortField: (field: SortField) => {
+    set({ sortField: field });
+  },
+  
+  setSortOrder: (order: SortOrder) => {
+    set({ sortOrder: order });
+  },
+  
+  getFilteredContainers: () => {
+    const { containers, searchTerm, stateFilter, sortField, sortOrder } = get();
+    return applyFiltersAndSort(containers, searchTerm, stateFilter, sortField, sortOrder);
   },
 }));

@@ -107,7 +107,7 @@ const mockContainerDetails: ContainerDetails = {
 
 describe('containerStore', () => {
   beforeEach(() => {
-    // Reset store state
+    // Reset store state - must include ALL state properties
     useContainerStore.setState({
       containers: [],
       selectedContainer: null,
@@ -116,7 +116,11 @@ describe('containerStore', () => {
       error: null,
       refreshInterval: null,
       operationInProgress: new Set<string>(),
-    });
+      searchTerm: '',
+      stateFilter: 'all',
+      sortField: 'name',
+      sortOrder: 'asc',
+    } as any); // Use 'as any' to avoid type checking for methods
 
     // Clear service mocks but not module mocks
     vi.clearAllTimers();

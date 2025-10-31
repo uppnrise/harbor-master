@@ -20,6 +20,7 @@ export const ContainerRow = memo(function ContainerRow({
   isSelected,
   onSelect,
 }: ContainerRowProps) {
+  const [currentOperation, setCurrentOperation] = useState<'starting' | 'stopping' | 'pausing' | 'unpausing' | null>(null);
   const [confirmDialog, setConfirmDialog] = useState<{
     isOpen: boolean;
     title: string;
@@ -82,11 +83,14 @@ export const ContainerRow = memo(function ContainerRow({
 
   const handleStartContainer = async () => {
     try {
+      setCurrentOperation('starting');
       await startContainer(container.id);
       showToast(`Container ${container.name} started successfully`, 'success');
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Failed to start container';
       showToast(message, 'error');
+    } finally {
+      setCurrentOperation(null);
     }
   };
 
@@ -96,14 +100,18 @@ export const ContainerRow = memo(function ContainerRow({
       title: 'Stop Container',
       message: `Are you sure you want to stop "${container.name}"?`,
       action: async () => {
+        // Close dialog immediately
+        setConfirmDialog((prev) => ({ ...prev, isOpen: false }));
+        
         try {
+          setCurrentOperation('stopping');
           await stopContainer(container.id);
           showToast(`Container ${container.name} stopped successfully`, 'success');
-          setConfirmDialog((prev) => ({ ...prev, isOpen: false }));
         } catch (err) {
           const message = err instanceof Error ? err.message : 'Failed to stop container';
           showToast(message, 'error');
-          setConfirmDialog((prev) => ({ ...prev, isOpen: false }));
+        } finally {
+          setCurrentOperation(null);
         }
       },
     });
@@ -111,21 +119,27 @@ export const ContainerRow = memo(function ContainerRow({
 
   const handlePauseContainer = async () => {
     try {
+      setCurrentOperation('pausing');
       await pauseContainer(container.id);
       showToast(`Container ${container.name} paused successfully`, 'success');
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Failed to pause container';
       showToast(message, 'error');
+    } finally {
+      setCurrentOperation(null);
     }
   };
 
   const handleUnpauseContainer = async () => {
     try {
+      setCurrentOperation('unpausing');
       await unpauseContainer(container.id);
       showToast(`Container ${container.name} unpaused successfully`, 'success');
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Failed to unpause container';
       showToast(message, 'error');
+    } finally {
+      setCurrentOperation(null);
     }
   };
 
@@ -219,7 +233,13 @@ export const ContainerRow = memo(function ContainerRow({
                   d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                 />
               </svg>
-              <span>Loading...</span>
+              <span>
+                {currentOperation === 'starting' && 'Starting...'}
+                {currentOperation === 'stopping' && 'Stopping...'}
+                {currentOperation === 'pausing' && 'Pausing...'}
+                {currentOperation === 'unpausing' && 'Unpausing...'}
+                {!currentOperation && 'Loading...'}
+              </span>
             </div>
           ) : container.state === ContainerState.Running ? (
             <>
