@@ -119,9 +119,30 @@ async fn check_podman_status(path: &str) -> RuntimeStatus {
 /// # Example
 /// ```no_run
 /// use harbor_master::runtime::status::check_status;
+/// use harbor_master::types::{Runtime, RuntimeType, RuntimeStatus, Version};
+/// use chrono::Utc;
 /// 
 /// #[tokio::main]
 /// async fn main() {
+///     let runtime = Runtime {
+///         id: "docker-1".to_string(),
+///         runtime_type: RuntimeType::Docker,
+///         path: "/usr/bin/docker".to_string(),
+///         version: Version { 
+///             major: 24, 
+///             minor: 0, 
+///             patch: 7,
+///             full: "24.0.7".to_string(),
+///         },
+///         status: RuntimeStatus::Unknown,
+///         last_checked: Utc::now(),
+///         detected_at: Utc::now(),
+///         mode: None,
+///         is_wsl: None,
+///         error: None,
+///         version_warning: None,
+///     };
+///     
 ///     let status = check_status(&runtime).await;
 ///     match status {
 ///         RuntimeStatus::Running => println!("Runtime is active"),
