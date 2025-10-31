@@ -1,15 +1,17 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, lazy, Suspense } from 'react';
 import { invoke } from '@tauri-apps/api/core';
 import { listen, emit } from '@tauri-apps/api/event';
 import { useRuntimeStore } from './stores/runtimeStore';
 import { useRuntimeStatus } from './hooks/useRuntimeStatus';
 import { WelcomeScreen } from './components/WelcomeScreen';
 import { RuntimeSelector } from './components/RuntimeSelector';
-import { NoRuntimesMessage } from './components/NoRuntimesMessage';
-import { RuntimeError } from './components/RuntimeError';
-import { Toast } from './components/Toast';
 import { formatRelativeTime } from './utils/formatters';
 import type { DetectionResult } from './types/runtime';
+
+// Lazy load non-critical components for better initial load performance
+const NoRuntimesMessage = lazy(() => import('./components/NoRuntimesMessage').then(module => ({ default: module.NoRuntimesMessage })));
+const RuntimeError = lazy(() => import('./components/RuntimeError').then(module => ({ default: module.RuntimeError })));
+const Toast = lazy(() => import('./components/Toast').then(module => ({ default: module.Toast })));
 
 /**
  * Toast notification state
@@ -141,7 +143,11 @@ function App() {
 
   // Show no runtimes message after detection completes with no runtimes
   if (!isDetecting && runtimes.length === 0 && !showWelcome) {
-    return <NoRuntimesMessage onRetry={() => detectRuntimes(true)} />;
+    return (
+      <Suspense fallback={<div className="min-h-screen bg-gray-900 flex items-center justify-center"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div></div>}>
+        <NoRuntimesMessage onRetry={() => detectRuntimes(true)} />
+      </Suspense>
+    );
   }
 
   return (
@@ -205,20 +211,22 @@ function App() {
 
               {/* Show error banner if selected runtime has error status */}
               {selectedRuntime && selectedRuntime.status === 'error' && (
-                <RuntimeError
-                  runtime={selectedRuntime}
-                  onRetry={() => detectRuntimes(true)}
-                  onSwitchRuntime={() => {
-                    // Find an alternative runtime that's not in error state
-                    const alternative = runtimes.find(
-                      (r) => r.id !== selectedRuntime.id && r.status !== 'error'
-                    );
-                    if (alternative) {
-                      setSelectedRuntime(alternative);
-                    }
-                  }}
-                  hasAlternatives={runtimes.filter((r) => r.status !== 'error').length > 1}
-                />
+                <Suspense fallback={<div className="bg-gray-800 border border-gray-700 rounded-lg p-4 animate-pulse h-32"></div>}>
+                  <RuntimeError
+                    runtime={selectedRuntime}
+                    onRetry={() => detectRuntimes(true)}
+                    onSwitchRuntime={() => {
+                      // Find an alternative runtime that's not in error state
+                      const alternative = runtimes.find(
+                        (r) => r.id !== selectedRuntime.id && r.status !== 'error'
+                      );
+                      if (alternative) {
+                        setSelectedRuntime(alternative);
+                      }
+                    }}
+                    hasAlternatives={runtimes.filter((r) => r.status !== 'error').length > 1}
+                  />
+                </Suspense>
               )}
 
               <div>
@@ -275,11 +283,13 @@ function App() {
       
       {/* Toast notifications */}
       {toast.show && (
-        <Toast
-          message={toast.message}
-          type={toast.type}
-          onClose={() => setToast({ ...toast, show: false })}
-        />
+        <Suspense fallback={null}>
+          <Toast
+            message={toast.message}
+            type={toast.type}
+            onClose={() => setToast({ ...toast, show: false })}
+          />
+        </Suspense>
       )}
     </div>
   );
