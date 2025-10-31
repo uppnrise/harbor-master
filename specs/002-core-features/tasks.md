@@ -37,10 +37,10 @@
 - [x] T1.1.7: Create `src/types/container.ts` with Container interface (1h)
 - [x] T1.1.8: Create `src/services/containerService.ts` with listContainers() (1h)
 - [x] T1.1.9: Create `src/stores/containerStore.ts` with Zustand state (2h)
-- [ ] T1.1.10: Create `src/components/containers/ContainerList.tsx` (3h)
-- [ ] T1.1.11: Create `src/components/containers/ContainerRow.tsx` (2h)
+- [x] T1.1.10: Create `src/components/containers/ContainerList.tsx` (3h)
+- [x] T1.1.11: Create `src/components/containers/ContainerRow.tsx` (2h)
 - [x] T1.1.12: Create `src/hooks/useContainers.ts` hook (1h)
-- [ ] T1.1.13: Write tests for ContainerList component (2h)
+- [x] T1.1.13: Write tests for ContainerList component (2h)
 
 **Subtotal:** 20 hours
 
