@@ -28,6 +28,7 @@ interface ContainerStore {
   loading: boolean;
   error: string | null;
   refreshInterval: number | null;
+  operationInProgress: Set<string>; // Track which containers have operations in progress
 
   // Actions
   fetchContainers: (options?: ContainerListOptions) => Promise<void>;
@@ -45,6 +46,7 @@ interface ContainerStore {
   clearError: () => void;
   startAutoRefresh: (intervalMs?: number) => void;
   stopAutoRefresh: () => void;
+  isOperationInProgress: (id: string) => boolean;
 }
 
 export const useContainerStore = create<ContainerStore>((set, get) => ({
@@ -55,6 +57,7 @@ export const useContainerStore = create<ContainerStore>((set, get) => ({
   loading: false,
   error: null,
   refreshInterval: null,
+  operationInProgress: new Set<string>(),
 
     // Fetch containers list
   fetchContainers: async (options?: ContainerListOptions) => {
@@ -98,95 +101,180 @@ export const useContainerStore = create<ContainerStore>((set, get) => ({
 
   // Start a container
   startContainer: async (id: string) => {
-    set({ loading: true, error: null });
+    const { operationInProgress } = get();
+    if (operationInProgress.has(id)) {
+      return; // Operation already in progress
+    }
+    
+    set({ 
+      operationInProgress: new Set(operationInProgress).add(id),
+      error: null 
+    });
+    
     try {
       const runtime = useRuntimeStore.getState().selectedRuntime;
       if (!runtime) {
         throw new Error('No runtime selected');
       }
       await startContainerService(runtime, id);
-      set({ loading: false });
+      
+      const current = get().operationInProgress;
+      const updated = new Set(current);
+      updated.delete(id);
+      set({ operationInProgress: updated });
+      
       // Refresh the container list
       await get().fetchContainers();
     } catch (err) {
       const error = err instanceof Error ? err.message : 'Failed to start container';
-      set({ error, loading: false });
+      const current = get().operationInProgress;
+      const updated = new Set(current);
+      updated.delete(id);
+      set({ error, operationInProgress: updated });
       throw err;
     }
   },
 
   // Stop a container
   stopContainer: async (id: string, timeout?: number) => {
-    set({ loading: true, error: null });
+    const { operationInProgress } = get();
+    if (operationInProgress.has(id)) {
+      return; // Operation already in progress
+    }
+    
+    set({ 
+      operationInProgress: new Set(operationInProgress).add(id),
+      error: null 
+    });
+    
     try {
       const runtime = useRuntimeStore.getState().selectedRuntime;
       if (!runtime) {
         throw new Error('No runtime selected');
       }
       await stopContainerService(runtime, id, timeout);
-      set({ loading: false });
+      
+      const current = get().operationInProgress;
+      const updated = new Set(current);
+      updated.delete(id);
+      set({ operationInProgress: updated });
+      
       // Refresh the container list
       await get().fetchContainers();
     } catch (err) {
       const error = err instanceof Error ? err.message : 'Failed to stop container';
-      set({ error, loading: false });
+      const current = get().operationInProgress;
+      const updated = new Set(current);
+      updated.delete(id);
+      set({ error, operationInProgress: updated });
       throw err;
     }
   },
 
   // Restart a container
   restartContainer: async (id: string, timeout?: number) => {
-    set({ loading: true, error: null });
+    const { operationInProgress } = get();
+    if (operationInProgress.has(id)) {
+      return; // Operation already in progress
+    }
+    
+    set({ 
+      operationInProgress: new Set(operationInProgress).add(id),
+      error: null 
+    });
+    
     try {
       const runtime = useRuntimeStore.getState().selectedRuntime;
       if (!runtime) {
         throw new Error('No runtime selected');
       }
       await restartContainerService(runtime, id, timeout);
-      set({ loading: false });
+      
+      const current = get().operationInProgress;
+      const updated = new Set(current);
+      updated.delete(id);
+      set({ operationInProgress: updated });
+      
       // Refresh the container list
       await get().fetchContainers();
     } catch (err) {
       const error = err instanceof Error ? err.message : 'Failed to restart container';
-      set({ error, loading: false });
+      const current = get().operationInProgress;
+      const updated = new Set(current);
+      updated.delete(id);
+      set({ error, operationInProgress: updated });
       throw err;
     }
   },
 
   // Pause a container
   pauseContainer: async (id: string) => {
-    set({ loading: true, error: null });
+    const { operationInProgress } = get();
+    if (operationInProgress.has(id)) {
+      return; // Operation already in progress
+    }
+    
+    set({ 
+      operationInProgress: new Set(operationInProgress).add(id),
+      error: null 
+    });
+    
     try {
       const runtime = useRuntimeStore.getState().selectedRuntime;
       if (!runtime) {
         throw new Error('No runtime selected');
       }
       await pauseContainerService(runtime, id);
-      set({ loading: false });
+      
+      const current = get().operationInProgress;
+      const updated = new Set(current);
+      updated.delete(id);
+      set({ operationInProgress: updated });
+      
       // Refresh the container list
       await get().fetchContainers();
     } catch (err) {
       const error = err instanceof Error ? err.message : 'Failed to pause container';
-      set({ error, loading: false });
+      const current = get().operationInProgress;
+      const updated = new Set(current);
+      updated.delete(id);
+      set({ error, operationInProgress: updated });
       throw err;
     }
   },
 
   // Unpause a container
   unpauseContainer: async (id: string) => {
-    set({ loading: true, error: null });
+    const { operationInProgress } = get();
+    if (operationInProgress.has(id)) {
+      return; // Operation already in progress
+    }
+    
+    set({ 
+      operationInProgress: new Set(operationInProgress).add(id),
+      error: null 
+    });
+    
     try {
       const runtime = useRuntimeStore.getState().selectedRuntime;
       if (!runtime) {
         throw new Error('No runtime selected');
       }
       await unpauseContainerService(runtime, id);
-      set({ loading: false });
+      
+      const current = get().operationInProgress;
+      const updated = new Set(current);
+      updated.delete(id);
+      set({ operationInProgress: updated });
+      
       // Refresh the container list
       await get().fetchContainers();
     } catch (err) {
       const error = err instanceof Error ? err.message : 'Failed to unpause container';
-      set({ error, loading: false });
+      const current = get().operationInProgress;
+      const updated = new Set(current);
+      updated.delete(id);
+      set({ error, operationInProgress: updated });
       throw err;
     }
   },
@@ -302,5 +390,10 @@ export const useContainerStore = create<ContainerStore>((set, get) => ({
       window.clearInterval(refreshInterval);
       set({ refreshInterval: null });
     }
+  },
+
+  // Check if an operation is in progress for a container
+  isOperationInProgress: (id: string) => {
+    return get().operationInProgress.has(id);
   },
 }));
