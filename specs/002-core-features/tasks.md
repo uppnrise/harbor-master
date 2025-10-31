@@ -104,26 +104,26 @@
 
 ---
 
-### User Story 1.4: Batch Container Operations
+### User Story 1.4: Batch Container Operations ✅
 **As a user, I want to perform actions on multiple containers**
 
 **Acceptance Criteria:**
-- Select multiple containers
-- Batch start, stop, restart, remove
-- Progress indicator for batch operations
+- Select multiple containers ✅
+- Batch start, stop, restart, remove ✅
+- Progress indicator for batch operations ✅
 
 **Tasks:**
 
 #### Backend (Rust) - 4 hours
-- [ ] T1.4.1: Add batch operation support (concurrent execution) (2h)
-- [ ] T1.4.2: Write tests for batch operations (2h)
+- [x] T1.4.1: Add batch operation support (concurrent execution) (2h) ✅
+- [x] T1.4.2: Write tests for batch operations (2h) ✅
 
 #### Frontend (TypeScript/React) - 10 hours
-- [ ] T1.4.3: Create `src/components/containers/BatchActionsBar.tsx` (3h)
-- [ ] T1.4.4: Add multi-selection to ContainerList (2h)
-- [ ] T1.4.5: Add batch operation state to containerStore (2h)
-- [ ] T1.4.6: Add batch progress UI (2h)
-- [ ] T1.4.7: Write tests for batch operations (1h)
+- [x] T1.4.3: Create `src/components/containers/BatchActionsBar.tsx` (3h) ✅
+- [x] T1.4.4: Add multi-selection to ContainerList (2h) ✅
+- [x] T1.4.5: Add batch operation state to containerStore (2h) ✅
+- [x] T1.4.6: Add batch progress UI (2h) ✅
+- [x] T1.4.7: Write tests for batch operations (1h) ✅
 
 **Subtotal:** 14 hours
 
