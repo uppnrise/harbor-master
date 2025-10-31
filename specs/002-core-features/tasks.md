@@ -145,10 +145,10 @@
 - [x] T1.5.4: Write tests for inspect (2h)
 
 #### Frontend (TypeScript/React) - 12 hours
-- [ ] T1.5.5: Create `src/components/containers/ContainerDetails.tsx` (4h)
-- [ ] T1.5.6: Create `src/components/containers/ContainerOverview.tsx` (2h)
-- [ ] T1.5.7: Create `src/components/layout/DetailPanel.tsx` (3h)
-- [ ] T1.5.8: Create `src/components/layout/TabPanel.tsx` (2h)
+- [x] T1.5.5: Create `src/components/containers/ContainerDetails.tsx` (4h)
+- [x] T1.5.6: Create `src/components/containers/ContainerOverview.tsx` (2h)
+- [x] T1.5.7: Create `src/components/layout/DetailPanel.tsx` (3h)
+- [x] T1.5.8: Create `src/components/layout/TabPanel.tsx` (2h)
 - [ ] T1.5.9: Write tests for detail components (1h)
 
 **Subtotal:** 18 hours
