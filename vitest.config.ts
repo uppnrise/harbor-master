@@ -6,12 +6,12 @@ export default defineConfig({
   test: {
     globals: true,
     environment: 'jsdom',
-    globalSetup: './tests/globalSetup.ts',
-    setupFiles: './tests/setup.ts',
+    setupFiles: ['./tests/polyfills.ts', './tests/setup.ts'],
     pool: 'forks',
     poolOptions: {
       forks: {
         singleFork: true,
+        isolate: false,
       },
     },
     environmentOptions: {
