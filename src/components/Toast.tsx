@@ -87,14 +87,18 @@ export function Toast({ message, type, onClose, duration = 3000 }: ToastProps) {
   return (
     <div
       className={`fixed bottom-4 right-4 ${bgColor[type]} text-white px-6 py-4 rounded-lg shadow-lg flex items-center space-x-3 min-w-[300px] max-w-md animate-slide-in z-50`}
+      role="alert"
+      aria-live="polite"
+      aria-atomic="true"
     >
-      <div className="flex-shrink-0">{icon[type]}</div>
+      <div className="flex-shrink-0" aria-hidden="true">{icon[type]}</div>
       <div className="flex-1">
         <p className="text-sm font-medium">{message}</p>
       </div>
       <button
         onClick={onClose}
         className="flex-shrink-0 ml-2 text-white/80 hover:text-white transition-colors"
+        aria-label="Close notification"
       >
         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />

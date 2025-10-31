@@ -113,6 +113,9 @@ export function RuntimeSelector() {
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 flex items-center justify-between hover:border-blue-500 transition-colors"
+        aria-label="Select container runtime"
+        aria-expanded={isOpen}
+        aria-haspopup="listbox"
       >
         {selectedRuntime ? (
           <div className="flex items-center space-x-3">
@@ -152,7 +155,11 @@ export function RuntimeSelector() {
       </button>
 
       {isOpen && (
-        <div className="absolute z-10 w-full mt-2 bg-gray-800 border border-gray-700 rounded-lg shadow-xl overflow-hidden max-h-96 overflow-y-auto">
+        <div 
+          className="absolute z-10 w-full mt-2 bg-gray-800 border border-gray-700 rounded-lg shadow-xl overflow-hidden max-h-96 overflow-y-auto"
+          role="listbox"
+          aria-label="Available container runtimes"
+        >
           {runtimes.map((runtime) => (
             <button
               key={runtime.id}
@@ -160,6 +167,8 @@ export function RuntimeSelector() {
               className={`w-full px-4 py-3 flex items-center space-x-3 hover:bg-gray-700 transition-colors ${
                 selectedRuntime?.id === runtime.id ? 'bg-gray-700/50' : ''
               }`}
+              role="option"
+              aria-selected={selectedRuntime?.id === runtime.id}
             >
               <span className="text-2xl">{getRuntimeIcon(runtime.type)}</span>
               <div className="flex-1 text-left">
