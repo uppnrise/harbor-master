@@ -455,7 +455,8 @@ mod tests {
         let result = detect_podman(500).await;
 
         // Verify result structure is valid
-        assert!(result.duration > 0);
+        // Duration can be 0 on very fast systems, so just check it's not erroring
+        assert!(result.duration < 1000); // Should complete within timeout
 
         // If Podman is installed, verify runtime data
         if !result.runtimes.is_empty() {
