@@ -6,6 +6,29 @@ import { StatusIndicator } from './StatusIndicator';
 import { formatRuntimeVersion, getMinimumVersion } from '../utils/formatters';
 import type { Runtime } from '../types/runtime';
 
+/**
+ * Dropdown selector component for choosing container runtimes
+ * 
+ * Features:
+ * - Auto-selects runtime on initial load based on preferences
+ * - Persists selection to preferences
+ * - Shows runtime status, version, and mode information
+ * - Displays version warnings for outdated runtimes
+ * - Highlights WSL2 installations
+ * 
+ * Selection priority:
+ * 1. Previously selected runtime (if still available)
+ * 2. Running runtime
+ * 3. Preferred runtime type from preferences
+ * 4. First detected runtime
+ * 
+ * @returns Runtime selector dropdown UI
+ * 
+ * @example
+ * ```tsx
+ * <RuntimeSelector />
+ * ```
+ */
 export function RuntimeSelector() {
   const { runtimes, selectedRuntime, setSelectedRuntime } = useRuntimeStore();
   const [isOpen, setIsOpen] = useState(false);

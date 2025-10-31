@@ -1,12 +1,35 @@
+//! Version parsing and validation utilities
+//!
+//! This module provides functions to parse semantic version strings from
+//! Docker and Podman output, and validate versions against minimum requirements.
+
 use regex::Regex;
 use crate::types::Version;
 use std::error::Error;
 
-/// Parse version string from Docker or Podman output
-/// Handles formats like:
-/// - "Docker version 24.0.7, build afdd53b"
-/// - "podman version 4.8.0"
-/// - "24.0.7"
+/// Parses semantic version from Docker or Podman output
+/// 
+/// Handles multiple output formats:
+/// - `"Docker version 24.0.7, build afdd53b"` → 24.0.7
+/// - `"podman version 4.8.0"` → 4.8.0
+/// - `"24.0.7"` → 24.0.7
+/// 
+/// # Arguments
+/// * `version_str` - Raw version string from --version command
+/// 
+/// # Returns
+/// - `Ok(Version)` with parsed major, minor, patch numbers
+/// - `Err` if string doesn't contain valid semantic version
+/// 
+/// # Example
+/// ```
+/// use harbor_master::runtime::version::parse_version;
+/// 
+/// let version = parse_version("Docker version 24.0.7, build afdd53b").unwrap();
+/// assert_eq!(version.major, 24);
+/// assert_eq!(version.minor, 0);
+/// assert_eq!(version.patch, 7);
+/// ```
 pub fn parse_version(version_str: &str) -> Result<Version, Box<dyn Error>> {
     // Regex to match semantic version (major.minor.patch)
     let re = Regex::new(r"(\d+)\.(\d+)\.(\d+)")?;
@@ -36,12 +59,30 @@ pub fn parse_version(version_str: &str) -> Result<Version, Box<dyn Error>> {
     }
 }
 
-/// Validate that a Docker version meets minimum requirements (>= 20.10.0)
+/// Validates Docker version against minimum requirements
+/// 
+/// Ensures Docker version is >= 20.10.0, which is the minimum supported version
+/// for modern container features and security updates.
+/// 
+/// # Arguments
+/// * `version` - Parsed version to validate
+/// 
+/// # Returns
+/// `true` if version meets minimum requirements, `false` otherwise
 pub fn validate_docker_version(version: &Version) -> bool {
     version.major > 20 || (version.major == 20 && version.minor >= 10)
 }
 
-/// Validate that a Podman version meets minimum requirements (>= 3.0.0)
+/// Validates Podman version against minimum requirements
+/// 
+/// Ensures Podman version is >= 3.0.0, which provides stable API compatibility
+/// and essential container management features.
+/// 
+/// # Arguments
+/// * `version` - Parsed version to validate
+/// 
+/// # Returns
+/// `true` if version meets minimum requirements, `false` otherwise
 pub fn validate_podman_version(version: &Version) -> bool {
     version.major >= 3
 }

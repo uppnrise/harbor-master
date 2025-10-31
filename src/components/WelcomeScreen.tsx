@@ -1,9 +1,27 @@
 import { StatusIndicator } from './StatusIndicator';
 
+/**
+ * Props for the WelcomeScreen component
+ */
 interface WelcomeScreenProps {
+  /** Whether runtime detection is currently in progress */
   isDetecting: boolean;
 }
 
+/**
+ * Welcome screen component displayed before runtime detection completes
+ * 
+ * Shows the HarborMaster logo, tagline, and detection progress indicator.
+ * Provides visual feedback during initial runtime detection.
+ * 
+ * @param props - Component properties
+ * @returns Welcome screen UI
+ * 
+ * @example
+ * ```tsx
+ * <WelcomeScreen isDetecting={true} />
+ * ```
+ */
 export function WelcomeScreen({ isDetecting }: WelcomeScreenProps) {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-900 text-white">

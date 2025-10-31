@@ -1,3 +1,9 @@
+//! Runtime status checking functionality
+//!
+//! This module provides status checking for Docker and Podman runtimes,
+//! determining whether they are Running, Stopped, in an Error state, or Unknown.
+//! Uses timeouts to prevent hanging on unresponsive runtimes.
+
 use std::path::PathBuf;
 use std::process::Command;
 use std::time::Duration;
@@ -5,10 +11,21 @@ use tokio::time::timeout;
 
 use crate::types::{Runtime, RuntimeStatus};
 
-/// Timeout for status checks (3 seconds)
+/// Maximum time to wait for a status check command (3 seconds)
 const STATUS_CHECK_TIMEOUT: Duration = Duration::from_secs(3);
 
-/// Check if Docker daemon is running
+/// Checks if the Docker daemon is currently running
+/// 
+/// Executes `docker info` with a 3-second timeout to determine daemon status.
+/// 
+/// # Arguments
+/// * `path` - Path to the Docker executable
+/// 
+/// # Returns
+/// - `RuntimeStatus::Running` if daemon is accessible and responsive
+/// - `RuntimeStatus::Stopped` if daemon is not running or command fails
+/// - `RuntimeStatus::Error` if permission denied
+/// - `RuntimeStatus::Unknown` if timeout occurs
 async fn check_docker_status(path: &str) -> RuntimeStatus {
     let path_buf = PathBuf::from(path);
     
@@ -43,7 +60,18 @@ async fn check_docker_status(path: &str) -> RuntimeStatus {
     }
 }
 
-/// Check if Podman daemon/socket is accessible
+/// Checks if Podman is accessible and running
+/// 
+/// Executes `podman info` with a 3-second timeout to verify accessibility.
+/// 
+/// # Arguments
+/// * `path` - Path to the Podman executable
+/// 
+/// # Returns
+/// - `RuntimeStatus::Running` if Podman is accessible and responsive
+/// - `RuntimeStatus::Stopped` if Podman service is not running or command fails
+/// - `RuntimeStatus::Error` if permission denied
+/// - `RuntimeStatus::Unknown` if timeout occurs
 async fn check_podman_status(path: &str) -> RuntimeStatus {
     let path_buf = PathBuf::from(path);
     
@@ -78,7 +106,30 @@ async fn check_podman_status(path: &str) -> RuntimeStatus {
     }
 }
 
-/// Check status of a runtime
+/// Checks the current status of a runtime
+/// 
+/// Delegates to runtime-specific status check functions and includes timeout protection.
+/// 
+/// # Arguments
+/// * `runtime` - The runtime to check status for
+/// 
+/// # Returns
+/// Current `RuntimeStatus` (Running, Stopped, Error, or Unknown)
+/// 
+/// # Example
+/// ```no_run
+/// use harbor_master::runtime::status::check_status;
+/// 
+/// #[tokio::main]
+/// async fn main() {
+///     let status = check_status(&runtime).await;
+///     match status {
+///         RuntimeStatus::Running => println!("Runtime is active"),
+///         RuntimeStatus::Stopped => println!("Runtime is not running"),
+///         _ => println!("Status unknown or error"),
+///     }
+/// }
+/// ```
 pub async fn check_status(runtime: &Runtime) -> RuntimeStatus {
     match runtime.runtime_type {
         crate::types::RuntimeType::Docker => check_docker_status(&runtime.path).await,
