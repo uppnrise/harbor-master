@@ -312,8 +312,8 @@
 
 **Purpose**: Final improvements, documentation, and optimization
 
-- [ ] T127 [P] Add JSDoc/TSDoc comments to all public functions in src/
-- [ ] T128 [P] Add Rust doc comments to all public functions in src-tauri/src/
+- [X] T127 [P] Add JSDoc/TSDoc comments to all public functions in src/
+- [X] T128 [P] Add Rust doc comments to all public functions in src-tauri/src/
 - [ ] T129 [P] Performance optimization: lazy load components with React.lazy
 - [ ] T130 [P] Performance optimization: add virtual scrolling if runtime list > 10 items
 - [ ] T131 [P] Accessibility audit: ensure WCAG 2.1 Level AA compliance
