@@ -3,6 +3,7 @@
 
 pub mod commands;
 pub mod config;
+pub mod container;
 pub mod polling;
 pub mod runtime;
 pub mod types;
