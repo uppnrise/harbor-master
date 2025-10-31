@@ -50,8 +50,11 @@ export const ContainerRow = memo(function ContainerRow({
     stopContainer,
     pauseContainer,
     unpauseContainer,
+    restartContainer,
     removeContainer,
     isOperationInProgress,
+    toggleContainerSelection,
+    isContainerSelected,
   } = useContainerStore();
 
   const isLoading = isOperationInProgress(container.id);
@@ -179,22 +182,35 @@ export const ContainerRow = memo(function ContainerRow({
     <>
       <div
         className={`
-        grid grid-cols-[100px_1fr_200px_120px_100px_140px] gap-3 p-3 border-b border-gray-200 dark:border-gray-700
-        hover:bg-gray-50 dark:hover:bg-gray-800 cursor-pointer transition-colors
+        grid grid-cols-[40px_100px_1fr_200px_120px_100px_140px] gap-3 p-3 border-b border-gray-200 dark:border-gray-700
+        hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors
         ${isSelected ? 'bg-blue-50 dark:bg-blue-900/20' : ''}
       `}
-        onClick={handleClick}
-        role="button"
-        tabIndex={0}
-        onKeyDown={(e) => {
-          if (e.key === 'Enter' || e.key === ' ') {
-            handleClick();
-          }
-        }}
-        aria-selected={isSelected}
       >
+        {/* Selection Checkbox */}
+        <div className="flex items-center justify-center" onClick={(e) => e.stopPropagation()}>
+          <input
+            type="checkbox"
+            checked={isContainerSelected(container.id)}
+            onChange={() => toggleContainerSelection(container.id)}
+            className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded cursor-pointer"
+            title="Select container"
+          />
+        </div>
+        
         {/* Status Indicator */}
-        <div className="flex items-center">
+        <div 
+          className="flex items-center cursor-pointer"
+          onClick={handleClick}
+          role="button"
+          tabIndex={0}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              handleClick();
+            }
+          }}
+          aria-selected={isSelected}
+        >
           <StatusBadge
             status={getStateText(container.state)}
             variant={
@@ -210,7 +226,7 @@ export const ContainerRow = memo(function ContainerRow({
         </div>
 
         {/* Container Name */}
-        <div className="min-w-0">
+        <div className="min-w-0 cursor-pointer" onClick={handleClick}>
           <div className="font-medium text-gray-900 dark:text-white truncate">
             {truncateName(container.name)}
           </div>
@@ -220,28 +236,28 @@ export const ContainerRow = memo(function ContainerRow({
         </div>
 
         {/* Image */}
-        <div className="hidden md:block min-w-0">
+        <div className="hidden md:block min-w-0 cursor-pointer" onClick={handleClick}>
           <div className="text-sm text-gray-700 dark:text-gray-300 truncate">
             {container.image}
           </div>
         </div>
 
         {/* Ports */}
-        <div className="hidden lg:block">
+        <div className="hidden lg:block cursor-pointer" onClick={handleClick}>
           <div className="text-sm text-gray-600 dark:text-gray-400 truncate">
             {formatPorts(container.ports)}
           </div>
         </div>
 
         {/* Created */}
-        <div className="hidden xl:block">
+        <div className="hidden xl:block cursor-pointer" onClick={handleClick}>
           <div className="text-sm text-gray-500 dark:text-gray-400">
             {formatCreated(container.created)}
           </div>
         </div>
 
         {/* Quick Actions */}
-        <div className="flex gap-1">
+        <div className="flex gap-1" onClick={(e) => e.stopPropagation()}>
           {isLoading ? (
             <div className="flex items-center gap-2 px-2 py-1 text-xs text-gray-500">
               <svg

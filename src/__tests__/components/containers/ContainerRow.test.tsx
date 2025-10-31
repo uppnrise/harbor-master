@@ -131,7 +131,7 @@ describe('ContainerRow', () => {
       />
     );
 
-    const row = container.querySelector('[role="button"][tabindex="0"]') as HTMLElement;
+    const row = container.querySelector('.grid') as HTMLElement;
     expect(row).toHaveClass('bg-blue-50');
   });
 

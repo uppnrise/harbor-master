@@ -2,6 +2,7 @@ import { useRef, useEffect, useState } from 'react';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { ContainerRow } from './ContainerRow';
 import { FilterBar } from './FilterBar';
+import { BatchActionsBar } from './BatchActionsBar';
 import ContainerDetails from './ContainerDetails';
 import { useContainerStore } from '../../stores/containerStore';
 import type { Container } from '../../types/container';
@@ -27,6 +28,10 @@ export function ContainerList() {
     sortOrder,
     setSortOrder,
     getFilteredContainers,
+    selectedContainerIds,
+    toggleContainerSelection,
+    selectAllContainers,
+    clearSelection,
   } = useContainerStore();
 
   const parentRef = useRef<HTMLDivElement>(null);
@@ -141,8 +146,26 @@ export function ContainerList() {
         </div>
       ) : (
         <div className="flex flex-col flex-1 border border-gray-300 dark:border-gray-700 rounded-lg overflow-hidden bg-white dark:bg-gray-800">
+          {/* Batch Actions Bar (appears when containers are selected) */}
+          <BatchActionsBar />
+          
           {/* Header */}
-          <div className="grid grid-cols-[100px_1fr_200px_120px_100px_140px] gap-3 p-3 border-b border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-900 font-medium text-sm text-gray-700 dark:text-gray-300">
+          <div className="grid grid-cols-[40px_100px_1fr_200px_120px_100px_140px] gap-3 p-3 border-b border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-900 font-medium text-sm text-gray-700 dark:text-gray-300">
+            <div className="flex items-center justify-center">
+              <input
+                type="checkbox"
+                checked={filteredContainers.length > 0 && filteredContainers.every(c => selectedContainerIds.has(c.id))}
+                onChange={(e) => {
+                  if (e.target.checked) {
+                    selectAllContainers();
+                  } else {
+                    clearSelection();
+                  }
+                }}
+                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded cursor-pointer"
+                title="Select all"
+              />
+            </div>
             <div>Status</div>
             <div>Name</div>
             <div className="hidden md:block">Image</div>

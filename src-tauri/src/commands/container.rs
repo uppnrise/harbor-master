@@ -5,6 +5,7 @@ use crate::container::{
     Container, ContainerDetails, ContainerListOptions, PruneResult, RemoveOptions,
 };
 use crate::types::Runtime;
+use futures::future::join_all;
 
 /// List containers
 #[tauri::command]
@@ -101,6 +102,113 @@ pub async fn prune_containers_command(runtime: Runtime) -> Result<PruneResult, S
     prune_containers(&runtime)
 }
 
+/// Start multiple containers concurrently
+#[tauri::command]
+pub async fn start_containers_command(
+    runtime: Runtime,
+    container_ids: Vec<String>,
+) -> Result<Vec<(String, Result<(), String>)>, String> {
+    let tasks = container_ids
+        .into_iter()
+        .map(|id| {
+            let runtime = runtime.clone();
+            let container_id = id.clone();
+            async move {
+                let result = start_container(&runtime, &container_id);
+                (id, result)
+            }
+        })
+        .collect::<Vec<_>>();
+
+    Ok(join_all(tasks).await)
+}
+
+/// Stop multiple containers concurrently
+#[tauri::command]
+pub async fn stop_containers_command(
+    runtime: Runtime,
+    container_ids: Vec<String>,
+    timeout: Option<u64>,
+) -> Result<Vec<(String, Result<(), String>)>, String> {
+    let tasks = container_ids
+        .into_iter()
+        .map(|id| {
+            let runtime = runtime.clone();
+            let container_id = id.clone();
+            async move {
+                let result = stop_container(&runtime, &container_id, timeout);
+                (id, result)
+            }
+        })
+        .collect::<Vec<_>>();
+
+    Ok(join_all(tasks).await)
+}
+
+/// Restart multiple containers concurrently
+#[tauri::command]
+pub async fn restart_containers_command(
+    runtime: Runtime,
+    container_ids: Vec<String>,
+    timeout: Option<u64>,
+) -> Result<Vec<(String, Result<(), String>)>, String> {
+    let tasks = container_ids
+        .into_iter()
+        .map(|id| {
+            let runtime = runtime.clone();
+            let container_id = id.clone();
+            async move {
+                let result = restart_container(&runtime, &container_id, timeout);
+                (id, result)
+            }
+        })
+        .collect::<Vec<_>>();
+
+    Ok(join_all(tasks).await)
+}
+
+/// Pause multiple containers concurrently
+#[tauri::command]
+pub async fn pause_containers_command(
+    runtime: Runtime,
+    container_ids: Vec<String>,
+) -> Result<Vec<(String, Result<(), String>)>, String> {
+    let tasks = container_ids
+        .into_iter()
+        .map(|id| {
+            let runtime = runtime.clone();
+            let container_id = id.clone();
+            async move {
+                let result = pause_container(&runtime, &container_id);
+                (id, result)
+            }
+        })
+        .collect::<Vec<_>>();
+
+    Ok(join_all(tasks).await)
+}
+
+/// Unpause multiple containers concurrently
+#[tauri::command]
+pub async fn unpause_containers_command(
+    runtime: Runtime,
+    container_ids: Vec<String>,
+) -> Result<Vec<(String, Result<(), String>)>, String> {
+    let tasks = container_ids
+        .into_iter()
+        .map(|id| {
+            let runtime = runtime.clone();
+            let container_id = id.clone();
+            async move {
+                let result = unpause_container(&runtime, &container_id);
+                (id, result)
+            }
+        })
+        .collect::<Vec<_>>();
+
+    Ok(join_all(tasks).await)
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -162,5 +270,67 @@ mod tests {
         let runtime = mock_runtime();
         let result = remove_container_command(runtime, "test-container".to_string(), true, false).await;
         assert!(result.is_ok() || result.is_err());
+    }
+
+    #[tokio::test]
+    async fn test_start_containers_command() {
+        let runtime = mock_runtime();
+        let container_ids = vec!["container1".to_string(), "container2".to_string()];
+        let result = start_containers_command(runtime, container_ids).await;
+        
+        assert!(result.is_ok());
+        if let Ok(results) = result {
+            assert_eq!(results.len(), 2);
+            assert_eq!(results[0].0, "container1");
+            assert_eq!(results[1].0, "container2");
+        }
+    }
+
+    #[tokio::test]
+    async fn test_stop_containers_command() {
+        let runtime = mock_runtime();
+        let container_ids = vec!["container1".to_string(), "container2".to_string()];
+        let result = stop_containers_command(runtime, container_ids, Some(10)).await;
+        
+        assert!(result.is_ok());
+        if let Ok(results) = result {
+            assert_eq!(results.len(), 2);
+        }
+    }
+
+    #[tokio::test]
+    async fn test_restart_containers_command() {
+        let runtime = mock_runtime();
+        let container_ids = vec!["container1".to_string()];
+        let result = restart_containers_command(runtime, container_ids, None).await;
+        
+        assert!(result.is_ok());
+        if let Ok(results) = result {
+            assert_eq!(results.len(), 1);
+        }
+    }
+
+    #[tokio::test]
+    async fn test_pause_containers_command() {
+        let runtime = mock_runtime();
+        let container_ids = vec!["container1".to_string(), "container2".to_string()];
+        let result = pause_containers_command(runtime, container_ids).await;
+        
+        assert!(result.is_ok());
+        if let Ok(results) = result {
+            assert_eq!(results.len(), 2);
+        }
+    }
+
+    #[tokio::test]
+    async fn test_unpause_containers_command() {
+        let runtime = mock_runtime();
+        let container_ids = vec!["container1".to_string()];
+        let result = unpause_containers_command(runtime, container_ids).await;
+        
+        assert!(result.is_ok());
+        if let Ok(results) = result {
+            assert_eq!(results.len(), 1);
+        }
     }
 }

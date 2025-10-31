@@ -18,6 +18,12 @@ import {
   removeContainer as removeContainerService,
   removeContainers as removeMultipleContainers,
   pruneContainers as pruneContainersService,
+  startContainers as startMultipleContainers,
+  stopContainers as stopMultipleContainers,
+  restartContainers as restartMultipleContainers,
+  pauseContainers as pauseMultipleContainers,
+  unpauseContainers as unpauseMultipleContainers,
+  type BatchOperationResult,
 } from '../services/containerService';
 import { useRuntimeStore } from './runtimeStore';
 import { applyFiltersAndSort, type SortField, type SortOrder } from '../utils/containerFilters';
@@ -31,6 +37,11 @@ interface ContainerStore {
   error: string | null;
   refreshInterval: number | null;
   operationInProgress: Set<string>; // Track which containers have operations in progress
+  
+  // Multi-selection and batch operations
+  selectedContainerIds: Set<string>; // Track selected containers for batch operations
+  batchOperationInProgress: boolean;
+  batchOperationResults: BatchOperationResult[];
   
   // Filter and sort state
   searchTerm: string;
@@ -56,6 +67,21 @@ interface ContainerStore {
   stopAutoRefresh: () => void;
   isOperationInProgress: (id: string) => boolean;
   
+  // Multi-selection actions
+  toggleContainerSelection: (id: string) => void;
+  selectAllContainers: () => void;
+  clearSelection: () => void;
+  isContainerSelected: (id: string) => boolean;
+  
+  // Batch operation actions
+  batchStartContainers: (ids: string[]) => Promise<BatchOperationResult[]>;
+  batchStopContainers: (ids: string[], timeout?: number) => Promise<BatchOperationResult[]>;
+  batchRestartContainers: (ids: string[], timeout?: number) => Promise<BatchOperationResult[]>;
+  batchPauseContainers: (ids: string[]) => Promise<BatchOperationResult[]>;
+  batchUnpauseContainers: (ids: string[]) => Promise<BatchOperationResult[]>;
+  batchRemoveContainers: (ids: string[], options?: RemoveOptions) => Promise<BatchOperationResult[]>;
+  clearBatchResults: () => void;
+  
   // Filter and sort actions
   setSearchTerm: (term: string) => void;
   setStateFilter: (state: ContainerState | 'all') => void;
@@ -73,6 +99,11 @@ export const useContainerStore = create<ContainerStore>((set, get) => ({
   error: null,
   refreshInterval: null,
   operationInProgress: new Set<string>(),
+  
+  // Multi-selection and batch initial state
+  selectedContainerIds: new Set<string>(),
+  batchOperationInProgress: false,
+  batchOperationResults: [],
   
   // Filter and sort initial state
   searchTerm: '',
@@ -440,5 +471,172 @@ export const useContainerStore = create<ContainerStore>((set, get) => ({
   getFilteredContainers: () => {
     const { containers, searchTerm, stateFilter, sortField, sortOrder } = get();
     return applyFiltersAndSort(containers, searchTerm, stateFilter, sortField, sortOrder);
+  },
+  
+  // Multi-selection methods
+  toggleContainerSelection: (id: string) => {
+    const selectedContainerIds = new Set(get().selectedContainerIds);
+    if (selectedContainerIds.has(id)) {
+      selectedContainerIds.delete(id);
+    } else {
+      selectedContainerIds.add(id);
+    }
+    set({ selectedContainerIds });
+  },
+  
+  selectAllContainers: () => {
+    const containers = get().getFilteredContainers();
+    const selectedContainerIds = new Set(containers.map(c => c.id));
+    set({ selectedContainerIds });
+  },
+  
+  clearSelection: () => {
+    set({ selectedContainerIds: new Set<string>() });
+  },
+  
+  isContainerSelected: (id: string) => {
+    return get().selectedContainerIds.has(id);
+  },
+  
+  // Batch operation methods
+  batchStartContainers: async (ids: string[]) => {
+    set({ batchOperationInProgress: true, batchOperationResults: [], error: null });
+    try {
+      const runtime = useRuntimeStore.getState().selectedRuntime;
+      if (!runtime) {
+        throw new Error('No runtime selected');
+      }
+      const results = await startMultipleContainers(runtime, ids);
+      set({ batchOperationInProgress: false, batchOperationResults: results });
+      // Refresh the container list
+      await get().fetchContainers();
+      return results;
+    } catch (err) {
+      const error = err instanceof Error ? err.message : 'Failed to start containers';
+      set({ error, batchOperationInProgress: false });
+      throw err;
+    }
+  },
+  
+  batchStopContainers: async (ids: string[], timeout?: number) => {
+    set({ batchOperationInProgress: true, batchOperationResults: [], error: null });
+    try {
+      const runtime = useRuntimeStore.getState().selectedRuntime;
+      if (!runtime) {
+        throw new Error('No runtime selected');
+      }
+      const results = await stopMultipleContainers(runtime, ids, timeout);
+      set({ batchOperationInProgress: false, batchOperationResults: results });
+      // Refresh the container list
+      await get().fetchContainers();
+      return results;
+    } catch (err) {
+      const error = err instanceof Error ? err.message : 'Failed to stop containers';
+      set({ error, batchOperationInProgress: false });
+      throw err;
+    }
+  },
+  
+  batchRestartContainers: async (ids: string[], timeout?: number) => {
+    set({ batchOperationInProgress: true, batchOperationResults: [], error: null });
+    try {
+      const runtime = useRuntimeStore.getState().selectedRuntime;
+      if (!runtime) {
+        throw new Error('No runtime selected');
+      }
+      const results = await restartMultipleContainers(runtime, ids, timeout);
+      set({ batchOperationInProgress: false, batchOperationResults: results });
+      // Refresh the container list
+      await get().fetchContainers();
+      return results;
+    } catch (err) {
+      const error = err instanceof Error ? err.message : 'Failed to restart containers';
+      set({ error, batchOperationInProgress: false });
+      throw err;
+    }
+  },
+  
+  batchPauseContainers: async (ids: string[]) => {
+    set({ batchOperationInProgress: true, batchOperationResults: [], error: null });
+    try {
+      const runtime = useRuntimeStore.getState().selectedRuntime;
+      if (!runtime) {
+        throw new Error('No runtime selected');
+      }
+      const results = await pauseMultipleContainers(runtime, ids);
+      set({ batchOperationInProgress: false, batchOperationResults: results });
+      // Refresh the container list
+      await get().fetchContainers();
+      return results;
+    } catch (err) {
+      const error = err instanceof Error ? err.message : 'Failed to pause containers';
+      set({ error, batchOperationInProgress: false });
+      throw err;
+    }
+  },
+  
+  batchUnpauseContainers: async (ids: string[]) => {
+    set({ batchOperationInProgress: true, batchOperationResults: [], error: null });
+    try {
+      const runtime = useRuntimeStore.getState().selectedRuntime;
+      if (!runtime) {
+        throw new Error('No runtime selected');
+      }
+      const results = await unpauseMultipleContainers(runtime, ids);
+      set({ batchOperationInProgress: false, batchOperationResults: results });
+      // Refresh the container list
+      await get().fetchContainers();
+      return results;
+    } catch (err) {
+      const error = err instanceof Error ? err.message : 'Failed to unpause containers';
+      set({ error, batchOperationInProgress: false });
+      throw err;
+    }
+  },
+  
+  batchRemoveContainers: async (ids: string[], options?: RemoveOptions) => {
+    set({ batchOperationInProgress: true, batchOperationResults: [], error: null });
+    try {
+      const runtime = useRuntimeStore.getState().selectedRuntime;
+      if (!runtime) {
+        throw new Error('No runtime selected');
+      }
+      // Use existing removeContainers which already handles batch removal
+      await removeMultipleContainers(
+        runtime,
+        ids,
+        options?.force || false,
+        options?.volumes || false
+      );
+      // Convert to BatchOperationResult format
+      const results: BatchOperationResult[] = ids.map(id => ({
+        id,
+        success: true,
+        error: undefined,
+      }));
+      set({ batchOperationInProgress: false, batchOperationResults: results });
+      // Clear selected container if it was in the removed list
+      const { selectedContainer } = get();
+      if (selectedContainer && ids.includes(selectedContainer.id)) {
+        set({ selectedContainer: null, containerDetails: null });
+      }
+      // Refresh the container list
+      await get().fetchContainers();
+      return results;
+    } catch (err) {
+      const error = err instanceof Error ? err.message : 'Failed to remove containers';
+      // On error, mark all as failed
+      const results: BatchOperationResult[] = ids.map(id => ({
+        id,
+        success: false,
+        error: error,
+      }));
+      set({ error, batchOperationInProgress: false, batchOperationResults: results });
+      throw err;
+    }
+  },
+  
+  clearBatchResults: () => {
+    set({ batchOperationResults: [] });
   },
 }));

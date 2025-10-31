@@ -133,3 +133,109 @@ export async function removeContainers(
 export async function pruneContainers(runtime: Runtime): Promise<PruneResult> {
   return invoke<PruneResult>('prune_containers_command', { runtime });
 }
+
+/**
+ * Batch operation result
+ */
+export interface BatchOperationResult {
+  id: string;
+  success: boolean;
+  error?: string | undefined;
+}
+
+/**
+ * Start multiple containers concurrently
+ */
+export async function startContainers(
+  runtime: Runtime,
+  containerIds: string[]
+): Promise<BatchOperationResult[]> {
+  const results = await invoke<[string, { Ok?: undefined; Err?: string }][]>(
+    'start_containers_command',
+    { runtime, containerIds }
+  );
+  
+  return results.map(([id, result]) => ({
+    id,
+    success: result.Ok !== undefined || !result.Err,
+    error: result.Err,
+  }));
+}
+
+/**
+ * Stop multiple containers concurrently
+ */
+export async function stopContainers(
+  runtime: Runtime,
+  containerIds: string[],
+  timeout?: number
+): Promise<BatchOperationResult[]> {
+  const results = await invoke<[string, { Ok?: undefined; Err?: string }][]>(
+    'stop_containers_command',
+    { runtime, containerIds, timeout: timeout ?? null }
+  );
+  
+  return results.map(([id, result]) => ({
+    id,
+    success: result.Ok !== undefined || !result.Err,
+    error: result.Err,
+  }));
+}
+
+/**
+ * Restart multiple containers concurrently
+ */
+export async function restartContainers(
+  runtime: Runtime,
+  containerIds: string[],
+  timeout?: number
+): Promise<BatchOperationResult[]> {
+  const results = await invoke<[string, { Ok?: undefined; Err?: string }][]>(
+    'restart_containers_command',
+    { runtime, containerIds, timeout: timeout ?? null }
+  );
+  
+  return results.map(([id, result]) => ({
+    id,
+    success: result.Ok !== undefined || !result.Err,
+    error: result.Err,
+  }));
+}
+
+/**
+ * Pause multiple containers concurrently
+ */
+export async function pauseContainers(
+  runtime: Runtime,
+  containerIds: string[]
+): Promise<BatchOperationResult[]> {
+  const results = await invoke<[string, { Ok?: undefined; Err?: string }][]>(
+    'pause_containers_command',
+    { runtime, containerIds }
+  );
+  
+  return results.map(([id, result]) => ({
+    id,
+    success: result.Ok !== undefined || !result.Err,
+    error: result.Err,
+  }));
+}
+
+/**
+ * Unpause multiple containers concurrently
+ */
+export async function unpauseContainers(
+  runtime: Runtime,
+  containerIds: string[]
+): Promise<BatchOperationResult[]> {
+  const results = await invoke<[string, { Ok?: undefined; Err?: string }][]>(
+    'unpause_containers_command',
+    { runtime, containerIds }
+  );
+  
+  return results.map(([id, result]) => ({
+    id,
+    success: result.Ok !== undefined || !result.Err,
+    error: result.Err,
+  }));
+}

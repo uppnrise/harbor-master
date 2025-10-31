@@ -45,6 +45,12 @@ fn main() {
             commands::container::remove_container_command,
             commands::container::remove_containers_command,
             commands::container::prune_containers_command,
+            // Batch container operations
+            commands::container::start_containers_command,
+            commands::container::stop_containers_command,
+            commands::container::restart_containers_command,
+            commands::container::pause_containers_command,
+            commands::container::unpause_containers_command,
         ])
         .setup(|app| {
             // Build the menu
