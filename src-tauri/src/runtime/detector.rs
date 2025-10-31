@@ -26,6 +26,8 @@ impl RuntimeDetector {
     /// 
     /// # Example
     /// ```
+    /// use harbor_master::runtime::detector::RuntimeDetector;
+    /// 
     /// let detector = RuntimeDetector::new(60_000, 500);
     /// ```
     pub fn new(cache_ttl: u64, detection_timeout: u64) -> Self {
