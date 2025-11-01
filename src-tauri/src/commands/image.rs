@@ -54,13 +54,11 @@ pub async fn pull_image(
         tag,
         auth,
     };
-    
+
     // Run in blocking task since it can take a while
-    tokio::task::spawn_blocking(move || {
-        image::pull_image(&runtime, &options, &app_handle)
-    })
-    .await
-    .map_err(|e| format!("Failed to spawn pull task: {}", e))?
+    tokio::task::spawn_blocking(move || image::pull_image(&runtime, &options, &app_handle))
+        .await
+        .map_err(|e| format!("Failed to spawn pull task: {}", e))?
 }
 
 #[cfg(test)]

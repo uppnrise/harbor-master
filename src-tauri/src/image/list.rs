@@ -22,7 +22,7 @@ pub fn list_images(runtime: &Runtime) -> Result<Vec<Image>, String> {
 
     let stdout = String::from_utf8_lossy(&output.stdout);
     let mut images = parse_images(&stdout)?;
-    
+
     // Get container counts for each image
     if let Ok(container_counts) = get_container_counts(runtime) {
         for image in &mut images {
@@ -31,7 +31,7 @@ pub fn list_images(runtime: &Runtime) -> Result<Vec<Image>, String> {
             }
         }
     }
-    
+
     Ok(images)
 }
 
@@ -49,10 +49,10 @@ fn get_container_counts(runtime: &Runtime) -> Result<HashMap<String, u32>, Strin
 
     let stdout = String::from_utf8_lossy(&output.stdout);
     let mut counts: HashMap<String, u32> = HashMap::new();
-    
+
     // Also need to map image names to IDs
     let image_name_to_id = get_image_name_to_id_map(runtime)?;
-    
+
     for line in stdout.lines() {
         let parts: Vec<&str> = line.split('\t').collect();
         if !parts.is_empty() {
@@ -82,17 +82,17 @@ fn get_image_name_to_id_map(runtime: &Runtime) -> Result<HashMap<String, String>
 
     let stdout = String::from_utf8_lossy(&output.stdout);
     let mut map = HashMap::new();
-    
+
     for line in stdout.lines() {
         let parts: Vec<&str> = line.split('\t').collect();
         if parts.len() >= 2 {
             let name = parts[0].trim().to_string();
             let id = parts[1].trim().to_string();
-            
+
             // Add both the full name and just the ID prefix as keys
             map.insert(name.clone(), id.clone());
             map.insert(id[..12.min(id.len())].to_string(), id.clone());
-            
+
             // Also add just the repo name without tag for matching
             if let Some(repo) = name.split(':').next() {
                 if !repo.is_empty() && repo != "<none>" {

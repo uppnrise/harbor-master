@@ -20,10 +20,7 @@ pub struct PruneResult {
 }
 
 /// Prune unused images
-pub fn prune_images(
-    runtime: &Runtime,
-    options: &PruneImageOptions,
-) -> Result<PruneResult, String> {
+pub fn prune_images(runtime: &Runtime, options: &PruneImageOptions) -> Result<PruneResult, String> {
     let mut cmd = Command::new(&runtime.path);
     cmd.args(["image", "prune", "-f"]); // -f to skip confirmation
 
@@ -31,9 +28,12 @@ pub fn prune_images(
         cmd.arg("-a"); // Prune all unused images, not just dangling
     }
 
-    let output = cmd
-        .output()
-        .map_err(|e| format!("Failed to execute {} image prune: {}", runtime.runtime_type, e))?;
+    let output = cmd.output().map_err(|e| {
+        format!(
+            "Failed to execute {} image prune: {}",
+            runtime.runtime_type, e
+        )
+    })?;
 
     if !output.status.success() {
         let stderr = String::from_utf8_lossy(&output.stderr);
@@ -59,12 +59,12 @@ fn parse_prune_output(output: &str) -> Result<PruneResult, String> {
 
     for line in output.lines() {
         let line = line.trim();
-        
+
         // Count deleted images
         if line.starts_with("deleted:") || line.starts_with("untagged:") {
             images_deleted += 1;
         }
-        
+
         // Parse space reclaimed
         if line.contains("Total reclaimed space:") || line.contains("reclaimed") {
             // Extract the size part (e.g., "1.2GB", "500MB")
@@ -83,12 +83,12 @@ fn parse_prune_output(output: &str) -> Result<PruneResult, String> {
 /// Parse a size string like "1.2GB" or "500MB" into bytes
 fn parse_size_string(size_str: &str) -> u64 {
     let size_str = size_str.trim();
-    
+
     // Extract number and unit
     let mut number_str = String::new();
     let mut unit_str = String::new();
     let mut in_number = true;
-    
+
     for ch in size_str.chars() {
         if ch.is_numeric() || ch == '.' {
             if in_number {
@@ -99,9 +99,9 @@ fn parse_size_string(size_str: &str) -> u64 {
             unit_str.push(ch.to_ascii_uppercase());
         }
     }
-    
+
     let number: f64 = number_str.parse().unwrap_or(0.0);
-    
+
     // Convert to bytes based on unit
     let multiplier: u64 = match unit_str.as_str() {
         "B" => 1,
@@ -111,7 +111,7 @@ fn parse_size_string(size_str: &str) -> u64 {
         "TB" | "T" => 1024 * 1024 * 1024 * 1024,
         _ => 1,
     };
-    
+
     (number * multiplier as f64) as u64
 }
 

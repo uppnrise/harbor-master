@@ -50,7 +50,14 @@ pub fn remove_image(
 fn stop_and_remove_containers_using_image(runtime: &Runtime, image_id: &str) -> Result<(), String> {
     // Get list of containers using this image (both running and stopped)
     let mut cmd = Command::new(&runtime.path);
-    cmd.args(["ps", "-a", "--filter", &format!("ancestor={}", image_id), "--format", "{{.ID}}"]);
+    cmd.args([
+        "ps",
+        "-a",
+        "--filter",
+        &format!("ancestor={}", image_id),
+        "--format",
+        "{{.ID}}",
+    ]);
 
     let output = cmd
         .output()
@@ -62,7 +69,10 @@ fn stop_and_remove_containers_using_image(runtime: &Runtime, image_id: &str) -> 
     }
 
     let container_ids = String::from_utf8_lossy(&output.stdout);
-    let ids: Vec<&str> = container_ids.lines().filter(|line| !line.is_empty()).collect();
+    let ids: Vec<&str> = container_ids
+        .lines()
+        .filter(|line| !line.is_empty())
+        .collect();
 
     // Stop and remove each container using synchronous Docker commands
     for container_id in ids {
@@ -70,16 +80,20 @@ fn stop_and_remove_containers_using_image(runtime: &Runtime, image_id: &str) -> 
         let mut stop_cmd = Command::new(&runtime.path);
         stop_cmd.args(["stop", container_id]);
         let _ = stop_cmd.output(); // Ignore errors if already stopped
-        
+
         // Then force remove the container
         let mut rm_cmd = Command::new(&runtime.path);
         rm_cmd.args(["rm", "-f", container_id]);
-        let rm_output = rm_cmd.output()
+        let rm_output = rm_cmd
+            .output()
             .map_err(|e| format!("Failed to remove container {}: {}", container_id, e))?;
-        
+
         if !rm_output.status.success() {
             let stderr = String::from_utf8_lossy(&rm_output.stderr);
-            return Err(format!("Failed to remove container {}: {}", container_id, stderr));
+            return Err(format!(
+                "Failed to remove container {}: {}",
+                container_id, stderr
+            ));
         }
     }
 

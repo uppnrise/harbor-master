@@ -49,12 +49,12 @@ pub struct PullProgress {
 }
 
 /// Pull an image from a registry
-/// 
+///
 /// # Arguments
 /// * `runtime` - Docker or Podman runtime
 /// * `options` - Pull options (image name, tag, auth)
 /// * `app_handle` - Tauri app handle for emitting progress events
-/// 
+///
 /// # Returns
 /// * `Ok(())` if pull succeeds
 /// * `Err(String)` with error message if pull fails
@@ -64,14 +64,14 @@ pub fn pull_image(
     app_handle: &AppHandle,
 ) -> Result<(), String> {
     let image_ref = format!("{}:{}", options.image_name, options.tag);
-    
+
     // Build command
     let mut cmd = Command::new(&runtime.path);
     cmd.arg("pull");
     cmd.arg(&image_ref);
     cmd.stdout(Stdio::piped());
     cmd.stderr(Stdio::piped());
-    
+
     // Add authentication if provided
     if let Some(auth) = &options.auth {
         // For Docker, use --username and --password
@@ -85,20 +85,22 @@ pub fn pull_image(
             }
         }
     }
-    
+
     // Spawn process
-    let mut child = cmd.spawn().map_err(|e| format!("Failed to spawn pull command: {}", e))?;
-    
+    let mut child = cmd
+        .spawn()
+        .map_err(|e| format!("Failed to spawn pull command: {}", e))?;
+
     // Read stdout for progress updates
     if let Some(stdout) = child.stdout.take() {
         let reader = BufReader::new(stdout);
         let app_handle_clone = app_handle.clone();
         let image_ref_clone = image_ref.clone();
-        
+
         // Parse progress in separate thread
         std::thread::spawn(move || {
             let mut layers: Vec<LayerProgress> = Vec::new();
-            
+
             for line in reader.lines().map_while(Result::ok) {
                 if let Some(progress) = parse_pull_progress(&line) {
                     // Update or add layer
@@ -107,7 +109,7 @@ pub fn pull_image(
                     } else {
                         layers.push(progress);
                     }
-                    
+
                     // Emit progress event
                     let overall_progress = PullProgress {
                         image: image_ref_clone.clone(),
@@ -115,11 +117,11 @@ pub fn pull_image(
                         message: line.clone(),
                         complete: false,
                     };
-                    
+
                     let _ = app_handle_clone.emit("image-pull-progress", overall_progress);
                 }
             }
-            
+
             // Emit completion event
             let completion = PullProgress {
                 image: image_ref_clone,
@@ -130,19 +132,21 @@ pub fn pull_image(
             let _ = app_handle_clone.emit("image-pull-progress", completion);
         });
     }
-    
+
     // Wait for process to complete
-    let status = child.wait().map_err(|e| format!("Failed to wait for pull command: {}", e))?;
-    
+    let status = child
+        .wait()
+        .map_err(|e| format!("Failed to wait for pull command: {}", e))?;
+
     if !status.success() {
         return Err(format!("Failed to pull image: {}", image_ref));
     }
-    
+
     Ok(())
 }
 
 /// Parse progress from a docker pull output line
-/// 
+///
 /// Docker pull output format examples:
 /// - "a1b2c3d4e5f6: Pulling fs layer"
 /// - "a1b2c3d4e5f6: Downloading [==>                ] 1.5MB/10MB"
@@ -154,15 +158,15 @@ fn parse_pull_progress(line: &str) -> Option<LayerProgress> {
     if parts.len() != 2 {
         return None;
     }
-    
+
     let id = parts[0].trim().to_string();
     let status_part = parts[1].trim();
-    
+
     // Check if this is a layer status line (12-character hex ID)
     if id.len() != 12 || !id.chars().all(|c| c.is_ascii_hexdigit()) {
         return None;
     }
-    
+
     // Parse status and progress
     let status = if status_part.contains('[') {
         // Progress line: "Downloading [==>    ] 1.5MB/10MB"
@@ -186,7 +190,7 @@ fn parse_pull_progress(line: &str) -> Option<LayerProgress> {
     } else {
         status_part.to_string()
     };
-    
+
     Some(LayerProgress {
         id,
         status,
@@ -201,10 +205,10 @@ fn parse_bytes_progress(s: &str) -> (Option<u64>, Option<u64>) {
     if parts.len() != 2 {
         return (None, None);
     }
-    
+
     let current = parse_size_to_bytes(parts[0].trim());
     let total = parse_size_to_bytes(parts[1].trim());
-    
+
     (current, total)
 }
 
@@ -213,7 +217,7 @@ fn parse_size_to_bytes(s: &str) -> Option<u64> {
     let s = s.trim();
     let mut number_str = String::new();
     let mut unit_str = String::new();
-    
+
     for c in s.chars() {
         if c.is_numeric() || c == '.' {
             number_str.push(c);
@@ -221,9 +225,9 @@ fn parse_size_to_bytes(s: &str) -> Option<u64> {
             unit_str.push(c);
         }
     }
-    
+
     let number: f64 = number_str.parse().ok()?;
-    
+
     let multiplier: u64 = match unit_str.trim().to_uppercase().as_str() {
         "B" => 1,
         "KB" | "K" => 1024,
@@ -231,7 +235,7 @@ fn parse_size_to_bytes(s: &str) -> Option<u64> {
         "GB" | "G" => 1024 * 1024 * 1024,
         _ => 1,
     };
-    
+
     Some((number * multiplier as f64) as u64)
 }
 
@@ -289,10 +293,10 @@ mod tests {
             tag: "latest".to_string(),
             auth: None,
         };
-        
+
         let json = serde_json::to_string(&options).unwrap();
         let deserialized: PullImageOptions = serde_json::from_str(&json).unwrap();
-        
+
         assert_eq!(deserialized.image_name, "nginx");
         assert_eq!(deserialized.tag, "latest");
     }
