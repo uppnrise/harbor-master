@@ -1,7 +1,5 @@
-/**
- * Image pulling operations
- * Handles pulling images from Docker registries with progress tracking
- */
+//! Image pulling operations
+//! Handles pulling images from Docker registries with progress tracking
 
 use serde::{Deserialize, Serialize};
 use std::io::{BufRead, BufReader};
@@ -101,7 +99,7 @@ pub fn pull_image(
         std::thread::spawn(move || {
             let mut layers: Vec<LayerProgress> = Vec::new();
             
-            for line in reader.lines().flatten() {
+            for line in reader.lines().map_while(Result::ok) {
                 if let Some(progress) = parse_pull_progress(&line) {
                     // Update or add layer
                     if let Some(existing) = layers.iter_mut().find(|l| l.id == progress.id) {

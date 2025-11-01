@@ -291,7 +291,7 @@ export const BatchActionsBar = memo(function BatchActionsBar() {
         title="Remove Containers"
         message={`Are you sure you want to remove ${selectedCount} selected container${selectedCount !== 1 ? 's' : ''}? This action cannot be undone.`}
         confirmText="Remove"
-        confirmVariant="danger"
+        variant="danger"
         isLoading={batchOperationInProgress}
         onConfirm={handleBatchRemove}
         onCancel={() => setRemoveDialog({ isOpen: false, force: false, volumes: false })}
