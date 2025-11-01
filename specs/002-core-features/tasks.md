@@ -330,28 +330,35 @@
 
 ---
 
-### User Story 2.6: Prune Unused Images
+### User Story 2.6: Prune Unused Images ✅
 **As a user, I want to clean up disk space by removing unused images**
 
 **Acceptance Criteria:**
-- Show dangling images
-- Bulk removal with size savings
-- Confirmation with total space to reclaim
+- ✅ Show dangling images
+- ✅ Bulk removal with size savings
+- ✅ Confirmation with total space to reclaim
 
 **Tasks:**
 
 #### Backend (Rust) - 4 hours
-- [ ] T2.6.1: Create `src-tauri/src/image/prune.rs` (1h)
-- [ ] T2.6.2: Implement `prune_images()` (1h)
-- [ ] T2.6.3: Add prune command (1h)
-- [ ] T2.6.4: Write tests for pruning (1h)
+- [x] T2.6.1: Create `src-tauri/src/image/prune.rs` (1h)
+- [x] T2.6.2: Implement `prune_images()` (1h)
+- [x] T2.6.3: Add prune command (1h)
+- [x] T2.6.4: Write tests for pruning (1h)
 
 #### Frontend (TypeScript/React) - 6 hours
-- [ ] T2.6.5: Create `src/components/images/PruneDialog.tsx` (3h)
-- [ ] T2.6.6: Show space savings calculation (2h)
-- [ ] T2.6.7: Write tests for prune flow (1h)
+- [x] T2.6.5: Add prune functionality to ImageList.tsx (3h)
+- [x] T2.6.6: Show space savings calculation (2h)
+- [x] T2.6.7: Write tests for prune flow (1h)
 
-**Subtotal:** 10 hours
+**Subtotal:** 10 hours ✅ **COMPLETED**
+
+**Implementation Notes:**
+- Created `prune.rs` module with Docker integration
+- Supports both "dangling only" and "all unused" modes
+- Displays human-readable statistics (images deleted + space reclaimed)
+- Integrated into existing ImageList component with confirmation dialog
+- All 186 tests passing (75 Rust + 111 TypeScript)
 
 ---
 
