@@ -107,7 +107,11 @@ const mockContainerDetails: ContainerDetails = {
 
 describe('containerStore', () => {
   beforeEach(() => {
-    // Reset store state - must include ALL state properties
+    // Clear all mocks FIRST
+    vi.clearAllMocks();
+    vi.clearAllTimers();
+    
+    // Reset store state - use partial updates to preserve methods
     useContainerStore.setState({
       containers: [],
       selectedContainer: null,
@@ -123,21 +127,25 @@ describe('containerStore', () => {
       stateFilter: 'all',
       sortField: 'name',
       sortOrder: 'asc',
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } as any); // Use 'as any' to avoid type checking for methods
-
-    // Clear service mocks but not module mocks
-    vi.clearAllTimers();
+    });
     
-    // Reset runtime store mock to return mockRuntime
+    // Setup runtime store mock AFTER clearing
+    const mockGetState = vi.fn().mockReturnValue({
+      selectedRuntime: mockRuntime,
+    });
+    
     vi.mocked(runtimeStore.useRuntimeStore).mockReturnValue({
       selectedRuntime: mockRuntime,
-      getState: () => ({ selectedRuntime: mockRuntime } as unknown as ReturnType<typeof runtimeStore.useRuntimeStore.getState>),
+      getState: mockGetState,
     } as unknown as ReturnType<typeof runtimeStore.useRuntimeStore>);
     
-    vi.mocked(runtimeStore.useRuntimeStore.getState).mockReturnValue({
-      selectedRuntime: mockRuntime,
-    } as unknown as ReturnType<typeof runtimeStore.useRuntimeStore.getState>);
+    vi.mocked(runtimeStore.useRuntimeStore.getState).mockImplementation(mockGetState);
+  });
+
+  afterEach(() => {
+    // Clean up any running timers
+    vi.clearAllTimers();
+    vi.restoreAllMocks();
   });
 
   describe('fetchContainers', () => {
