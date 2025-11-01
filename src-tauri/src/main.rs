@@ -4,6 +4,7 @@
 mod commands;
 mod config;
 mod container;
+mod image;
 mod polling;
 mod runtime;
 mod types;
@@ -51,6 +52,8 @@ fn main() {
             commands::container::restart_containers_command,
             commands::container::pause_containers_command,
             commands::container::unpause_containers_command,
+            // Image management commands
+            commands::image::list_images,
         ])
         .setup(|app| {
             // Build the menu

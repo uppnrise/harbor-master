@@ -6,6 +6,7 @@ use std::sync::Arc;
 use tauri::{AppHandle, Emitter, Window};
 
 pub mod container;
+pub mod image;
 
 // Global detector instance
 lazy_static::lazy_static! {
