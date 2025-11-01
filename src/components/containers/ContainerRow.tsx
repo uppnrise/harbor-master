@@ -407,35 +407,35 @@ export const ContainerRow = memo(function ContainerRow({
             
             {/* Remove Options */}
             <div className="space-y-3 mb-6">
-              <label className="flex items-start gap-2 cursor-pointer">
+              <label className="flex items-start gap-3 cursor-pointer p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
                 <input
                   type="checkbox"
                   checked={removeDialog.force}
                   onChange={(e) => setRemoveDialog(prev => ({ ...prev, force: e.target.checked }))}
-                  className="mt-1 h-4 w-4 text-red-600 focus:ring-red-500 border-gray-300 rounded"
+                  className="mt-0.5 h-5 w-5 text-red-600 focus:ring-2 focus:ring-red-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 border-gray-300 dark:border-gray-600 rounded cursor-pointer"
                 />
-                <div>
+                <div className="flex-1">
                   <div className="text-sm font-medium text-gray-900 dark:text-white">
                     Force remove
                   </div>
-                  <div className="text-xs text-gray-500 dark:text-gray-400">
+                  <div className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
                     Remove even if the container is running
                   </div>
                 </div>
               </label>
               
-              <label className="flex items-start gap-2 cursor-pointer">
+              <label className="flex items-start gap-3 cursor-pointer p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
                 <input
                   type="checkbox"
                   checked={removeDialog.volumes}
                   onChange={(e) => setRemoveDialog(prev => ({ ...prev, volumes: e.target.checked }))}
-                  className="mt-1 h-4 w-4 text-red-600 focus:ring-red-500 border-gray-300 rounded"
+                  className="mt-0.5 h-5 w-5 text-red-600 focus:ring-2 focus:ring-red-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 border-gray-300 dark:border-gray-600 rounded cursor-pointer"
                 />
-                <div>
+                <div className="flex-1">
                   <div className="text-sm font-medium text-gray-900 dark:text-white">
                     Remove volumes
                   </div>
-                  <div className="text-xs text-gray-500 dark:text-gray-400">
+                  <div className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
                     Also remove anonymous volumes associated with the container
                   </div>
                 </div>

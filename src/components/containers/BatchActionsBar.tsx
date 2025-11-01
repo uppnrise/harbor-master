@@ -3,9 +3,10 @@
  * 
  * Displays batch action buttons when containers are selected
  */
-import { memo } from 'react';
+import { memo, useState } from 'react';
 import { useContainerStore } from '../../stores/containerStore';
 import { useToast } from '../../hooks/useToast';
+import { ConfirmDialog } from '../ui/ConfirmDialog';
 
 export const BatchActionsBar = memo(function BatchActionsBar() {
   const {
@@ -22,6 +23,12 @@ export const BatchActionsBar = memo(function BatchActionsBar() {
   } = useContainerStore();
   
   const { showToast } = useToast();
+  const [removeDialog, setRemoveDialog] = useState({
+    isOpen: false,
+    force: false,
+    volumes: false,
+  });
+  
   const selectedCount = selectedContainerIds.size;
   
   if (selectedCount === 0) {
@@ -127,13 +134,12 @@ export const BatchActionsBar = memo(function BatchActionsBar() {
   };
   
   const handleBatchRemove = async () => {
-    if (!confirm(`Are you sure you want to remove ${selectedCount} selected container${selectedCount !== 1 ? 's' : ''}?`)) {
-      return;
-    }
-    
     try {
       showToast(`Removing ${selectedCount} container${selectedCount !== 1 ? 's' : ''}...`, 'info');
-      const results = await batchRemoveContainers(selectedIds, { force: false, volumes: false });
+      const results = await batchRemoveContainers(selectedIds, { 
+        force: removeDialog.force, 
+        volumes: removeDialog.volumes 
+      });
       const succeeded = results.filter(r => r.success).length;
       const failed = results.filter(r => !r.success).length;
       
@@ -142,6 +148,7 @@ export const BatchActionsBar = memo(function BatchActionsBar() {
       } else {
         showToast(`⚠ Removed ${succeeded}, failed ${failed} container${failed !== 1 ? 's' : ''}`, 'error');
       }
+      setRemoveDialog({ isOpen: false, force: false, volumes: false });
       clearSelection();
     } catch (error) {
       showToast(error instanceof Error ? error.message : 'Failed to remove containers', 'error');
@@ -233,7 +240,7 @@ export const BatchActionsBar = memo(function BatchActionsBar() {
             )}
             
             <button
-              onClick={handleBatchRemove}
+              onClick={() => setRemoveDialog({ isOpen: true, force: false, volumes: false })}
               disabled={batchOperationInProgress}
               className="px-3 py-1.5 text-sm font-medium text-red-700 bg-red-100 rounded hover:bg-red-200 dark:bg-red-900/30 dark:text-red-300 dark:hover:bg-red-900/50 disabled:opacity-50 disabled:cursor-not-allowed"
               title="Remove selected containers"
@@ -277,6 +284,55 @@ export const BatchActionsBar = memo(function BatchActionsBar() {
           <span>Processing batch operation...</span>
         </div>
       )}
+      
+      {/* Batch Remove Confirmation Dialog */}
+      <ConfirmDialog
+        isOpen={removeDialog.isOpen}
+        title="Remove Containers"
+        message={`Are you sure you want to remove ${selectedCount} selected container${selectedCount !== 1 ? 's' : ''}? This action cannot be undone.`}
+        confirmText="Remove"
+        confirmVariant="danger"
+        isLoading={batchOperationInProgress}
+        onConfirm={handleBatchRemove}
+        onCancel={() => setRemoveDialog({ isOpen: false, force: false, volumes: false })}
+      >
+        {/* Remove Options */}
+        <div className="space-y-3 mt-4">
+          <label className="flex items-start gap-3 cursor-pointer p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+            <input
+              type="checkbox"
+              checked={removeDialog.force}
+              onChange={(e) => setRemoveDialog(prev => ({ ...prev, force: e.target.checked }))}
+              className="mt-0.5 h-5 w-5 text-red-600 focus:ring-2 focus:ring-red-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 border-gray-300 dark:border-gray-600 rounded cursor-pointer"
+            />
+            <div className="flex-1">
+              <div className="text-sm font-medium text-gray-900 dark:text-white">
+                Force remove
+              </div>
+              <div className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                Remove even if containers are running
+              </div>
+            </div>
+          </label>
+          
+          <label className="flex items-start gap-3 cursor-pointer p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+            <input
+              type="checkbox"
+              checked={removeDialog.volumes}
+              onChange={(e) => setRemoveDialog(prev => ({ ...prev, volumes: e.target.checked }))}
+              className="mt-0.5 h-5 w-5 text-red-600 focus:ring-2 focus:ring-red-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 border-gray-300 dark:border-gray-600 rounded cursor-pointer"
+            />
+            <div className="flex-1">
+              <div className="text-sm font-medium text-gray-900 dark:text-white">
+                Remove volumes
+              </div>
+              <div className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                Also remove anonymous volumes associated with the containers
+              </div>
+            </div>
+          </label>
+        </div>
+      </ConfirmDialog>
     </div>
   );
 });

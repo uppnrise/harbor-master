@@ -40,6 +40,16 @@ export interface ConfirmDialogProps {
   isLoading?: boolean;
 
   /**
+   * Whether the confirm button should be disabled
+   */
+  confirmDisabled?: boolean;
+
+  /**
+   * Optional children to render below the message (e.g., checkboxes, options)
+   */
+  children?: React.ReactNode;
+
+  /**
    * Callback when confirmed
    */
   onConfirm: () => void;
@@ -61,6 +71,8 @@ export function ConfirmDialog({
   cancelText = 'Cancel',
   variant = 'danger',
   isLoading = false,
+  confirmDisabled = false,
+  children,
   onConfirm,
   onCancel,
 }: ConfirmDialogProps) {
@@ -148,6 +160,13 @@ export function ConfirmDialog({
           </p>
         </div>
 
+        {/* Optional children (e.g., checkboxes, form elements) */}
+        {children && (
+          <div className="mb-6">
+            {children}
+          </div>
+        )}
+
         {/* Actions */}
         <div className="flex justify-end gap-3">
           <button
@@ -160,7 +179,7 @@ export function ConfirmDialog({
           </button>
           <button
             onClick={onConfirm}
-            disabled={isLoading}
+            disabled={isLoading || confirmDisabled}
             className={`px-6 py-2.5 rounded text-white disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 min-w-[100px] ${confirmButtonStyles[variant]}`}
             aria-label={confirmText}
           >
