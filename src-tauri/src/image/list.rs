@@ -210,7 +210,7 @@ mod tests {
             "Id": "sha256:xyz789",
             "RepoTags": ["ubuntu:20.04"],
             "Size": 73000000,
-            "Created": "2024-01-10T08:00:00Z"
+            "CreatedAt": "2024-01-10T08:00:00Z"
         });
 
         let image = parse_image_object(&json).unwrap();
