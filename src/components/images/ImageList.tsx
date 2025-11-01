@@ -3,13 +3,13 @@
  * Displays a list of container images with filtering and sorting
  */
 
-import { useRef, useEffect } from 'react';
+import { useRef, useEffect, useState } from 'react';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { ImageRow } from './ImageRow';
 import { useImageStore } from '../../stores/imageStore';
 import { filterImages, sortImages, type ImageSortField, type SortDirection } from '../../utils/imageFilters';
 import { useRuntimeStore } from '../../stores/runtimeStore';
-import { useState } from 'react';
+import { ConfirmDialog } from '../ui/ConfirmDialog';
 
 export function ImageList() {
   const {
@@ -17,6 +17,7 @@ export function ImageList() {
     isLoading,
     error,
     loadImages,
+    removeImages,
     searchQuery,
     setSearchQuery,
     filterTags,
@@ -33,6 +34,10 @@ export function ImageList() {
 
   const [sortBy, setSortBy] = useState<ImageSortField>('repository');
   const [sortDirection, setSortDirection] = useState<SortDirection>('asc');
+  const [showRemoveDialog, setShowRemoveDialog] = useState(false);
+  const [forceRemove, setForceRemove] = useState(false);
+  const [isRemoving, setIsRemoving] = useState(false);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   // Filter and sort images
   const filteredAndSortedImages = sortImages(
@@ -71,6 +76,53 @@ export function ImageList() {
   const isAllSelected =
     filteredAndSortedImages.length > 0 &&
     selectedImageIds.size === filteredAndSortedImages.length;
+
+  // Handle remove images
+  const handleRemoveClick = () => {
+    setShowRemoveDialog(true);
+  };
+
+  const handleRemoveConfirm = async () => {
+    if (!selectedRuntime) return;
+
+    setIsRemoving(true);
+    try {
+      const imageIds = Array.from(selectedImageIds);
+      await removeImages(selectedRuntime, imageIds, forceRemove);
+      setSuccessMessage(
+        `Successfully removed ${imageIds.length} image${imageIds.length !== 1 ? 's' : ''}`
+      );
+      setTimeout(() => setSuccessMessage(null), 3000);
+    } catch {
+      // Error handled in store
+    } finally {
+      setIsRemoving(false);
+      setShowRemoveDialog(false);
+      setForceRemove(false);
+    }
+  };
+
+  const handleRemoveCancel = () => {
+    setShowRemoveDialog(false);
+    setForceRemove(false);
+  };
+
+  // Get images that are in use
+  const selectedImagesInUse = Array.from(selectedImageIds)
+    .map((id) => images.find((img) => img.id === id))
+    .filter((img) => img && img.containers > 0);
+
+  const removeDialogMessage = selectedImagesInUse.length > 0
+    ? `${selectedImagesInUse.length} of the selected images are in use by containers.\n\n${
+        forceRemove
+          ? 'Force removal will stop and remove those containers.'
+          : 'Enable "Force" to remove them anyway.'
+      }\n\nAre you sure you want to remove ${selectedImageIds.size} image${
+        selectedImageIds.size !== 1 ? 's' : ''
+      }?`
+    : `Are you sure you want to remove ${selectedImageIds.size} image${
+        selectedImageIds.size !== 1 ? 's' : ''
+      }?`;
 
   if (error) {
     return (
@@ -126,6 +178,35 @@ export function ImageList() {
           </select>
         </div>
       </div>
+
+      {/* Actions Toolbar */}
+      {selectedImageIds.size > 0 && (
+        <div className="px-4 py-3 bg-blue-50 dark:bg-blue-900/20 border-b border-blue-200 dark:border-blue-800">
+          <div className="flex items-center justify-between">
+            <div className="text-sm text-blue-900 dark:text-blue-100">
+              {selectedImageIds.size} image{selectedImageIds.size !== 1 ? 's' : ''} selected
+            </div>
+            <div className="flex gap-2">
+              <button
+                onClick={handleRemoveClick}
+                disabled={isRemoving}
+                className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Remove
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Success Message */}
+      {successMessage && (
+        <div className="px-4 py-3 bg-green-50 dark:bg-green-900/20 border-b border-green-200 dark:border-green-800">
+          <div className="text-sm text-green-900 dark:text-green-100">
+            {successMessage}
+          </div>
+        </div>
+      )}
 
       {/* Image List */}
       <div ref={parentRef} className="flex-1 overflow-auto">
@@ -242,6 +323,34 @@ export function ImageList() {
           </>
         )}
       </div>
+
+      {/* Remove Confirmation Dialog */}
+      <ConfirmDialog
+        isOpen={showRemoveDialog}
+        title="Remove Images"
+        message={removeDialogMessage}
+        confirmText="Remove"
+        cancelText="Cancel"
+        variant="danger"
+        isLoading={isRemoving}
+        onConfirm={handleRemoveConfirm}
+        onCancel={handleRemoveCancel}
+      />
+
+      {/* Force Checkbox in Dialog (if images in use) */}
+      {showRemoveDialog && selectedImagesInUse.length > 0 && (
+        <div className="fixed bottom-20 left-1/2 -translate-x-1/2 z-50 bg-gray-800 px-4 py-2 rounded-lg border border-gray-700">
+          <label className="flex items-center gap-2 text-white cursor-pointer">
+            <input
+              type="checkbox"
+              checked={forceRemove}
+              onChange={(e) => setForceRemove(e.target.checked)}
+              className="h-4 w-4 rounded border-gray-600 text-blue-600"
+            />
+            <span>Force removal (will remove containers using these images)</span>
+          </label>
+        </div>
+      )}
     </div>
   );
 }
