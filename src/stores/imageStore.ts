@@ -19,6 +19,8 @@ export interface ImageStore {
 
   // Actions
   loadImages: (runtime: Runtime) => Promise<void>;
+  removeImage: (runtime: Runtime, imageId: string, force?: boolean) => Promise<void>;
+  removeImages: (runtime: Runtime, imageIds: string[], force?: boolean) => Promise<void>;
   setSearchQuery: (query: string) => void;
   setFilterTags: (filter: 'all' | 'tagged' | 'dangling') => void;
   selectImage: (imageId: string) => void;
@@ -46,6 +48,35 @@ export const useImageStore = create<ImageStore>((set, get) => ({
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
       set({ error: errorMessage, isLoading: false });
+    }
+  },
+
+  // Remove a single image
+  removeImage: async (runtime: Runtime, imageId: string, force = false) => {
+    set({ isLoading: true, error: null });
+    try {
+      await imageService.removeImage(runtime, imageId, force);
+      // Reload images to reflect the change
+      await get().loadImages(runtime);
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      set({ error: errorMessage, isLoading: false });
+      throw error; // Re-throw for UI to handle
+    }
+  },
+
+  // Remove multiple images
+  removeImages: async (runtime: Runtime, imageIds: string[], force = false) => {
+    set({ isLoading: true, error: null });
+    try {
+      await imageService.removeImages(runtime, imageIds, force);
+      // Clear selection and reload
+      set({ selectedImageIds: new Set() });
+      await get().loadImages(runtime);
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      set({ error: errorMessage, isLoading: false });
+      throw error; // Re-throw for UI to handle
     }
   },
 
