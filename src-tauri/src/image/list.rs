@@ -194,7 +194,7 @@ mod tests {
         assert_eq!(image.tag, "latest");
         assert_eq!(image.digest, Some("sha256:def456".to_string()));
         assert_eq!(image.size, 142857216);
-        assert_eq!(image.created, "2024-01-15T10:30:00Z");
+        assert_eq!(image.created, "2024-01-15T10:30:00+00:00"); // RFC3339 format
         assert_eq!(image.containers, 2);
         assert_eq!(image.labels.get("version"), Some(&"1.0".to_string()));
     }
@@ -214,7 +214,7 @@ mod tests {
         assert_eq!(image.repository, "ubuntu");
         assert_eq!(image.tag, "20.04");
         assert_eq!(image.size, 73000000);
-        assert_eq!(image.created, "2024-01-10T08:00:00Z");
+        assert_eq!(image.created, "2024-01-10T08:00:00+00:00"); // RFC3339 format
     }
 
     #[test]
