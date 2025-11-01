@@ -79,12 +79,7 @@ export function ImageList() {
 
   // Handle remove images
   const handleRemoveClick = () => {
-    console.log('Remove button clicked, opening dialog');
-    console.log('showRemoveDialog before:', showRemoveDialog);
-    console.log('selectedImageIds:', selectedImageIds);
-    console.log('selectedImagesInUse:', selectedImagesInUse);
     setShowRemoveDialog(true);
-    console.log('showRemoveDialog set to true');
   };
 
   const handleRemoveConfirm = async () => {
