@@ -70,29 +70,6 @@ pub fn remove_images(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::types::{Runtime, RuntimeStatus, RuntimeType, Version};
-    use chrono::Utc;
-
-    fn mock_runtime() -> Runtime {
-        Runtime {
-            id: "test-docker".to_string(),
-            runtime_type: RuntimeType::Docker,
-            path: "docker".to_string(),
-            version: Version {
-                major: 24,
-                minor: 0,
-                patch: 0,
-                full: "24.0.0".to_string(),
-            },
-            status: RuntimeStatus::Running,
-            last_checked: Utc::now(),
-            detected_at: Utc::now(),
-            mode: None,
-            is_wsl: None,
-            error: None,
-            version_warning: None,
-        }
-    }
 
     #[test]
     fn test_remove_options_default() {
