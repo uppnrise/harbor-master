@@ -75,7 +75,10 @@ pub fn remove_containers(
     }
 
     if !errors.is_empty() {
-        return Err(format!("Failed to remove some containers:\n{}", errors.join("\n")));
+        return Err(format!(
+            "Failed to remove some containers:\n{}",
+            errors.join("\n")
+        ));
     }
 
     Ok(removed)
@@ -96,7 +99,12 @@ pub fn prune_containers(runtime: &Runtime) -> Result<PruneResult, String> {
         .arg("--format")
         .arg("json")
         .output()
-        .map_err(|e| format!("Failed to execute {} container prune: {}", runtime.runtime_type, e))?;
+        .map_err(|e| {
+            format!(
+                "Failed to execute {} container prune: {}",
+                runtime.runtime_type, e
+            )
+        })?;
 
     if !output.status.success() {
         let stderr = String::from_utf8_lossy(&output.stderr);
@@ -104,7 +112,7 @@ pub fn prune_containers(runtime: &Runtime) -> Result<PruneResult, String> {
     }
 
     let stdout = String::from_utf8_lossy(&output.stdout);
-    
+
     // Parse the prune result
     let result: PruneResult = serde_json::from_str(&stdout)
         .map_err(|e| format!("Failed to parse prune result: {}", e))?;
@@ -125,7 +133,7 @@ pub struct PruneResult {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::types::{Runtime, RuntimeType, RuntimeStatus, Version};
+    use crate::types::{Runtime, RuntimeStatus, RuntimeType, Version};
     use chrono::Utc;
 
     fn mock_runtime() -> Runtime {
@@ -187,7 +195,7 @@ mod tests {
 
         let result: Result<PruneResult, _> = serde_json::from_str(json);
         assert!(result.is_ok());
-        
+
         let prune = result.unwrap();
         assert_eq!(prune.containers_deleted.as_ref().unwrap().len(), 2);
         assert_eq!(prune.space_reclaimed, 1024000);

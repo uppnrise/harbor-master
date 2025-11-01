@@ -25,9 +25,9 @@ mod tests {
             return;
         }
 
-        use crate::types::{RuntimeType, Runtime, Version, RuntimeStatus};
+        use crate::types::{Runtime, RuntimeStatus, RuntimeType, Version};
         use chrono::Utc;
-        
+
         let runtime = Runtime {
             id: "test-docker".to_string(),
             runtime_type: RuntimeType::Docker,
@@ -48,14 +48,17 @@ mod tests {
         };
 
         let result = list_images(runtime).await;
-        
+
         // Should not fail (even if no images exist)
         // Note: This may fail if Docker is not running, which is acceptable
         if result.is_ok() {
             let images = result.unwrap();
             println!("Found {} Docker images", images.len());
         } else {
-            eprintln!("Docker is installed but not running or accessible: {:?}", result.err());
+            eprintln!(
+                "Docker is installed but not running or accessible: {:?}",
+                result.err()
+            );
         }
     }
 
@@ -72,9 +75,9 @@ mod tests {
             return;
         }
 
-        use crate::types::{RuntimeType, Runtime, Version, RuntimeStatus};
+        use crate::types::{Runtime, RuntimeStatus, RuntimeType, Version};
         use chrono::Utc;
-        
+
         let runtime = Runtime {
             id: "test-podman".to_string(),
             runtime_type: RuntimeType::Podman,
@@ -95,14 +98,17 @@ mod tests {
         };
 
         let result = list_images(runtime).await;
-        
+
         // Should not fail (even if no images exist)
         // Note: This may fail if Podman is not running, which is acceptable
         if result.is_ok() {
             let images = result.unwrap();
             println!("Found {} Podman images", images.len());
         } else {
-            eprintln!("Podman is installed but not running or accessible: {:?}", result.err());
+            eprintln!(
+                "Podman is installed but not running or accessible: {:?}",
+                result.err()
+            );
         }
     }
 }

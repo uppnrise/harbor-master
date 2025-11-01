@@ -168,11 +168,11 @@ pub fn inspect_container(
     }
 
     let stdout = String::from_utf8_lossy(&output.stdout);
-    
+
     // Docker/Podman inspect returns an array with one element
     let mut details: Vec<ContainerDetails> = serde_json::from_str(&stdout)
         .map_err(|e| format!("Failed to parse container details: {}", e))?;
-    
+
     details
         .pop()
         .ok_or_else(|| "No container details returned".to_string())
@@ -181,7 +181,7 @@ pub fn inspect_container(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::types::{Runtime, RuntimeType, RuntimeStatus, Version};
+    use crate::types::{Runtime, RuntimeStatus, RuntimeType, Version};
     use chrono::Utc;
 
     fn mock_runtime() -> Runtime {
@@ -284,7 +284,7 @@ mod tests {
             eprintln!("Deserialization error: {}", e);
         }
         assert!(result.is_ok());
-        
+
         let details = result.unwrap();
         assert_eq!(details.len(), 1);
         assert_eq!(details[0].id, "abc123");

@@ -13,7 +13,10 @@ pub fn list_images(runtime: &Runtime) -> Result<Vec<Image>, String> {
 
     if !output.status.success() {
         let stderr = String::from_utf8_lossy(&output.stderr);
-        return Err(format!("{} images failed: {}", runtime.runtime_type, stderr));
+        return Err(format!(
+            "{} images failed: {}",
+            runtime.runtime_type, stderr
+        ));
     }
 
     let stdout = String::from_utf8_lossy(&output.stdout);
@@ -31,8 +34,8 @@ fn parse_images(output: &str) -> Result<Vec<Image>, String> {
             continue;
         }
 
-        let raw: serde_json::Value = serde_json::from_str(line)
-            .map_err(|e| format!("Failed to parse image JSON: {}", e))?;
+        let raw: serde_json::Value =
+            serde_json::from_str(line).map_err(|e| format!("Failed to parse image JSON: {}", e))?;
 
         let image = parse_image_object(&raw)?;
         images.push(image);
@@ -161,7 +164,7 @@ mod tests {
         });
 
         let image = parse_image_object(&json).unwrap();
-        
+
         assert_eq!(image.id, "sha256:abc123");
         assert_eq!(image.repository, "nginx");
         assert_eq!(image.tag, "latest");
@@ -182,7 +185,7 @@ mod tests {
         });
 
         let image = parse_image_object(&json).unwrap();
-        
+
         assert_eq!(image.id, "sha256:xyz789");
         assert_eq!(image.repository, "ubuntu");
         assert_eq!(image.tag, "20.04");
@@ -201,7 +204,7 @@ mod tests {
         });
 
         let image = parse_image_object(&json).unwrap();
-        
+
         assert_eq!(image.repository, "<none>");
         assert_eq!(image.tag, "<none>");
     }
@@ -212,7 +215,7 @@ mod tests {
 {"ID":"sha256:xyz789","Repository":"ubuntu","Tag":"20.04","Size":73000000,"CreatedAt":"2024-01-10T08:00:00Z"}"#;
 
         let images = parse_images(output).unwrap();
-        
+
         assert_eq!(images.len(), 2);
         assert_eq!(images[0].repository, "nginx");
         assert_eq!(images[1].repository, "ubuntu");
@@ -227,7 +230,7 @@ mod tests {
 "#;
 
         let images = parse_images(output).unwrap();
-        
+
         assert_eq!(images.len(), 2);
     }
 }

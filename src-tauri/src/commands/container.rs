@@ -18,10 +18,7 @@ pub async fn list_containers_command(
 
 /// Start a container
 #[tauri::command]
-pub async fn start_container_command(
-    runtime: Runtime,
-    container_id: String,
-) -> Result<(), String> {
+pub async fn start_container_command(runtime: Runtime, container_id: String) -> Result<(), String> {
     start_container(&runtime, &container_id)
 }
 
@@ -47,10 +44,7 @@ pub async fn restart_container_command(
 
 /// Pause a container
 #[tauri::command]
-pub async fn pause_container_command(
-    runtime: Runtime,
-    container_id: String,
-) -> Result<(), String> {
+pub async fn pause_container_command(runtime: Runtime, container_id: String) -> Result<(), String> {
     pause_container(&runtime, &container_id)
 }
 
@@ -245,7 +239,7 @@ mod tests {
             size: false,
             filters: None,
         };
-        
+
         // This will fail without Docker, but tests the command structure
         let result = list_containers_command(runtime, options).await;
         assert!(result.is_ok() || result.is_err());
@@ -268,7 +262,8 @@ mod tests {
     #[tokio::test]
     async fn test_remove_container_command() {
         let runtime = mock_runtime();
-        let result = remove_container_command(runtime, "test-container".to_string(), true, false).await;
+        let result =
+            remove_container_command(runtime, "test-container".to_string(), true, false).await;
         assert!(result.is_ok() || result.is_err());
     }
 
@@ -277,7 +272,7 @@ mod tests {
         let runtime = mock_runtime();
         let container_ids = vec!["container1".to_string(), "container2".to_string()];
         let result = start_containers_command(runtime, container_ids).await;
-        
+
         assert!(result.is_ok());
         if let Ok(results) = result {
             assert_eq!(results.len(), 2);
@@ -291,7 +286,7 @@ mod tests {
         let runtime = mock_runtime();
         let container_ids = vec!["container1".to_string(), "container2".to_string()];
         let result = stop_containers_command(runtime, container_ids, Some(10)).await;
-        
+
         assert!(result.is_ok());
         if let Ok(results) = result {
             assert_eq!(results.len(), 2);
@@ -303,7 +298,7 @@ mod tests {
         let runtime = mock_runtime();
         let container_ids = vec!["container1".to_string()];
         let result = restart_containers_command(runtime, container_ids, None).await;
-        
+
         assert!(result.is_ok());
         if let Ok(results) = result {
             assert_eq!(results.len(), 1);
@@ -315,7 +310,7 @@ mod tests {
         let runtime = mock_runtime();
         let container_ids = vec!["container1".to_string(), "container2".to_string()];
         let result = pause_containers_command(runtime, container_ids).await;
-        
+
         assert!(result.is_ok());
         if let Ok(results) = result {
             assert_eq!(results.len(), 2);
@@ -327,7 +322,7 @@ mod tests {
         let runtime = mock_runtime();
         let container_ids = vec!["container1".to_string()];
         let result = unpause_containers_command(runtime, container_ids).await;
-        
+
         assert!(result.is_ok());
         if let Ok(results) = result {
             assert_eq!(results.len(), 1);

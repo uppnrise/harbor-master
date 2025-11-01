@@ -6,27 +6,27 @@ use serde::{Deserialize, Serialize};
 pub struct Image {
     /// Image ID (full SHA256 hash)
     pub id: String,
-    
+
     /// Repository name (e.g., "nginx", "ubuntu")
     pub repository: String,
-    
+
     /// Image tag (e.g., "latest", "20.04")
     pub tag: String,
-    
+
     /// Image digest (SHA256 hash)
     #[serde(skip_serializing_if = "Option::is_none")]
     pub digest: Option<String>,
-    
+
     /// Image size in bytes
     pub size: u64,
-    
+
     /// Creation timestamp (ISO 8601 format)
     pub created: String,
-    
+
     /// Number of containers using this image
     #[serde(default)]
     pub containers: u32,
-    
+
     /// Labels applied to the image
     #[serde(default)]
     pub labels: std::collections::HashMap<String, String>,
@@ -44,19 +44,19 @@ impl Image {
 #[allow(dead_code)] // Used by formatted_size method
 fn format_bytes(bytes: u64) -> String {
     const UNITS: &[&str] = &["B", "KB", "MB", "GB", "TB"];
-    
+
     if bytes == 0 {
         return "0 B".to_string();
     }
-    
+
     let mut size = bytes as f64;
     let mut unit_index = 0;
-    
+
     while size >= 1024.0 && unit_index < UNITS.len() - 1 {
         size /= 1024.0;
         unit_index += 1;
     }
-    
+
     if unit_index == 0 {
         format!("{} {}", bytes, UNITS[unit_index])
     } else {
@@ -91,7 +91,7 @@ mod tests {
             containers: 0,
             labels: std::collections::HashMap::new(),
         };
-        
+
         assert_eq!(image.formatted_size(), "136.2 MB");
     }
 
@@ -113,7 +113,7 @@ mod tests {
 
         let json = serde_json::to_string(&image).unwrap();
         let deserialized: Image = serde_json::from_str(&json).unwrap();
-        
+
         assert_eq!(image, deserialized);
     }
 }

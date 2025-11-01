@@ -16,12 +16,12 @@ pub fn start_container(runtime: &Runtime, container_id: &str) -> Result<(), Stri
         .arg(container_id)
         .output()
         .map_err(|e| format!("Failed to execute {} start: {}", runtime.runtime_type, e))?;
-    
+
     if !output.status.success() {
         let stderr = String::from_utf8_lossy(&output.stderr);
         return Err(format!("Failed to start container: {}", stderr));
     }
-    
+
     Ok(())
 }
 
@@ -41,22 +41,22 @@ pub fn stop_container(
 ) -> Result<(), String> {
     let mut cmd = Command::new(&runtime.path);
     cmd.arg("stop");
-    
+
     if let Some(t) = timeout {
         cmd.arg("--time").arg(t.to_string());
     }
-    
+
     cmd.arg(container_id);
-    
+
     let output = cmd
         .output()
         .map_err(|e| format!("Failed to execute {} stop: {}", runtime.runtime_type, e))?;
-    
+
     if !output.status.success() {
         let stderr = String::from_utf8_lossy(&output.stderr);
         return Err(format!("Failed to stop container: {}", stderr));
     }
-    
+
     Ok(())
 }
 
@@ -76,22 +76,22 @@ pub fn restart_container(
 ) -> Result<(), String> {
     let mut cmd = Command::new(&runtime.path);
     cmd.arg("restart");
-    
+
     if let Some(t) = timeout {
         cmd.arg("--time").arg(t.to_string());
     }
-    
+
     cmd.arg(container_id);
-    
+
     let output = cmd
         .output()
         .map_err(|e| format!("Failed to execute {} restart: {}", runtime.runtime_type, e))?;
-    
+
     if !output.status.success() {
         let stderr = String::from_utf8_lossy(&output.stderr);
         return Err(format!("Failed to restart container: {}", stderr));
     }
-    
+
     Ok(())
 }
 
@@ -109,12 +109,12 @@ pub fn pause_container(runtime: &Runtime, container_id: &str) -> Result<(), Stri
         .arg(container_id)
         .output()
         .map_err(|e| format!("Failed to execute {} pause: {}", runtime.runtime_type, e))?;
-    
+
     if !output.status.success() {
         let stderr = String::from_utf8_lossy(&output.stderr);
         return Err(format!("Failed to pause container: {}", stderr));
     }
-    
+
     Ok(())
 }
 
@@ -132,19 +132,19 @@ pub fn unpause_container(runtime: &Runtime, container_id: &str) -> Result<(), St
         .arg(container_id)
         .output()
         .map_err(|e| format!("Failed to execute {} unpause: {}", runtime.runtime_type, e))?;
-    
+
     if !output.status.success() {
         let stderr = String::from_utf8_lossy(&output.stderr);
         return Err(format!("Failed to unpause container: {}", stderr));
     }
-    
+
     Ok(())
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::types::{Runtime, RuntimeType, RuntimeStatus, Version};
+    use crate::types::{Runtime, RuntimeStatus, RuntimeType, Version};
     use chrono::Utc;
 
     fn mock_runtime() -> Runtime {
