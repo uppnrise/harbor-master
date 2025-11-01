@@ -76,3 +76,35 @@ export async function removeImages(
     throw new Error(`Failed to remove images: ${error}`);
   }
 }
+
+/**
+ * Result from pruning unused images
+ */
+export interface PruneResult {
+  /** Number of images deleted */
+  imagesDeleted: number;
+  /** Disk space reclaimed in bytes */
+  spaceReclaimed: number;
+}
+
+/**
+ * Prune unused images to reclaim disk space
+ * @param runtime - The container runtime to use
+ * @param all - Remove all unused images, not just dangling ones
+ * @returns Promise resolving to prune statistics
+ */
+export async function pruneImages(
+  runtime: Runtime,
+  all = false
+): Promise<PruneResult> {
+  try {
+    const result = await invoke<PruneResult>('prune_images', {
+      runtime,
+      all,
+    });
+    return result;
+  } catch (error) {
+    console.error('Failed to prune images:', error);
+    throw new Error(`Failed to prune images: ${error}`);
+  }
+}

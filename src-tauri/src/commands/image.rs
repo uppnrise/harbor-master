@@ -1,5 +1,5 @@
 use crate::image;
-use crate::image::{Image, RemoveImageOptions};
+use crate::image::{Image, PruneImageOptions, PruneResult, RemoveImageOptions};
 use crate::types::Runtime;
 
 /// List all images for the current runtime
@@ -30,6 +30,13 @@ pub async fn remove_images(
 ) -> Result<Vec<String>, String> {
     let options = RemoveImageOptions { force, no_prune };
     image::remove_images(&runtime, &image_ids, &options)
+}
+
+/// Prune unused images
+#[tauri::command]
+pub async fn prune_images(runtime: Runtime, all: bool) -> Result<PruneResult, String> {
+    let options = PruneImageOptions { all };
+    image::prune_images(&runtime, &options)
 }
 
 #[cfg(test)]

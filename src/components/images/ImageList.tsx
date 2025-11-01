@@ -11,6 +11,13 @@ import { filterImages, sortImages, type ImageSortField, type SortDirection } fro
 import { useRuntimeStore } from '../../stores/runtimeStore';
 import { ConfirmDialog } from '../ui/ConfirmDialog';
 
+function formatBytes(bytes: number): string {
+  const sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
+  if (bytes === 0) return '0 B';
+  const i = Math.floor(Math.log(bytes) / Math.log(1024));
+  return `${(bytes / Math.pow(1024, i)).toFixed(2)} ${sizes[i]}`;
+}
+
 export function ImageList() {
   const {
     images,
@@ -18,6 +25,7 @@ export function ImageList() {
     error,
     loadImages,
     removeImages,
+    pruneImages,
     searchQuery,
     setSearchQuery,
     filterTags,
@@ -35,8 +43,11 @@ export function ImageList() {
   const [sortBy, setSortBy] = useState<ImageSortField>('repository');
   const [sortDirection, setSortDirection] = useState<SortDirection>('asc');
   const [showRemoveDialog, setShowRemoveDialog] = useState(false);
+  const [showPruneDialog, setShowPruneDialog] = useState(false);
   const [forceRemove, setForceRemove] = useState(false);
+  const [pruneAll, setPruneAll] = useState(false);
   const [isRemoving, setIsRemoving] = useState(false);
+  const [isPruning, setIsPruning] = useState(false);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   // Filter and sort images
@@ -113,6 +124,36 @@ export function ImageList() {
     setForceRemove(false);
   };
 
+  // Handle prune images
+  const handlePruneClick = () => {
+    setShowPruneDialog(true);
+  };
+
+  const handlePruneConfirm = async () => {
+    if (!selectedRuntime) return;
+
+    setIsPruning(true);
+    try {
+      const result = await pruneImages(selectedRuntime, pruneAll);
+      const message = result.imagesDeleted === 0
+        ? 'No unused images to prune'
+        : `Successfully pruned ${result.imagesDeleted} image${result.imagesDeleted !== 1 ? 's' : ''} (${formatBytes(result.spaceReclaimed)} reclaimed)`;
+      setSuccessMessage(message);
+      setTimeout(() => setSuccessMessage(null), 5000);
+    } catch {
+      // Error handled in store
+    } finally {
+      setIsPruning(false);
+      setShowPruneDialog(false);
+      setPruneAll(false);
+    }
+  };
+
+  const handlePruneCancel = () => {
+    setShowPruneDialog(false);
+    setPruneAll(false);
+  };
+
   // Get images that are in use
   const selectedImagesInUse = Array.from(selectedImageIds)
     .map((id) => images.find((img) => img.id === id))
@@ -182,6 +223,13 @@ export function ImageList() {
             <option value="tagged">Tagged</option>
             <option value="dangling">Dangling</option>
           </select>
+          <button
+            onClick={handlePruneClick}
+            disabled={isPruning || isLoading}
+            className="px-4 py-2 bg-orange-600 text-white rounded hover:bg-orange-700 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            Prune Unused
+          </button>
         </div>
       </div>
 
@@ -354,7 +402,7 @@ export function ImageList() {
                 className="mt-0.5 h-5 w-5 text-red-600 focus:ring-2 focus:ring-red-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 border-gray-300 dark:border-gray-600 rounded cursor-pointer"
               />
               <div className="flex-1">
-                <div className="text-sm font-medium text-gray-900 dark:text-white">
+                                <div className="text-sm font-medium text-gray-900 dark:text-white">
                   🚨 Force remove
                 </div>
                 <div className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
@@ -365,7 +413,41 @@ export function ImageList() {
           </div>
         )}
       </ConfirmDialog>
-```
+
+      {/* Prune Confirmation Dialog */}
+      <ConfirmDialog
+        isOpen={showPruneDialog}
+        title="Prune Unused Images"
+        message={pruneAll
+          ? "🗑️  This will remove ALL unused images (not just dangling ones).\n\nUnused images are those not referenced by any container.\n\nThis can free up significant disk space but may require re-downloading images later.\n\nProceed with pruning?"
+          : "🗑️  This will remove dangling images (untagged images).\n\nDangling images are intermediate layers that have no relationship to any tagged images.\n\nProceed with pruning?"}
+        confirmText={isPruning ? "Pruning..." : "Prune"}
+        cancelText="Cancel"
+        variant="warning"
+        isLoading={isPruning}
+        onConfirm={handlePruneConfirm}
+        onCancel={handlePruneCancel}
+      >
+        {/* Prune All Checkbox */}
+        <div className="space-y-3 mt-4">
+          <label className="flex items-start gap-3 cursor-pointer p-3 rounded-lg bg-orange-900/20 border border-orange-600/50 hover:bg-orange-900/30 transition-colors">
+            <input
+              type="checkbox"
+              checked={pruneAll}
+              onChange={(e) => setPruneAll(e.target.checked)}
+              className="mt-0.5 h-5 w-5 text-orange-600 focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 border-gray-300 dark:border-gray-600 rounded cursor-pointer"
+            />
+            <div className="flex-1">
+              <div className="text-sm font-medium text-gray-900 dark:text-white">
+                ⚠️  Prune all unused images
+              </div>
+              <div className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                Remove ALL images not used by containers (not just dangling images). May reclaim more space.
+              </div>
+            </div>
+          </label>
+        </div>
+      </ConfirmDialog>
     </div>
   );
 }

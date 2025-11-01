@@ -55,7 +55,7 @@ fn get_container_counts(runtime: &Runtime) -> Result<HashMap<String, u32>, Strin
     
     for line in stdout.lines() {
         let parts: Vec<&str> = line.split('\t').collect();
-        if parts.len() >= 1 {
+        if !parts.is_empty() {
             let image_ref = parts[0].trim();
             if !image_ref.is_empty() {
                 // Try to find the image ID from the reference

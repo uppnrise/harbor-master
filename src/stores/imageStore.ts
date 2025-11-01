@@ -6,6 +6,7 @@
 import { create } from 'zustand';
 import type { Image } from '../types/image';
 import * as imageService from '../services/imageService';
+import type { PruneResult } from '../services/imageService';
 import type { Runtime } from '../types/runtime';
 
 export interface ImageStore {
@@ -21,6 +22,7 @@ export interface ImageStore {
   loadImages: (runtime: Runtime) => Promise<void>;
   removeImage: (runtime: Runtime, imageId: string, force?: boolean) => Promise<void>;
   removeImages: (runtime: Runtime, imageIds: string[], force?: boolean) => Promise<void>;
+  pruneImages: (runtime: Runtime, all?: boolean) => Promise<PruneResult>;
   setSearchQuery: (query: string) => void;
   setFilterTags: (filter: 'all' | 'tagged' | 'dangling') => void;
   selectImage: (imageId: string) => void;
@@ -73,6 +75,21 @@ export const useImageStore = create<ImageStore>((set, get) => ({
       // Clear selection and reload
       set({ selectedImageIds: new Set() });
       await get().loadImages(runtime);
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      set({ error: errorMessage, isLoading: false });
+      throw error; // Re-throw for UI to handle
+    }
+  },
+
+  // Prune unused images
+  pruneImages: async (runtime: Runtime, all = false) => {
+    set({ isLoading: true, error: null });
+    try {
+      const result = await imageService.pruneImages(runtime, all);
+      // Reload images to reflect the change
+      await get().loadImages(runtime);
+      return result;
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
       set({ error: errorMessage, isLoading: false });
