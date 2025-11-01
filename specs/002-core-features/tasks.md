@@ -302,27 +302,29 @@
 
 ---
 
-### User Story 2.5: Remove Images
+### User Story 2.5: Remove Images ✅ COMPLETE
 **As a user, I want to remove images safely**
 
+**Status:** ✅ Complete (2025-11-01)
+
 **Acceptance Criteria:**
-- Confirmation dialog
-- Force remove option
-- Show which containers use the image
+- ✅ Confirmation dialog
+- ✅ Force remove option
+- ✅ Show which containers use the image
 
 **Tasks:**
 
 #### Backend (Rust) - 4 hours
-- [ ] T2.5.1: Create `src-tauri/src/image/remove.rs` (1h)
-- [ ] T2.5.2: Implement `remove_image(id, force)` (1h)
-- [ ] T2.5.3: Add remove command (1h)
-- [ ] T2.5.4: Write tests for removal (1h)
+- [x] T2.5.1: Create `src-tauri/src/image/remove.rs` (1h)
+- [x] T2.5.2: Implement `remove_image(id, force)` (1h)
+- [x] T2.5.3: Add remove command (1h)
+- [x] T2.5.4: Write tests for removal (1h)
 
 #### Frontend (TypeScript/React) - 6 hours
-- [ ] T2.5.5: Add remove confirmation to ImageRow (2h)
-- [ ] T2.5.6: Check container usage before removal (2h)
-- [ ] T2.5.7: Add force remove option (1h)
-- [ ] T2.5.8: Write tests for removal (1h)
+- [x] T2.5.5: Add remove confirmation to ImageRow (2h)
+- [x] T2.5.6: Check container usage before removal (2h)
+- [x] T2.5.7: Add force remove option (1h)
+- [x] T2.5.8: Write tests for removal (1h)
 
 **Subtotal:** 10 hours
 
