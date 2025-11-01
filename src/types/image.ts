@@ -73,3 +73,31 @@ export function getImageName(image: Image): string {
 export function isDanglingImage(image: Image): boolean {
   return image.repository === '<none>' || image.tag === '<none>';
 }
+
+/**
+ * Progress status for an image layer during pull
+ */
+export interface LayerProgress {
+  /** Layer ID */
+  id: string;
+  /** Status message */
+  status: string;
+  /** Current progress in bytes */
+  current?: number;
+  /** Total size in bytes */
+  total?: number;
+}
+
+/**
+ * Overall pull progress
+ */
+export interface PullProgress {
+  /** Image being pulled */
+  image: string;
+  /** Individual layer progress */
+  layers: LayerProgress[];
+  /** Overall status message */
+  message: string;
+  /** Whether pull is complete */
+  complete: boolean;
+}

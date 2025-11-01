@@ -6,6 +6,7 @@
 import { useRef, useEffect, useState } from 'react';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { ImageRow } from './ImageRow';
+import { PullImageDialog } from './PullImageDialog';
 import { useImageStore } from '../../stores/imageStore';
 import { filterImages, sortImages, type ImageSortField, type SortDirection } from '../../utils/imageFilters';
 import { useRuntimeStore } from '../../stores/runtimeStore';
@@ -26,6 +27,9 @@ export function ImageList() {
     loadImages,
     removeImages,
     pruneImages,
+    pullImage,
+    pullProgress,
+    isPulling,
     searchQuery,
     setSearchQuery,
     filterTags,
@@ -44,6 +48,7 @@ export function ImageList() {
   const [sortDirection, setSortDirection] = useState<SortDirection>('asc');
   const [showRemoveDialog, setShowRemoveDialog] = useState(false);
   const [showPruneDialog, setShowPruneDialog] = useState(false);
+  const [showPullDialog, setShowPullDialog] = useState(false);
   const [forceRemove, setForceRemove] = useState(false);
   const [pruneAll, setPruneAll] = useState(false);
   const [isRemoving, setIsRemoving] = useState(false);
@@ -154,6 +159,28 @@ export function ImageList() {
     setPruneAll(false);
   };
 
+  // Handle pull image
+  const handlePullClick = () => {
+    setShowPullDialog(true);
+  };
+
+  const handlePullImage = async (imageName: string, tag: string, auth?: string) => {
+    if (!selectedRuntime) return;
+    
+    try {
+      await pullImage(selectedRuntime, imageName, tag, auth);
+      // Success message will be shown when pull completes via event
+    } catch {
+      // Error handled in store
+    }
+  };
+
+  const handlePullClose = () => {
+    if (!isPulling) {
+      setShowPullDialog(false);
+    }
+  };
+
   // Get images that are in use
   const selectedImagesInUse = Array.from(selectedImageIds)
     .map((id) => images.find((img) => img.id === id))
@@ -223,6 +250,13 @@ export function ImageList() {
             <option value="tagged">Tagged</option>
             <option value="dangling">Dangling</option>
           </select>
+          <button
+            onClick={handlePullClick}
+            disabled={isLoading}
+            className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            Pull Image
+          </button>
           <button
             onClick={handlePruneClick}
             disabled={isPruning || isLoading}
@@ -448,6 +482,15 @@ export function ImageList() {
           </label>
         </div>
       </ConfirmDialog>
+
+      {/* Pull Image Dialog */}
+      <PullImageDialog
+        isOpen={showPullDialog}
+        pullProgress={pullProgress}
+        isPulling={isPulling}
+        onPull={handlePullImage}
+        onClose={handlePullClose}
+      />
     </div>
   );
 }

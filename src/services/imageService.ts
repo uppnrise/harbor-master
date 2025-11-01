@@ -108,3 +108,30 @@ export async function pruneImages(
     throw new Error(`Failed to prune images: ${error}`);
   }
 }
+
+/**
+ * Pull an image from a registry
+ * @param runtime - The container runtime to use
+ * @param imageName - Name of the image (e.g., "nginx", "docker.io/library/nginx")
+ * @param tag - Image tag (e.g., "latest", "1.21")
+ * @param auth - Optional authentication (username:password)
+ * @returns Promise that resolves when pull starts (progress via events)
+ */
+export async function pullImage(
+  runtime: Runtime,
+  imageName: string,
+  tag = 'latest',
+  auth?: string
+): Promise<void> {
+  try {
+    await invoke('pull_image', {
+      runtime,
+      imageName,
+      tag,
+      auth: auth || null,
+    });
+  } catch (error) {
+    console.error('Failed to pull image:', error);
+    throw new Error(`Failed to pull image: ${error}`);
+  }
+}

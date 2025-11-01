@@ -57,6 +57,7 @@ fn main() {
             commands::image::remove_image,
             commands::image::remove_images,
             commands::image::prune_images,
+            commands::image::pull_image,
         ])
         .setup(|app| {
             // Build the menu

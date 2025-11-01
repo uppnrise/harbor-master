@@ -1,6 +1,7 @@
 use crate::image;
-use crate::image::{Image, PruneImageOptions, PruneResult, RemoveImageOptions};
+use crate::image::{Image, PruneImageOptions, PruneResult, PullImageOptions, RemoveImageOptions};
 use crate::types::Runtime;
+use tauri::AppHandle;
 
 /// List all images for the current runtime
 #[tauri::command]
@@ -37,6 +38,29 @@ pub async fn remove_images(
 pub async fn prune_images(runtime: Runtime, all: bool) -> Result<PruneResult, String> {
     let options = PruneImageOptions { all };
     image::prune_images(&runtime, &options)
+}
+
+/// Pull an image from a registry
+#[tauri::command]
+pub async fn pull_image(
+    runtime: Runtime,
+    image_name: String,
+    tag: String,
+    auth: Option<String>,
+    app_handle: AppHandle,
+) -> Result<(), String> {
+    let options = PullImageOptions {
+        image_name,
+        tag,
+        auth,
+    };
+    
+    // Run in blocking task since it can take a while
+    tokio::task::spawn_blocking(move || {
+        image::pull_image(&runtime, &options, &app_handle)
+    })
+    .await
+    .map_err(|e| format!("Failed to spawn pull task: {}", e))?
 }
 
 #[cfg(test)]

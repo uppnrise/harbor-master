@@ -4,10 +4,11 @@
  */
 
 import { create } from 'zustand';
-import type { Image } from '../types/image';
+import type { Image, PullProgress } from '../types/image';
 import * as imageService from '../services/imageService';
 import type { PruneResult } from '../services/imageService';
 import type { Runtime } from '../types/runtime';
+import { listen } from '@tauri-apps/api/event';
 
 export interface ImageStore {
   // State
@@ -17,12 +18,16 @@ export interface ImageStore {
   error: string | null;
   searchQuery: string;
   filterTags: 'all' | 'tagged' | 'dangling';
+  pullProgress: PullProgress | null;
+  isPulling: boolean;
 
   // Actions
   loadImages: (runtime: Runtime) => Promise<void>;
   removeImage: (runtime: Runtime, imageId: string, force?: boolean) => Promise<void>;
   removeImages: (runtime: Runtime, imageIds: string[], force?: boolean) => Promise<void>;
   pruneImages: (runtime: Runtime, all?: boolean) => Promise<PruneResult>;
+  pullImage: (runtime: Runtime, imageName: string, tag?: string, auth?: string) => Promise<void>;
+  setPullProgress: (progress: PullProgress | null) => void;
   setSearchQuery: (query: string) => void;
   setFilterTags: (filter: 'all' | 'tagged' | 'dangling') => void;
   selectImage: (imageId: string) => void;
@@ -40,6 +45,8 @@ export const useImageStore = create<ImageStore>((set, get) => ({
   error: null,
   searchQuery: '',
   filterTags: 'all',
+  pullProgress: null,
+  isPulling: false,
 
   // Load images from backend
   loadImages: async (runtime: Runtime) => {
@@ -95,6 +102,40 @@ export const useImageStore = create<ImageStore>((set, get) => ({
       set({ error: errorMessage, isLoading: false });
       throw error; // Re-throw for UI to handle
     }
+  },
+
+  // Pull an image from registry
+  pullImage: async (runtime: Runtime, imageName: string, tag = 'latest', auth?: string) => {
+    set({ isPulling: true, error: null, pullProgress: null });
+    
+    // Set up event listener for progress updates
+    const unlisten = await listen<PullProgress>('image-pull-progress', (event) => {
+      set({ pullProgress: event.payload });
+      
+      // If pull is complete, reload images and clean up
+      if (event.payload.complete) {
+        set({ isPulling: false });
+        get().loadImages(runtime).catch(() => {
+          // Error handled in loadImages
+        });
+      }
+    });
+    
+    try {
+      await imageService.pullImage(runtime, imageName, tag, auth);
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      set({ error: errorMessage, isPulling: false, pullProgress: null });
+      unlisten();
+      throw error;
+    }
+    
+    // Note: unlisten will be called when pull completes via event listener
+  },
+
+  // Set pull progress (for manual updates)
+  setPullProgress: (progress: PullProgress | null) => {
+    set({ pullProgress: progress });
   },
 
   // Set search query
