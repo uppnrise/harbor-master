@@ -1,4 +1,4 @@
-import { memo, useEffect, useRef } from 'react';
+import React, { memo, useEffect, useRef } from 'react';
 
 interface DetailPanelProps {
   /** Whether the panel is open */

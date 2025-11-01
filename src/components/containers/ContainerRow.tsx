@@ -50,7 +50,6 @@ export const ContainerRow = memo(function ContainerRow({
     stopContainer,
     pauseContainer,
     unpauseContainer,
-    restartContainer,
     removeContainer,
     isOperationInProgress,
     toggleContainerSelection,

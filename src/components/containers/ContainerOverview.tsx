@@ -62,7 +62,7 @@ export default function ContainerOverview({ details }: ContainerOverviewProps) {
 
     const formatted = portEntries
       .filter((entry): entry is [string, Array<{ hostIp: string; hostPort: string }>] => {
-        const [_, bindings] = entry;
+        const [, bindings] = entry;
         return bindings !== null && bindings.length > 0;
       })
       .map(([containerPort, bindings]) => {

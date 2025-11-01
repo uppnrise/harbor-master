@@ -1,6 +1,7 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import React from 'react';
 import { ContainerRow } from '../../../components/containers/ContainerRow';
 import { ContainerState, type Container } from '../../../types/container';
 import { ToastProvider } from '../../../contexts/ToastContext';

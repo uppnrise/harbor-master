@@ -1,4 +1,4 @@
-import { memo, useState } from 'react';
+import React, { memo, useState } from 'react';
 
 export interface Tab {
   /** Unique identifier for the tab */

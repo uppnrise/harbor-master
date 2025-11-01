@@ -29,7 +29,6 @@ export function ContainerList() {
     setSortOrder,
     getFilteredContainers,
     selectedContainerIds,
-    toggleContainerSelection,
     selectAllContainers,
     clearSelection,
   } = useContainerStore();

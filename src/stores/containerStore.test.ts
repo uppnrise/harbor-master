@@ -123,6 +123,7 @@ describe('containerStore', () => {
       stateFilter: 'all',
       sortField: 'name',
       sortOrder: 'asc',
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } as any); // Use 'as any' to avoid type checking for methods
 
     // Clear service mocks but not module mocks
@@ -169,6 +170,7 @@ describe('containerStore', () => {
     it('should throw error when no runtime selected', async () => {
       vi.mocked(runtimeStore.useRuntimeStore.getState).mockReturnValue({
         selectedRuntime: null,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } as any);
 
       const { fetchContainers } = useContainerStore.getState();
@@ -383,6 +385,7 @@ describe('containerStore', () => {
     });
 
     it('should stop auto-refresh', () => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       useContainerStore.setState({ refreshInterval: 123 as any });
 
       const { stopAutoRefresh } = useContainerStore.getState();
