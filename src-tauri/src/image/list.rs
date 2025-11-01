@@ -80,11 +80,16 @@ fn parse_image_object(raw: &serde_json::Value) -> Result<Image, String> {
         .unwrap_or(0);
 
     // Extract created timestamp and normalize to ISO 8601
-    let created = raw["CreatedAt"]
-        .as_str()
-        .or_else(|| raw["Created"].as_str())
-        .and_then(|s| normalize_timestamp(s))
-        .unwrap_or_else(|| Utc::now().to_rfc3339());
+    let created = raw
+        .get("CreatedAt")
+        .and_then(|v| v.as_str())
+        .and_then(normalize_timestamp)
+        .unwrap_or_else(|| {
+            raw.get("CreatedAt")
+                .and_then(|v| v.as_str())
+                .unwrap_or("unknown")
+                .to_string()
+        });
 
     // Extract containers count (may not be available in all runtimes)
     let containers = raw["Containers"].as_u64().unwrap_or(0) as u32;
