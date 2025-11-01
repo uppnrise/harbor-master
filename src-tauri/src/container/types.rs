@@ -2,9 +2,10 @@
 use serde::{Deserialize, Serialize};
 
 /// Container state enumeration
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, Default)]
 #[serde(rename_all = "lowercase")]
 pub enum ContainerState {
+    #[default]
     Created,
     Running,
     Paused,
@@ -17,6 +18,7 @@ pub enum ContainerState {
 /// Container status information
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
+#[allow(dead_code)] // Will be used in future container detail features
 pub struct ContainerStatus {
     pub state: ContainerState,
     pub status: String,
@@ -94,12 +96,6 @@ pub struct ContainerListOptions {
     pub limit: Option<i64>,
     pub size: bool,
     pub filters: Option<std::collections::HashMap<String, Vec<String>>>,
-}
-
-impl Default for ContainerState {
-    fn default() -> Self {
-        ContainerState::Created
-    }
 }
 
 impl std::fmt::Display for ContainerState {

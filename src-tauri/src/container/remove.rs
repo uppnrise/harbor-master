@@ -3,21 +3,12 @@ use crate::types::Runtime;
 use std::process::Command;
 
 /// Options for removing a container
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Default)]
 pub struct RemoveOptions {
     /// Force remove running container
     pub force: bool,
     /// Remove associated anonymous volumes
     pub volumes: bool,
-}
-
-impl Default for RemoveOptions {
-    fn default() -> Self {
-        Self {
-            force: false,
-            volumes: false,
-        }
-    }
 }
 
 /// Remove a container
