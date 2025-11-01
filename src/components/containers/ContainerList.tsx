@@ -25,8 +25,6 @@ export function ContainerList() {
     setStateFilter,
     sortField,
     setSortField,
-    sortOrder,
-    setSortOrder,
     getFilteredContainers,
     selectedContainerIds,
     selectAllContainers,
@@ -119,10 +117,6 @@ export function ContainerList() {
         onStateFilterChange={setStateFilter}
         sortField={sortField}
         onSortFieldChange={setSortField}
-        sortOrder={sortOrder}
-        onSortOrderChange={setSortOrder}
-        containerCount={containers.length}
-        filteredCount={filteredContainers.length}
       />
 
       {/* Container List */}
