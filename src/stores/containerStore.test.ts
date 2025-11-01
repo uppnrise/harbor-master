@@ -178,8 +178,7 @@ describe('containerStore', () => {
     it('should throw error when no runtime selected', async () => {
       vi.mocked(runtimeStore.useRuntimeStore.getState).mockReturnValue({
         selectedRuntime: null,
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      } as any);
+      } as Partial<ReturnType<typeof runtimeStore.useRuntimeStore.getState>> as ReturnType<typeof runtimeStore.useRuntimeStore.getState>);
 
       const { fetchContainers } = useContainerStore.getState();
       await expect(fetchContainers()).rejects.toThrow('No runtime selected');
@@ -393,8 +392,8 @@ describe('containerStore', () => {
     });
 
     it('should stop auto-refresh', () => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      useContainerStore.setState({ refreshInterval: 123 as any });
+      const mockInterval = 123; // Mock interval ID
+      useContainerStore.setState({ refreshInterval: mockInterval });
 
       const { stopAutoRefresh } = useContainerStore.getState();
       stopAutoRefresh();
