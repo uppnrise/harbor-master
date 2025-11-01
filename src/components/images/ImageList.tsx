@@ -45,8 +45,8 @@ export function ImageList() {
   const rowVirtualizer = useVirtualizer({
     count: filteredAndSortedImages.length,
     getScrollElement: () => parentRef.current,
-    estimateSize: () => 72, // Row height
-    overscan: 10,
+    estimateSize: () => 64, // Fixed row height
+    overscan: 5,
   });
 
   // Load images on mount or when runtime changes
@@ -56,7 +56,8 @@ export function ImageList() {
         // Error handled in store
       });
     }
-  }, [selectedRuntime, loadImages]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedRuntime?.id]); // Only re-run when runtime ID changes
 
   // Handle select all checkbox
   const handleSelectAll = () => {
@@ -216,13 +217,14 @@ export function ImageList() {
 
                 return (
                   <div
-                    key={virtualRow.key}
+                    key={image.id}
+                    data-index={virtualRow.index}
+                    ref={rowVirtualizer.measureElement}
                     style={{
                       position: 'absolute',
                       top: 0,
                       left: 0,
                       width: '100%',
-                      height: `${virtualRow.size}px`,
                       transform: `translateY(${virtualRow.start}px)`,
                     }}
                   >
