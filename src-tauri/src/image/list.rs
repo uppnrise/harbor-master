@@ -1,5 +1,6 @@
 use super::types::Image;
 use crate::types::Runtime;
+use chrono::{DateTime, Utc};
 use std::collections::HashMap;
 use std::process::Command;
 
@@ -78,12 +79,12 @@ fn parse_image_object(raw: &serde_json::Value) -> Result<Image, String> {
         .or_else(|| raw["VirtualSize"].as_u64())
         .unwrap_or(0);
 
-    // Extract created timestamp
+    // Extract created timestamp and normalize to ISO 8601
     let created = raw["CreatedAt"]
         .as_str()
         .or_else(|| raw["Created"].as_str())
-        .unwrap_or("")
-        .to_string();
+        .and_then(|s| normalize_timestamp(s))
+        .unwrap_or_else(|| Utc::now().to_rfc3339());
 
     // Extract containers count (may not be available in all runtimes)
     let containers = raw["Containers"].as_u64().unwrap_or(0) as u32;
@@ -119,6 +120,29 @@ fn parse_repo_tag(repo_tag: &str) -> (String, String) {
     } else {
         (repo_tag.to_string(), "latest".to_string())
     }
+}
+
+/// Normalize timestamp to ISO 8601 format
+/// Handles various Docker/Podman timestamp formats
+fn normalize_timestamp(timestamp: &str) -> Option<String> {
+    // Try parsing as RFC3339 (ISO 8601) first
+    if let Ok(dt) = DateTime::parse_from_rfc3339(timestamp) {
+        return Some(dt.to_rfc3339());
+    }
+
+    // Try parsing common Docker formats
+    // Format: "2024-01-15 10:30:45 +0000 UTC"
+    if let Ok(dt) = DateTime::parse_from_str(timestamp, "%Y-%m-%d %H:%M:%S %z %Z") {
+        return Some(dt.to_rfc3339());
+    }
+
+    // Format: "2024-01-15T10:30:45Z"
+    if let Ok(dt) = timestamp.parse::<DateTime<Utc>>() {
+        return Some(dt.to_rfc3339());
+    }
+
+    // If all parsing fails, return None
+    None
 }
 
 #[cfg(test)]
