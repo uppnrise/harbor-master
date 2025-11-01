@@ -28,7 +28,7 @@ export function ImageRow({ image, isSelected, onSelect }: ImageRowProps) {
   return (
     <div
       className={`
-        grid grid-cols-[48px_200px_150px_120px_1fr] gap-4 px-4 py-4
+        grid grid-cols-[48px_200px_150px_120px_1fr] gap-4 px-4 py-3
         border-b border-gray-200 dark:border-gray-700
         hover:bg-gray-50 dark:hover:bg-gray-800
         transition-colors duration-150
@@ -85,7 +85,17 @@ export function ImageRow({ image, isSelected, onSelect }: ImageRowProps) {
       {/* Created */}
       <div className="flex items-center justify-between">
         <span className="text-sm text-gray-600 dark:text-gray-400" title={image.created}>
-          {formatDistanceToNow(new Date(image.created), { addSuffix: true })}
+          {(() => {
+            try {
+              const createdDate = new Date(image.created);
+              if (isNaN(createdDate.getTime())) {
+                return image.created; // Fallback to raw string if invalid
+              }
+              return formatDistanceToNow(createdDate, { addSuffix: true });
+            } catch {
+              return image.created; // Fallback to raw string on error
+            }
+          })()}
         </span>
         {image.containers > 0 && (
           <span className="text-xs text-gray-500 dark:text-gray-400">
