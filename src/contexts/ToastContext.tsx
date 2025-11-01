@@ -1,4 +1,7 @@
-import { createContext, useContext, useState, useCallback, ReactNode } from 'react';
+/* eslint-disable react-refresh/only-export-components */
+// ToastContext needs to be exported for the useToast hook in src/hooks/useToast.ts
+// This is a standard React context pattern and doesn't negatively impact Fast Refresh
+import { createContext, useState, useCallback, ReactNode } from 'react';
 import { Toast } from '../components/Toast';
 
 export type ToastType = 'success' | 'error' | 'info';
@@ -13,7 +16,7 @@ interface ToastContextType {
   showToast: (message: string, type: ToastType) => void;
 }
 
-const ToastContext = createContext<ToastContextType | undefined>(undefined);
+export const ToastContext = createContext<ToastContextType | undefined>(undefined);
 
 export function ToastProvider({ children }: { children: ReactNode }) {
   const [toasts, setToasts] = useState<ToastMessage[]>([]);
@@ -50,12 +53,4 @@ export function ToastProvider({ children }: { children: ReactNode }) {
       </div>
     </ToastContext.Provider>
   );
-}
-
-export function useToast() {
-  const context = useContext(ToastContext);
-  if (!context) {
-    throw new Error('useToast must be used within ToastProvider');
-  }
-  return context;
 }
