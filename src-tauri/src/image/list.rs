@@ -21,7 +21,88 @@ pub fn list_images(runtime: &Runtime) -> Result<Vec<Image>, String> {
     }
 
     let stdout = String::from_utf8_lossy(&output.stdout);
-    parse_images(&stdout)
+    let mut images = parse_images(&stdout)?;
+    
+    // Get container counts for each image
+    if let Ok(container_counts) = get_container_counts(runtime) {
+        for image in &mut images {
+            if let Some(&count) = container_counts.get(&image.id) {
+                image.containers = count;
+            }
+        }
+    }
+    
+    Ok(images)
+}
+
+/// Get the number of containers using each image
+fn get_container_counts(runtime: &Runtime) -> Result<HashMap<String, u32>, String> {
+    let output = Command::new(&runtime.path)
+        .args(["ps", "-a", "--format", "{{.Image}}\t{{.ID}}"])
+        .output()
+        .map_err(|e| format!("Failed to execute {} ps: {}", runtime.runtime_type, e))?;
+
+    if !output.status.success() {
+        // Non-critical error, return empty map
+        return Ok(HashMap::new());
+    }
+
+    let stdout = String::from_utf8_lossy(&output.stdout);
+    let mut counts: HashMap<String, u32> = HashMap::new();
+    
+    // Also need to map image names to IDs
+    let image_name_to_id = get_image_name_to_id_map(runtime)?;
+    
+    for line in stdout.lines() {
+        let parts: Vec<&str> = line.split('\t').collect();
+        if parts.len() >= 1 {
+            let image_ref = parts[0].trim();
+            if !image_ref.is_empty() {
+                // Try to find the image ID from the reference
+                if let Some(image_id) = image_name_to_id.get(image_ref) {
+                    *counts.entry(image_id.clone()).or_insert(0) += 1;
+                }
+            }
+        }
+    }
+
+    Ok(counts)
+}
+
+/// Get a mapping of image references (repo:tag or ID) to full image IDs
+fn get_image_name_to_id_map(runtime: &Runtime) -> Result<HashMap<String, String>, String> {
+    let output = Command::new(&runtime.path)
+        .args(["images", "--format", "{{.Repository}}:{{.Tag}}\t{{.ID}}"])
+        .output()
+        .map_err(|e| format!("Failed to execute {} images: {}", runtime.runtime_type, e))?;
+
+    if !output.status.success() {
+        return Ok(HashMap::new());
+    }
+
+    let stdout = String::from_utf8_lossy(&output.stdout);
+    let mut map = HashMap::new();
+    
+    for line in stdout.lines() {
+        let parts: Vec<&str> = line.split('\t').collect();
+        if parts.len() >= 2 {
+            let name = parts[0].trim().to_string();
+            let id = parts[1].trim().to_string();
+            
+            // Add both the full name and just the ID prefix as keys
+            map.insert(name.clone(), id.clone());
+            map.insert(id[..12.min(id.len())].to_string(), id.clone());
+            
+            // Also add just the repo name without tag for matching
+            if let Some(repo) = name.split(':').next() {
+                if !repo.is_empty() && repo != "<none>" {
+                    map.insert(repo.to_string(), id.clone());
+                }
+            }
+        }
+    }
+
+    Ok(map)
 }
 
 /// Parse JSON output from `docker/podman images --format json`

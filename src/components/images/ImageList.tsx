@@ -79,11 +79,22 @@ export function ImageList() {
 
   // Handle remove images
   const handleRemoveClick = () => {
+    console.log('Remove button clicked, opening dialog');
+    console.log('showRemoveDialog before:', showRemoveDialog);
+    console.log('selectedImageIds:', selectedImageIds);
+    console.log('selectedImagesInUse:', selectedImagesInUse);
     setShowRemoveDialog(true);
+    console.log('showRemoveDialog set to true');
   };
 
   const handleRemoveConfirm = async () => {
     if (!selectedRuntime) return;
+
+    // Check if trying to remove images in use without force
+    if (selectedImagesInUse.length > 0 && !forceRemove) {
+      // Don't proceed - user needs to enable force
+      return;
+    }
 
     setIsRemoving(true);
     try {
@@ -113,13 +124,13 @@ export function ImageList() {
     .filter((img) => img && img.containers > 0);
 
   const removeDialogMessage = selectedImagesInUse.length > 0
-    ? `${selectedImagesInUse.length} of the selected images are in use by containers.\n\n${
+    ? `⚠️  Warning: ${selectedImagesInUse.length} of the selected images ${selectedImagesInUse.length === 1 ? 'is' : 'are'} in use by containers:\n\n${selectedImagesInUse
+        .map((img) => `• ${img!.repository}:${img!.tag} (${img!.containers} container${img!.containers !== 1 ? 's' : ''})`)
+        .join('\n')}\n\n${
         forceRemove
-          ? 'Force removal will stop and remove those containers.'
-          : 'Enable "Force" to remove them anyway.'
-      }\n\nAre you sure you want to remove ${selectedImageIds.size} image${
-        selectedImageIds.size !== 1 ? 's' : ''
-      }?`
+          ? '🚨 Force removal will STOP and REMOVE all associated containers!\n\nThis action cannot be undone.'
+          : '❌ Cannot remove these images while containers are using them.\n\nEnable "Force remove" to stop and remove the containers first.'
+      }\n\nRemove ${selectedImageIds.size} image${selectedImageIds.size !== 1 ? 's' : ''}?`
     : `Are you sure you want to remove ${selectedImageIds.size} image${
         selectedImageIds.size !== 1 ? 's' : ''
       }?`;
@@ -333,24 +344,33 @@ export function ImageList() {
         cancelText="Cancel"
         variant="danger"
         isLoading={isRemoving}
+        confirmDisabled={selectedImagesInUse.length > 0 && !forceRemove}
         onConfirm={handleRemoveConfirm}
         onCancel={handleRemoveCancel}
-      />
-
-      {/* Force Checkbox in Dialog (if images in use) */}
-      {showRemoveDialog && selectedImagesInUse.length > 0 && (
-        <div className="fixed bottom-20 left-1/2 -translate-x-1/2 z-50 bg-gray-800 px-4 py-2 rounded-lg border border-gray-700">
-          <label className="flex items-center gap-2 text-white cursor-pointer">
-            <input
-              type="checkbox"
-              checked={forceRemove}
-              onChange={(e) => setForceRemove(e.target.checked)}
-              className="h-4 w-4 rounded border-gray-600 text-blue-600"
-            />
-            <span>Force removal (will remove containers using these images)</span>
-          </label>
-        </div>
-      )}
+      >
+        {/* Force Removal Checkbox (if images are in use) */}
+        {selectedImagesInUse.length > 0 && (
+          <div className="space-y-3 mt-4">
+            <label className="flex items-start gap-3 cursor-pointer p-3 rounded-lg bg-yellow-900/20 border border-yellow-600/50 hover:bg-yellow-900/30 transition-colors">
+              <input
+                type="checkbox"
+                checked={forceRemove}
+                onChange={(e) => setForceRemove(e.target.checked)}
+                className="mt-0.5 h-5 w-5 text-red-600 focus:ring-2 focus:ring-red-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800 border-gray-300 dark:border-gray-600 rounded cursor-pointer"
+              />
+              <div className="flex-1">
+                <div className="text-sm font-medium text-gray-900 dark:text-white">
+                  🚨 Force remove
+                </div>
+                <div className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                  STOP and REMOVE all containers using these images. This action cannot be undone!
+                </div>
+              </div>
+            </label>
+          </div>
+        )}
+      </ConfirmDialog>
+```
     </div>
   );
 }
