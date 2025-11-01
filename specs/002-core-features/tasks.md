@@ -192,29 +192,32 @@
 
 ## Epic 2: Image Management
 
-### User Story 2.1: List All Images
+### User Story 2.1: List All Images ✅
 **As a user, I want to view all images with their details**
 
+**Status:** COMPLETE  
+**Completed:** November 1, 2025
+
 **Acceptance Criteria:**
-- Show: Repository, Tag, Size, Created
-- Support both Docker and Podman
+- Show: Repository, Tag, Size, Created ✅
+- Support both Docker and Podman ✅
 
 **Tasks:**
 
 #### Backend (Rust) - 6 hours
-- [ ] T2.1.1: Create `src-tauri/src/image/mod.rs` module (1h)
-- [ ] T2.1.2: Create `src-tauri/src/image/types.rs` with Image struct (1h)
-- [ ] T2.1.3: Implement `list_images()` in `src-tauri/src/image/list.rs` (2h)
-- [ ] T2.1.4: Add list_images command (1h)
-- [ ] T2.1.5: Write tests for image listing (1h)
+- [x] T2.1.1: Create `src-tauri/src/image/mod.rs` module (1h)
+- [x] T2.1.2: Create `src-tauri/src/image/types.rs` with Image struct (1h)
+- [x] T2.1.3: Implement `list_images()` in `src-tauri/src/image/list.rs` (2h)
+- [x] T2.1.4: Add list_images command (1h)
+- [x] T2.1.5: Write tests for image listing (1h)
 
 #### Frontend (TypeScript/React) - 10 hours
-- [ ] T2.1.6: Create `src/types/image.ts` (1h)
-- [ ] T2.1.7: Create `src/services/imageService.ts` (1h)
-- [ ] T2.1.8: Create `src/stores/imageStore.ts` (2h)
-- [ ] T2.1.9: Create `src/components/images/ImageList.tsx` (3h)
-- [ ] T2.1.10: Create `src/components/images/ImageRow.tsx` (2h)
-- [ ] T2.1.11: Write tests for ImageList (1h)
+- [x] T2.1.6: Create `src/types/image.ts` (1h)
+- [x] T2.1.7: Create `src/services/imageService.ts` (1h)
+- [x] T2.1.8: Create `src/stores/imageStore.ts` (2h)
+- [x] T2.1.9: Create `src/components/images/ImageList.tsx` (3h)
+- [x] T2.1.10: Create `src/components/images/ImageRow.tsx` (2h)
+- [x] T2.1.11: Write tests for ImageList (1h)
 
 **Subtotal:** 16 hours
 
