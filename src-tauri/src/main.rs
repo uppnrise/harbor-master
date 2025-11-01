@@ -54,6 +54,8 @@ fn main() {
             commands::container::unpause_containers_command,
             // Image management commands
             commands::image::list_images,
+            commands::image::remove_image,
+            commands::image::remove_images,
         ])
         .setup(|app| {
             // Build the menu

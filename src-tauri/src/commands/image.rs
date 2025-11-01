@@ -1,11 +1,35 @@
 use crate::image;
-use crate::image::Image;
+use crate::image::{Image, RemoveImageOptions};
 use crate::types::Runtime;
 
 /// List all images for the current runtime
 #[tauri::command]
 pub async fn list_images(runtime: Runtime) -> Result<Vec<Image>, String> {
     image::list_images(&runtime)
+}
+
+/// Remove a single image
+#[tauri::command]
+pub async fn remove_image(
+    runtime: Runtime,
+    image_id: String,
+    force: bool,
+    no_prune: bool,
+) -> Result<(), String> {
+    let options = RemoveImageOptions { force, no_prune };
+    image::remove_image(&runtime, &image_id, &options)
+}
+
+/// Remove multiple images
+#[tauri::command]
+pub async fn remove_images(
+    runtime: Runtime,
+    image_ids: Vec<String>,
+    force: bool,
+    no_prune: bool,
+) -> Result<Vec<String>, String> {
+    let options = RemoveImageOptions { force, no_prune };
+    image::remove_images(&runtime, &image_ids, &options)
 }
 
 #[cfg(test)]
