@@ -53,7 +53,7 @@ This project uses [Spec-Kit](https://github.com/github/spec-kit) for structured,
 3. **Install Development Tools:**
    - [Rust](https://rustup.rs/) (for Tauri)
    - [Node.js](https://nodejs.org/) 18+ 
-   - [pnpm](https://pnpm.io/) package manager
+   - [npm](https://www.npmjs.com/) package manager (comes with Node.js)
    - [Git](https://git-scm.com/)
    - [Docker](https://docs.docker.com/get-docker/) or [Podman](https://podman.io/getting-started/installation)
 
@@ -67,8 +67,8 @@ This project uses [Spec-Kit](https://github.com/github/spec-kit) for structured,
 
 1. **Clone this repository:**
 ```bash
-   git clone https://github.com/[your-org]/harbormaster.git
-   cd harbormaster
+   git clone https://github.com/uppnrise/harbor-master.git
+   cd harbor-master
 ```
 
 2. **Initialize Spec-Kit:**
@@ -80,7 +80,7 @@ This project uses [Spec-Kit](https://github.com/github/spec-kit) for structured,
 
 3. **Install dependencies:**
 ```bash
-   pnpm install
+   npm install
    cd src-tauri && cargo build
 ```
 
@@ -124,7 +124,7 @@ We will build HarborMaster using:
 - Zustand for state management
 - Tailwind CSS for styling
 - Vite as build tool
-- pnpm for package management
+- npm for package management
 
 For runtime detection, we'll use:
 - Rust for system-level operations (file system, process execution)
@@ -171,8 +171,10 @@ harbormaster/
 │   │   │   ├── spec.md           # Feature specification
 │   │   │   ├── plan.md           # Implementation plan (generated)
 │   │   │   └── tasks.md          # Task breakdown (generated)
-│   │   └── 002-container-operations/
-│   │       └── spec.md
+│   │   └── 002-core-features/
+│   │       ├── spec.md           # Feature specification
+│   │       ├── plan.md           # Implementation plan (generated)
+│   │       └── tasks.md          # Task breakdown (generated)
 │   ├── scripts/                   # Spec-Kit automation scripts
 │   └── templates/                 # Spec-Kit templates
 │
@@ -237,13 +239,13 @@ Once you've initialized the project, these commands are available in your AI age
 - [x] Comprehensive testing (163 tests, 65%+ coverage)
 - [x] Full accessibility (WCAG 2.1 AA, keyboard navigation)
 
-### Phase 2: Core Features (Next)
-- [ ] Container lifecycle management (start, stop, restart, remove)
-- [ ] Container listing and filtering
-- [ ] Image management
-- [ ] Volume and network operations
-- [ ] Real-time logs viewer
-- [ ] Resource usage statistics
+### Phase 2: Core Features 📋 **PLANNED**
+- [ ] Container Management (list, filter, start, stop, restart, remove, batch operations)
+- [ ] Image Management (list, pull, push, tag, remove, prune)
+- [ ] Volume Operations (create, list, inspect, remove, prune)
+- [ ] Network Operations (create, list, connect, disconnect)
+- [ ] Real-Time Logs Viewer (streaming, search, filter, export)
+- [ ] Resource Monitoring (CPU, memory, network, disk I/O, multi-container dashboard)
 
 ### Phase 3: Advanced Features
 - [ ] Kubernetes integration
@@ -279,8 +281,11 @@ Once you've initialized the project, these commands are available in your AI age
 ## 🧪 Testing
 
 ```bash
-# Run TypeScript unit tests
+# Run all tests
 npm test
+
+# Run TypeScript unit tests only
+npm run test:unit
 
 # Run Rust unit tests
 cd src-tauri && cargo test --lib
@@ -300,12 +305,11 @@ npm run test:coverage
 
 **Current Test Status:**
 - ✅ 80 TypeScript unit tests passing
-- ✅ 36 Rust unit tests passing
+- ✅ 72 Rust unit tests passing (includes lib, integration, and doctests)
 - ✅ 5 Rust integration tests passing
 - ✅ 6 Rust doctests passing
-- ✅ 19 E2E test scenarios created
 - **Total: 163 tests passing**
-- **Coverage: 65.27%** (exceeds 60% target)
+- **Coverage: 65%+** (exceeds 60% target)
 
 ---
 
@@ -344,7 +348,7 @@ We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.
 2. Create a feature branch: `git checkout -b feature/amazing-feature`
 3. Make your changes following the constitution principles
 4. Write tests (minimum 80% coverage)
-5. Run tests: `pnpm test`
+5. Run tests: `npm test`
 6. Commit using conventional commits: `git commit -m 'feat: add amazing feature'`
 7. Push to your fork: `git push origin feature/amazing-feature`
 8. Open a Pull Request
@@ -355,8 +359,8 @@ We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.
 
 - **Current Version:** 0.1.0-alpha
 - **Status:** Phase 1 Complete (Foundation & Runtime Detection)
-- **Branch:** `001-foundation-runtime-detection`
-- **Next Milestone:** Phase 2 - Container Operations
+- **Branch:** `main` (Phase 1 merged)
+- **Next Milestone:** Phase 2 - Core Features
 
 ### Quality Metrics
 
@@ -371,12 +375,15 @@ We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.
 
 ### Recent Achievements
 
-- ✅ **87/93 tasks complete (93%)**
+- ✅ **Phase 1: 93/93 tasks complete (100%)**
 - ✅ Full TypeScript and Rust documentation with working doctests
 - ✅ Lazy loading for performance optimization
 - ✅ ARIA attributes and keyboard navigation for accessibility
 - ✅ Comprehensive error handling and user guidance
 - ✅ Cross-platform runtime detection with WSL2 support
+- ✅ All CI/CD pipelines passing (GitHub Actions)
+- ✅ Zero npm vulnerabilities (updated to latest dependencies)
+- ✅ ESLint 9 migration with flat config
 
 ---
 
@@ -446,15 +453,15 @@ For more help, see [GitHub Issues](https://github.com/uppnrise/harbor-master/iss
 
 ---
 
-## �🐛 Known Issues
+## 🐛 Known Issues
 
-See [GitHub Issues](https://github.com/[your-org]/harbormaster/issues) for current bugs and feature requests.
+See [GitHub Issues](https://github.com/uppnrise/harbor-master/issues) for current bugs and feature requests.
 
 ---
 
 ## 🔒 Security
 
-Found a security vulnerability? Please email security@harbormaster.app instead of opening a public issue.
+Found a security vulnerability? Please open a [Security Advisory](https://github.com/uppnrise/harbor-master/security/advisories) or contact the maintainers directly.
 
 ---
 
@@ -466,8 +473,11 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 🙏 Acknowledgments
 
-- Built with [Tauri](https://tauri.app/) for native performance
-- UI powered by [React](https://react.dev/) and [Tailwind CSS](https://tailwindcss.com/)
+- Built with [Tauri 2.0](https://tauri.app/) for native performance
+- UI powered by [React 18](https://react.dev/) and [Tailwind CSS](https://tailwindcss.com/)
+- State management with [Zustand](https://zustand-demo.pmnd.rs/)
+- Build tooling with [Vite 6](https://vitejs.dev/)
+- Testing with [Vitest 3](https://vitest.dev/) and [Playwright](https://playwright.dev/)
 - Spec-Driven Development via [Spec-Kit](https://github.com/github/spec-kit)
 - Inspired by Docker Desktop, Portainer, and Rancher Desktop
 
@@ -475,17 +485,16 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 💬 Community
 
-- **Discord:** [Join our community](https://discord.gg/harbormaster) (coming soon)
-- **Twitter:** [@harbormaster_app](https://twitter.com/harbormaster_app) (coming soon)
-- **GitHub Discussions:** [Ask questions](https://github.com/[your-org]/harbormaster/discussions)
+- **GitHub Discussions:** [Ask questions](https://github.com/uppnrise/harbor-master/discussions)
+- **Issues:** [Report bugs or request features](https://github.com/uppnrise/harbor-master/issues)
 
 ---
 
 ## 📧 Contact
 
-- **Website:** https://harbormaster.app (coming soon)
-- **Email:** hello@harbormaster.app
-- **Issues:** https://github.com/[your-org]/harbormaster/issues
+- **GitHub:** https://github.com/uppnrise/harbor-master
+- **Issues:** https://github.com/uppnrise/harbor-master/issues
+- **Discussions:** https://github.com/uppnrise/harbor-master/discussions
 
 ---
 
@@ -495,6 +504,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ⚓ **Welcome aboard, Captain!** 🚢
 
-[Website](https://harbormaster.app) • [Documentation](https://docs.harbormaster.app) • [Report Bug](https://github.com/[your-org]/harbormaster/issues) • [Request Feature](https://github.com/[your-org]/harbormaster/issues)
+[GitHub](https://github.com/uppnrise/harbor-master) • [Report Bug](https://github.com/uppnrise/harbor-master/issues) • [Request Feature](https://github.com/uppnrise/harbor-master/issues) • [Discussions](https://github.com/uppnrise/harbor-master/discussions)
 
 </div>

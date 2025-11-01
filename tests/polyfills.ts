@@ -15,3 +15,32 @@ if (typeof globalThis.Map === 'undefined') {
 if (typeof globalThis.Set === 'undefined') {
   (globalThis as typeof globalThis & { Set: typeof Set }).Set = Set;
 }
+
+// Mock Tauri API for tests
+if (typeof window !== 'undefined') {
+  (window as unknown as { __TAURI_INTERNALS__: { invoke: () => Promise<unknown> } }).__TAURI_INTERNALS__ = {
+    invoke: () => Promise.resolve(),
+  };
+}
+
+// Polyfill HTMLDialogElement for jsdom
+if (typeof window !== 'undefined' && typeof HTMLDialogElement === 'undefined') {
+  (window as unknown as { HTMLDialogElement: typeof Element }).HTMLDialogElement = class HTMLDialogElement extends HTMLElement {
+    open = false;
+    returnValue = '';
+    
+    showModal() {
+      this.open = true;
+    }
+    
+    show() {
+      this.open = true;
+    }
+    
+    close(returnValue = '') {
+      this.open = false;
+      this.returnValue = returnValue;
+    }
+  } as typeof HTMLDialogElement;
+}
+
